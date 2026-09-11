@@ -234,7 +234,7 @@ mainへの直接pushには、GitHub branch protection/rulesetが`github-actions[
 
 ## 変更可能ファイル制限とfail-closed
 
-許可パスは実行日から厳密に導いた単一の `data/radar/YYYY-MM.json` のみ。新月はその1ファイルの追加を許容し、既存月はその1ファイルの変更を許容する。`git diff --name-status` と`git ls-files --others --exclude-standard`をbase checkoutと比較し、追加・変更・削除・renameのいずれもこの厳密パス以外なら失敗する。`src/**`、`.github/**`、`scripts/**`、`prompts/**`、SPEC、AGENTS、package/lock、`data/research-sources.yml`、既存Generated Dataは通常レーダー実行で変更不能である。
+許可パスは実行日から厳密に導いた単一の `data/radar/YYYY-MM.json` のみ。新月はその1ファイルの追加を許容し、既存月はその1ファイルの変更を許容する。workflowの差分有無判定は`git status --porcelain`でtracked・untrackedの両方を検出し、その後に`git diff --name-status` と`git ls-files --others --exclude-standard`をbase checkoutと比較する。追加・変更・削除・renameのいずれもこの厳密パス以外なら失敗する。`src/**`、`.github/**`、`scripts/**`、`prompts/**`、SPEC、AGENTS、package/lock、`data/research-sources.yml`、既存Generated Dataは通常レーダー実行で変更不能である。
 
 API/Web Search/Structured Outputs/schema/source照合/URL/fingerprint/保存後schema/許可ファイル/テスト/typecheck/buildのどれかが失敗・不明なら、pushしない。破損しかけた対象ファイルはcommitせずjobをfailにする。0件は正常・空commitなし。「今週は情報なし」要素も作らない。
 
