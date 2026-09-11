@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { parse } from 'yaml';
 
 import { groupSocialEntries } from './social';
+import { toAbsoluteHttpUrl } from './url';
 
 import itemsJson from '../../data/generated/items.json';
 import summariesJson from '../../data/generated/summaries.json';
@@ -73,9 +74,13 @@ export function mergeLatestItems(items: PortalItem[], summaries: PortalSummary[]
   return items
     .map((item) => ({
       ...item,
-      summary: summaryById.get(item.id) ?? item.description
+      summary: summaryById.get(item.id) ?? item.description,
+      originalUrl: toAbsoluteHttpUrl(item.originalUrl) ?? item.originalUrl
     }))
-    .sort((left, right) => new Date(right.collectedAt).getTime() - new Date(left.collectedAt).getTime())
+    .sort(
+      (left, right) =>
+        getSortableTimestamp(right.publishedAt, right.collectedAt) - getSortableTimestamp(left.publishedAt, left.collectedAt)
+    )
     .slice(0, limit);
 }
 
@@ -111,21 +116,35 @@ export function getSources() {
 }
 
 export function formatDate(date: string | null, fallbackDate?: string): string {
-  const value = date ?? fallbackDate;
-  if (!value) {
-    return '掲載日未確認';
+  for (const value of [date, fallbackDate]) {
+    if (!value) {
+      continue;
+    }
+
+    const parsedDate = new Date(value);
+    if (Number.isNaN(parsedDate.getTime())) {
+      continue;
+    }
+
+    return new Intl.DateTimeFormat('ja-JP', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    }).format(parsedDate);
   }
 
-  const parsedDate = new Date(value);
-  if (Number.isNaN(parsedDate.getTime())) {
-    return '掲載日未確認';
+  return '掲載日未確認';
+}
+
+function getSortableTimestamp(primaryDate: string | null, fallbackDate: string): number {
+  for (const value of [primaryDate, fallbackDate]) {
+    const timestamp = value ? new Date(value).getTime() : NaN;
+    if (Number.isFinite(timestamp)) {
+      return timestamp;
+    }
   }
 
-  return new Intl.DateTimeFormat('ja-JP', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  }).format(parsedDate);
+  return 0;
 }
 
 export function getSourceTypeLabel(sourceType: SourceType): string {

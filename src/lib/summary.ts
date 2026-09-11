@@ -3,6 +3,12 @@ export type SummarySource = {
   description?: string;
 };
 
+export type SummarySnapshot = {
+  itemId: string;
+  summary: string;
+  generatedAt: string;
+};
+
 function toSentences(value: string): string[] {
   return value
     .replace(/\s+/g, ' ')
@@ -32,4 +38,31 @@ export function isValidSummary(summary: string): boolean {
   const sentences = toSentences(summary);
 
   return sentences.length >= 2 && sentences.length <= 3 && !summary.includes('http');
+}
+
+export function buildSummaries(
+  items: Array<{ id: string; title: string; description?: string }>,
+  previousSummaries: SummarySnapshot[] = [],
+  generatedAt = new Date().toISOString()
+): SummarySnapshot[] {
+  const previousByItemId = new Map(previousSummaries.map((entry) => [entry.itemId, entry]));
+
+  return items.map((item) => {
+    const summary = generateSummary({
+      title: item.title,
+      description: item.description
+    });
+
+    if (!isValidSummary(summary)) {
+      throw new Error(`Invalid summary generated for ${item.id}`);
+    }
+
+    const previous = previousByItemId.get(item.id);
+
+    return {
+      itemId: item.id,
+      summary,
+      generatedAt: previous?.summary === summary ? previous.generatedAt : generatedAt
+    };
+  });
 }

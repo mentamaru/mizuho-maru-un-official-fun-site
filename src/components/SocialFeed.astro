@@ -56,21 +56,31 @@ const { groups } = Astro.props;
                   <h3 class="text-lg font-bold text-base-content">{entry.displayName}</h3>
                   <p class="break-all text-sm text-base-content/70">@{entry.accountId}</p>
                 </div>
-                <p class="text-sm leading-7 text-base-content/80">必要な外部リソースは利用時まで読み込みません。埋め込み表示に失敗した場合も外部プロフィールへ移動できます。</p>
+                <p class="text-sm leading-7 text-base-content/80">
+                  必要な外部リソースは利用時まで読み込みません。X はタイムラインを遅延読み込みし、表示できない場合は外部プロフィールへ移動できます。
+                </p>
                 <div class="flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    class="btn btn-primary btn-sm"
-                    data-social-load
-                    data-platform={entry.platform}
-                    data-script={getEmbedScriptUrl(entry.platform)}
-                    data-status-id={`${entry.id}-status`}
-                  >
-                    {platform.label} の埋め込みを読み込む
-                  </button>
+                  {entry.platform === 'x' ? (
+                    <button
+                      type="button"
+                      class="btn btn-primary btn-sm"
+                      data-social-load
+                      data-platform={entry.platform}
+                      data-script={getEmbedScriptUrl(entry.platform)}
+                      data-status-id={`${entry.id}-status`}
+                      data-target-id={`${entry.id}-embed`}
+                      data-profile-url={entry.profileUrl}
+                      data-display-name={entry.displayName}
+                    >
+                      X タイムラインを読み込む
+                    </button>
+                  ) : null}
                   <a class="btn btn-outline btn-sm border-primary/40 text-primary" href={entry.profileUrl} rel="noreferrer" target="_blank">外部プロフィール</a>
                 </div>
-                <p id={`${entry.id}-status`} class="text-sm text-base-content/70">未読み込み</p>
+                <p id={`${entry.id}-status`} class="text-sm text-base-content/70">
+                  {entry.platform === 'x' ? '未読み込み' : '外部プロフィールから確認できます。'}
+                </p>
+                {entry.platform === 'x' ? <div id={`${entry.id}-embed`} class="overflow-hidden rounded-2xl" /> : null}
               </div>
             </article>
           ))}
@@ -85,6 +95,13 @@ const { groups } = Astro.props;
 </section>
 
 <script>
+  type TwitterWidgets = {
+    widgets?: {
+      load: (element?: HTMLElement) => void;
+    };
+  };
+
+  const twitterWindow = window as Window & typeof globalThis & { twttr?: TwitterWidgets };
   const socialTriggers = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-social-trigger]'));
   const socialPanels = Array.from(document.querySelectorAll<HTMLElement>('[data-social-panel]'));
 
@@ -131,11 +148,31 @@ const { groups } = Astro.props;
     button.addEventListener('click', () => {
       const scriptUrl = button.dataset.script;
       const statusId = button.dataset.statusId;
+      const targetId = button.dataset.targetId;
+      const profileUrl = button.dataset.profileUrl;
+      const displayName = button.dataset.displayName;
       const status = statusId ? document.getElementById(statusId) : null;
+      const target = targetId ? document.getElementById(targetId) : null;
 
-      if (!scriptUrl || document.querySelector(`[data-social-script="${scriptUrl}"]`)) {
+      if (!scriptUrl || !target || !profileUrl) {
         if (status) {
-          status.textContent = '読み込み済みです。表示できない場合は外部プロフィールをご利用ください。';
+          status.textContent = '外部プロフィールをご利用ください。';
+        }
+        return;
+      }
+
+      if (!target.querySelector('a.twitter-timeline')) {
+        const anchor = document.createElement('a');
+        anchor.className = 'twitter-timeline';
+        anchor.href = profileUrl;
+        anchor.textContent = `${displayName ?? 'X'} のタイムライン`;
+        target.replaceChildren(anchor);
+      }
+
+      if (document.querySelector(`[data-social-script="${scriptUrl}"]`)) {
+        twitterWindow.twttr?.widgets?.load(target);
+        if (status) {
+          status.textContent = 'タイムラインの表示を更新しました。表示できない場合は外部プロフィールをご利用ください。';
         }
         return;
       }
@@ -145,18 +182,19 @@ const { groups } = Astro.props;
       script.async = true;
       script.dataset.socialScript = scriptUrl;
       script.onload = () => {
+        twitterWindow.twttr?.widgets?.load(target);
         if (status) {
-          status.textContent = '外部リソースの読み込みを開始しました。表示できない場合は外部プロフィールをご利用ください。';
+          status.textContent = 'タイムラインを読み込みました。表示できない場合は外部プロフィールをご利用ください。';
         }
       };
       script.onerror = () => {
         if (status) {
-          status.textContent = '埋め込みの読み込みに失敗しました。外部プロフィールをご利用ください。';
+          status.textContent = 'タイムラインの読み込みに失敗しました。外部プロフィールをご利用ください。';
         }
       };
       document.head.append(script);
       if (status) {
-        status.textContent = '外部リソースを読み込み中です。';
+        status.textContent = 'タイムラインを読み込み中です。';
       }
     });
   });

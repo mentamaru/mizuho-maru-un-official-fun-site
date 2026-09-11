@@ -12,10 +12,14 @@ describe('formatDate', () => {
   test('returns fallback label for invalid dates', () => {
     expect(formatDate('not-a-date')).toBe('掲載日未確認');
   });
+
+  test('falls back to collectedAt when primary date is invalid', () => {
+    expect(formatDate('not-a-date', '2026-09-11T00:00:00.000Z')).toBe('2026年9月11日');
+  });
 });
 
 describe('mergeLatestItems', () => {
-  test('sorts by collectedAt and falls back to item descriptions', () => {
+  test('sorts by publishedAt before collectedAt and falls back to item descriptions', () => {
     const items: PortalItem[] = [
       {
         id: 'older',
@@ -25,7 +29,7 @@ describe('mergeLatestItems', () => {
         originalUrl: 'https://example.com/older',
         sourceType: 'official',
         publishMethod: 'manual',
-        publishedAt: null,
+        publishedAt: '2026-09-12T00:00:00.000Z',
         collectedAt: '2026-09-09T00:00:00.000Z',
         description: 'older fallback',
         locale: 'ja-JP'
@@ -54,9 +58,9 @@ describe('mergeLatestItems', () => {
 
     const latest = mergeLatestItems(items, summaries, 2);
 
-    expect(latest.map((item) => item.id)).toEqual(['newer', 'older']);
-    expect(latest[0]?.summary).toBe('newer summary');
-    expect(latest[1]?.summary).toBe('older fallback');
+    expect(latest.map((item) => item.id)).toEqual(['older', 'newer']);
+    expect(latest[0]?.summary).toBe('older fallback');
+    expect(latest[1]?.summary).toBe('newer summary');
   });
 });
 

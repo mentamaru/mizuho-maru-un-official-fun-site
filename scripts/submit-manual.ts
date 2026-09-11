@@ -2,6 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 
 import { generateSummary } from '../src/lib/summary';
 import type { PortalItem, PortalSummary } from '../src/lib/site-data';
+import { toAbsoluteHttpUrl } from '../src/lib/url';
 
 const title = process.env.SUBMIT_TITLE?.trim();
 const sourceUrl = process.env.SUBMIT_SOURCE_URL?.trim();
@@ -19,6 +20,12 @@ if (!title || !sourceUrl) {
   throw new Error('SUBMIT_TITLE and SUBMIT_SOURCE_URL are required.');
 }
 
+const originalUrl = toAbsoluteHttpUrl(sourceUrl);
+
+if (!originalUrl) {
+  throw new Error('SUBMIT_SOURCE_URL must be an absolute http(s) URL.');
+}
+
 const itemsPath = new URL('../data/generated/items.json', import.meta.url);
 const summariesPath = new URL('../data/generated/summaries.json', import.meta.url);
 
@@ -34,7 +41,7 @@ items.unshift({
   title,
   source: 'Manual Submission',
   category: '手動投入',
-  originalUrl: sourceUrl,
+  originalUrl,
   sourceType,
   publishMethod: 'manual',
   publishedAt: null,

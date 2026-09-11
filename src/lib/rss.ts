@@ -1,5 +1,7 @@
 import { XMLParser } from 'fast-xml-parser';
 
+import { toAbsoluteHttpUrl } from './url';
+
 export type RssItem = {
   title: string;
   link: string;
@@ -29,7 +31,7 @@ export function parseRss(xml: string): RssItem[] {
   const parsed = parser.parse(xml);
   const rssItems = asArray(parsed?.rss?.channel?.item).map((item) => ({
     title: stripTags(item.title),
-    link: typeof item.link === 'string' ? item.link : item.link?.['@_href'] ?? '',
+    link: toAbsoluteHttpUrl(typeof item.link === 'string' ? item.link : item.link?.['@_href']) ?? '',
     publishedAt: item.pubDate ?? item.isoDate ?? null,
     description: stripTags(item.description ?? item['content:encoded']),
     sourceType: 'official' as const
@@ -42,12 +44,12 @@ export function parseRss(xml: string): RssItem[] {
   return asArray(parsed?.feed?.entry)
     .map((entry) => ({
       title: stripTags(entry.title),
-      link:
+      link: toAbsoluteHttpUrl(
         typeof entry.link === 'string'
           ? entry.link
           : asArray(entry.link).find((candidate) => candidate?.['@_rel'] === 'alternate')?.['@_href'] ??
-            asArray(entry.link)[0]?.['@_href'] ??
-            '',
+              asArray(entry.link)[0]?.['@_href']
+      ) ?? '',
       publishedAt: entry.published ?? entry.updated ?? null,
       description: stripTags(entry.summary ?? entry.content),
       sourceType: 'official' as const
