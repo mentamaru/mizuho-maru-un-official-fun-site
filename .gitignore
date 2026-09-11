@@ -1,0 +1,9 @@
+node_modules/
+.astro/
+dist/
+playwright-report/
+test-results/
+coverage/
+.env
+.env.local
+.vercel/

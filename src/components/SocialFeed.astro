@@ -1,0 +1,128 @@
+---
+import { siteCopy, socialPlatforms } from '../lib/content';
+import { getEmbedScriptUrl, type SocialEntry } from '../lib/social';
+
+interface Props {
+  groups: Record<'x' | 'instagram', SocialEntry[]>;
+}
+
+const { groups } = Astro.props;
+---
+
+<section class="space-y-6">
+  <div class="space-y-2">
+    <p class="text-sm font-semibold text-primary">Whitelist / Lazy Load</p>
+    <h2 class="text-2xl font-bold text-base-content">関連SNS</h2>
+    <p class="max-w-3xl text-sm leading-7 text-base-content/80">{siteCopy.socialDisclaimer}</p>
+  </div>
+
+  <div class="tabs tabs-boxed grid grid-cols-2 gap-2 rounded-3xl border border-secondary/50 bg-base-100 p-2 shadow-sm">
+    {socialPlatforms.map((platform, index) => (
+      <button
+        type="button"
+        role="tab"
+        class:list={['tab rounded-2xl px-4 py-3 font-semibold', index === 0 && 'tab-active']}
+        data-social-trigger
+        data-platform={platform.id}
+        aria-controls={`${platform.id}-social-panel`}
+        aria-selected={index === 0 ? 'true' : 'false'}
+      >
+        {platform.label}
+      </button>
+    ))}
+  </div>
+
+  {socialPlatforms.map((platform, index) => (
+    <section id={`${platform.id}-social-panel`} data-social-panel hidden={index !== 0} class="space-y-4">
+      {groups[platform.id].length > 0 ? (
+        <div class="grid gap-4 md:grid-cols-2">
+          {groups[platform.id].map((entry) => (
+            <article class="card border border-secondary/40 bg-base-100 shadow-sm">
+              <div class="card-body gap-4">
+                <div class="space-y-1">
+                  <p class="text-sm font-semibold text-primary">{entry.category}</p>
+                  <h3 class="text-lg font-bold text-base-content">{entry.displayName}</h3>
+                  <p class="break-all text-sm text-base-content/70">@{entry.accountId}</p>
+                </div>
+                <p class="text-sm leading-7 text-base-content/80">必要な外部リソースは利用時まで読み込みません。埋め込み表示に失敗した場合も外部プロフィールへ移動できます。</p>
+                <div class="flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-sm"
+                    data-social-load
+                    data-platform={entry.platform}
+                    data-script={getEmbedScriptUrl(entry.platform)}
+                    data-status-id={`${entry.id}-status`}
+                  >
+                    {platform.label} の埋め込みを読み込む
+                  </button>
+                  <a class="btn btn-outline btn-sm border-primary/40 text-primary" href={entry.profileUrl} rel="noreferrer" target="_blank">外部プロフィール</a>
+                </div>
+                <p id={`${entry.id}-status`} class="text-sm text-base-content/70">未読み込み</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div class="rounded-3xl border border-dashed border-secondary/50 bg-base-100 p-6 text-sm leading-7 text-base-content/75">
+          {platform.label} の掲載候補を確認中です。公開プロフィールが確認できたものだけを追加します。
+        </div>
+      )}
+    </section>
+  ))}
+</section>
+
+<script>
+  const socialTriggers = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-social-trigger]'));
+  const socialPanels = Array.from(document.querySelectorAll<HTMLElement>('[data-social-panel]'));
+
+  const setActivePanel = (platform: string) => {
+    socialTriggers.forEach((trigger) => {
+      const active = trigger.dataset.platform === platform;
+      trigger.classList.toggle('tab-active', active);
+      trigger.setAttribute('aria-selected', String(active));
+    });
+
+    socialPanels.forEach((panel) => {
+      panel.hidden = panel.id !== `${platform}-social-panel`;
+    });
+  };
+
+  socialTriggers.forEach((trigger) => {
+    trigger.addEventListener('click', () => setActivePanel(trigger.dataset.platform ?? 'x'));
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-social-load]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const scriptUrl = button.dataset.script;
+      const statusId = button.dataset.statusId;
+      const status = statusId ? document.getElementById(statusId) : null;
+
+      if (!scriptUrl || document.querySelector(`[data-social-script="${scriptUrl}"]`)) {
+        if (status) {
+          status.textContent = '読み込み済みです。表示できない場合は外部プロフィールをご利用ください。';
+        }
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = scriptUrl;
+      script.async = true;
+      script.dataset.socialScript = scriptUrl;
+      script.onload = () => {
+        if (status) {
+          status.textContent = '外部リソースの読み込みを開始しました。表示できない場合は外部プロフィールをご利用ください。';
+        }
+      };
+      script.onerror = () => {
+        if (status) {
+          status.textContent = '埋め込みの読み込みに失敗しました。外部プロフィールをご利用ください。';
+        }
+      };
+      document.head.append(script);
+      if (status) {
+        status.textContent = '外部リソースを読み込み中です。';
+      }
+    });
+  });
+</script>

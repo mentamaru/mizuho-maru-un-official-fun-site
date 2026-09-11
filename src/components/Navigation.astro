@@ -1,0 +1,70 @@
+---
+import { navigationTabs } from '../lib/content';
+---
+
+<nav aria-label="メインナビゲーション" class="tabs tabs-boxed grid grid-cols-2 gap-2 rounded-3xl border border-secondary/50 bg-base-100 p-2 shadow-sm sm:grid-cols-4">
+  {navigationTabs.map((tab, index) => (
+    <button
+      type="button"
+      role="tab"
+      class:list={['tab h-auto rounded-2xl border border-transparent px-4 py-3 text-sm font-semibold', index === 0 && 'tab-active']}
+      data-tab-trigger
+      data-target={tab.id}
+      aria-controls={`${tab.id}-panel`}
+      aria-selected={index === 0 ? 'true' : 'false'}
+      tabindex={index === 0 ? '0' : '-1'}
+    >
+      {tab.label}
+    </button>
+  ))}
+</nav>
+
+<script>
+  const triggers = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-tab-trigger]'));
+  const panels = Array.from(document.querySelectorAll<HTMLElement>('[data-tab-panel]'));
+
+  if (triggers.length > 0 && panels.length > 0) {
+    document.documentElement.dataset.tabsReady = 'true';
+
+    const setActiveTab = (targetId: string) => {
+      triggers.forEach((trigger) => {
+        const active = trigger.dataset.target === targetId;
+        trigger.classList.toggle('tab-active', active);
+        trigger.setAttribute('aria-selected', String(active));
+        trigger.setAttribute('tabindex', active ? '0' : '-1');
+        if (active) {
+          trigger.focus({ preventScroll: true });
+        }
+      });
+
+      panels.forEach((panel) => {
+        panel.hidden = panel.id !== `${targetId}-panel`;
+      });
+    };
+
+    triggers.forEach((trigger) => {
+      trigger.addEventListener('click', () => setActiveTab(trigger.dataset.target ?? 'latest'));
+      trigger.addEventListener('keydown', (event) => {
+        if (!(event instanceof KeyboardEvent)) {
+          return;
+        }
+
+        const currentIndex = triggers.indexOf(trigger);
+        if (event.key === 'ArrowRight') {
+          event.preventDefault();
+          const next = triggers[(currentIndex + 1) % triggers.length];
+          setActiveTab(next.dataset.target ?? 'latest');
+          return;
+        }
+
+        if (event.key === 'ArrowLeft') {
+          event.preventDefault();
+          const previous = triggers[(currentIndex - 1 + triggers.length) % triggers.length];
+          setActiveTab(previous.dataset.target ?? 'latest');
+        }
+      });
+    });
+
+    setActiveTab('latest');
+  }
+</script>

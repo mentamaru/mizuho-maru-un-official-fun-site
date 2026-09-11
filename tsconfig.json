@@ -1,0 +1,15 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "types": ["node", "vitest/globals"]
+  },
+  "include": [
+    "src",
+    "scripts",
+    "tests",
+    "astro.config.mjs",
+    "playwright.config.ts",
+    "vitest.config.ts"
+  ]
+}
