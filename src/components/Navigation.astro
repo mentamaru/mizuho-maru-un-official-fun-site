@@ -1,14 +1,15 @@
 ---
 import { navigationTabs } from '../lib/content';
+const isHome = Astro.url.pathname === '/';
 ---
 
 <nav
   aria-label="メインナビゲーション"
-  role="tablist"
-  class="tabs tabs-boxed grid grid-cols-2 gap-2 rounded-3xl border border-secondary/50 bg-base-100 p-2 shadow-sm sm:grid-cols-4"
+  role={isHome ? "tablist" : undefined}
+  class="tabs tabs-box grid grid-cols-2 gap-2 rounded-3xl border border-secondary/50 bg-base-100 p-2 shadow-sm sm:grid-cols-4"
 >
   {navigationTabs.map((tab, index) => (
-    <button
+    isHome ? <button
       type="button"
       role="tab"
       class:list={['tab h-auto rounded-2xl border border-transparent px-4 py-3 text-sm font-semibold', index === 0 && 'tab-active']}
@@ -20,7 +21,7 @@ import { navigationTabs } from '../lib/content';
       tabindex={index === 0 ? '0' : '-1'}
     >
       {tab.label}
-    </button>
+    </button> : <a class="tab rounded-2xl px-4 py-3 font-semibold" href={`/#${tab.id}`}>{tab.label}</a>
   ))}
 </nav>
 
@@ -48,7 +49,10 @@ import { navigationTabs } from '../lib/content';
     };
 
     triggers.forEach((trigger) => {
-      trigger.addEventListener('click', () => setActiveTab(trigger.dataset.target ?? 'latest'));
+      trigger.addEventListener('click', () => {
+        setActiveTab(trigger.dataset.target ?? 'latest');
+        history.replaceState(null, '', `#${trigger.dataset.target}`);
+      });
       trigger.addEventListener('keydown', (event) => {
         if (!(event instanceof KeyboardEvent)) {
           return;
@@ -70,6 +74,8 @@ import { navigationTabs } from '../lib/content';
       });
     });
 
-    setActiveTab('latest');
+    const openHash = () => setActiveTab(triggers.some(t => t.dataset.target === location.hash.slice(1)) ? location.hash.slice(1) : 'latest');
+    window.addEventListener('hashchange', openHash);
+    openHash();
   }
 </script>

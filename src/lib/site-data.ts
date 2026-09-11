@@ -36,6 +36,7 @@ export type SocialConfig = {
   platform: 'x' | 'instagram';
   accountId: string;
   displayName: string;
+  description?: string;
   profileUrl: string;
   category: string;
   enabled: boolean;
@@ -116,7 +117,7 @@ export function getSources() {
 }
 
 export function formatDate(date: string | null, fallbackDate?: string): string {
-  for (const value of [date, fallbackDate]) {
+  for (const [index, value] of [date, fallbackDate].entries()) {
     if (!value) {
       continue;
     }
@@ -126,11 +127,13 @@ export function formatDate(date: string | null, fallbackDate?: string): string {
       continue;
     }
 
-    return new Intl.DateTimeFormat('ja-JP', {
+    const formatted = new Intl.DateTimeFormat('ja-JP', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
+      timeZone: 'Asia/Tokyo'
     }).format(parsedDate);
+    return index === 0 ? `公開日：${formatted}` : `公開日未確認（収集日：${formatted}）`;
   }
 
   return '掲載日未確認';

@@ -15,19 +15,19 @@ const linkGroups = getLinkGroups();
 
 <Layout title={siteCopy.siteTitle} description={siteCopy.siteDescription}>
   <section class="space-y-8">
-    <section id="latest-panel" data-tab-panel role="tabpanel" aria-labelledby="latest-tab" class="space-y-8">
+    <section id="latest-panel" data-tab-panel tabindex="0" role="tabpanel" aria-labelledby="latest-tab" class="space-y-8">
       <LatestNews items={latestItems} />
     </section>
 
-    <section id="related-panel" data-tab-panel role="tabpanel" aria-labelledby="related-tab" class="space-y-8">
+    <section id="related-panel" data-tab-panel tabindex="0" role="tabpanel" aria-labelledby="related-tab" class="space-y-8">
       <RelatedInfo groups={relatedGroups} />
     </section>
 
-    <section id="social-panel" data-tab-panel role="tabpanel" aria-labelledby="social-tab" class="space-y-8">
+    <section id="social-panel" data-tab-panel tabindex="0" role="tabpanel" aria-labelledby="social-tab" class="space-y-8">
       <SocialFeed groups={socialGroups} />
     </section>
 
-    <section id="links-panel" data-tab-panel role="tabpanel" aria-labelledby="links-tab" class="space-y-8">
+    <section id="links-panel" data-tab-panel tabindex="0" role="tabpanel" aria-labelledby="links-tab" class="space-y-8">
       <LinkList groups={linkGroups} />
     </section>
   </section>

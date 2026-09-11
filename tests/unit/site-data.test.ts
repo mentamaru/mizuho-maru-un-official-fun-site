@@ -14,7 +14,7 @@ describe('formatDate', () => {
   });
 
   test('falls back to collectedAt when primary date is invalid', () => {
-    expect(formatDate('not-a-date', '2026-09-11T00:00:00.000Z')).toBe('2026年9月11日');
+    expect(formatDate('not-a-date', '2026-09-11T00:00:00.000Z')).toBe('公開日未確認（収集日：2026年9月11日）');
   });
 });
 

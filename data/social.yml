@@ -2,6 +2,15 @@
   platform: x
   accountId: mizuho_koho
   displayName: 瑞穂町（東京都）広報公式 X
-  profileUrl: https://twitter.com/mizuho_koho
+  profileUrl: https://x.com/mizuho_koho
   category: 公式広報
+  enabled: true
+
+- id: marumaru-mizuho-instagram
+  platform: instagram
+  accountId: marumaru_mizuho
+  displayName: marumaru_mizuho
+  description: イベント情報はこちらのアカウントからご確認ください。
+  profileUrl: https://www.instagram.com/marumaru_mizuho/
+  category: イベント情報
   enabled: true
