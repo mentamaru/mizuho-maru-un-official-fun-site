@@ -46,6 +46,25 @@ test('tab switching and SNS lazy loading work', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'リンク集' })).toBeVisible();
 });
 
+test('X timelines are queued instead of starting together', async ({ page }) => {
+  await page.route('https://platform.x.com/widgets.js', route => route.fulfill({ contentType: 'application/javascript', body: `
+    window.__timelineStarts = [];
+    window.twttr = {widgets: {createTimeline: async (source, target) => new Promise(resolve => {
+      window.__timelineStarts.push(source.url);
+      const render = () => { const frame = document.createElement('iframe'); frame.title = 'X タイムライン'; target.append(frame); resolve(frame); };
+      if (window.__timelineStarts.length === 1) window.__releaseFirstTimeline = render; else render();
+    })}};
+  ` }));
+  await page.goto('/');
+  await page.getByRole('tab', { name: '関連SNS', exact: true }).click();
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { __timelineStarts?: string[] }).__timelineStarts?.length ?? 0)).toBe(1);
+  expect(await page.locator('#mizuho-koho-x-embed').getAttribute('data-loading')).toBe('true');
+  expect(await page.locator('#marumaru-mizuho-x-embed').getAttribute('data-queued')).toBe('true');
+  await page.evaluate(() => (window as typeof window & { __releaseFirstTimeline?: () => void }).__releaseFirstTimeline?.());
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { __timelineStarts?: string[] }).__timelineStarts?.length ?? 0)).toBe(2);
+  await expect(page.locator('#marumaru-mizuho-x-embed iframe')).toBeVisible();
+});
+
 test('layout does not overflow at 375px', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 900 });
   await page.goto('/');
