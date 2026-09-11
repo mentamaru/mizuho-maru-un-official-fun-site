@@ -7,6 +7,7 @@ export type RssItem = {
   link: string;
   publishedAt: string | null;
   description: string;
+  categories: string[];
   sourceType: 'official';
 };
 
@@ -27,6 +28,12 @@ function asArray<T>(value: T | T[] | undefined): T[] {
   return Array.isArray(value) ? value : [value];
 }
 
+function categories(value: unknown): string[] {
+  return asArray(value as string | string[] | undefined)
+    .map((category) => stripTags(typeof category === 'string' ? category : String(category)))
+    .filter(Boolean);
+}
+
 export function parseRss(xml: string): RssItem[] {
   const parsed = parser.parse(xml);
   const rssItems = asArray(parsed?.rss?.channel?.item).map((item) => ({
@@ -34,6 +41,7 @@ export function parseRss(xml: string): RssItem[] {
     link: toAbsoluteHttpUrl(typeof item.link === 'string' ? item.link : item.link?.['@_href']) ?? '',
     publishedAt: item.pubDate ?? item.isoDate ?? null,
     description: stripTags(item.description ?? item['content:encoded']),
+    categories: categories(item.category),
     sourceType: 'official' as const
   }));
 
@@ -52,6 +60,7 @@ export function parseRss(xml: string): RssItem[] {
       ) ?? '',
       publishedAt: entry.published ?? entry.updated ?? null,
       description: stripTags(entry.summary ?? entry.content),
+      categories: categories(entry.category),
       sourceType: 'official' as const
     }))
     .filter((item) => item.title && item.link);

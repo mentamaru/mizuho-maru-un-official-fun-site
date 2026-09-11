@@ -1,0 +1,17 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { loadOfficialItems, officialMonth } from '../../lib/official';
+import { formatDate } from '../../lib/site-data';
+import { toAbsoluteHttpUrl } from '../../lib/url';
+
+const items = loadOfficialItems();
+const months = [...new Set(items.map(item => officialMonth(item.collectedAt)))];
+---
+
+<Layout title="公式情報 | 非公式みずほまる情報ポータル" description="瑞穂町公式RSSから取得したみずほまる情報です。">
+  <section class="space-y-6"><div class="space-y-2"><h1 class="text-3xl font-bold">公式情報</h1><p class="leading-7 text-base-content/80">瑞穂町公式サイトのRSSから取得したみずほまるに関するお知らせです。正確な詳細は、各カードの元情報をご確認ください。</p></div>
+  {items.length > 0 ? <><label class="form-control max-w-xs"><span class="label-text font-semibold">収集年月</span><select class="select select-bordered" data-official-filter><option value="">すべて</option>{months.map(month => <option value={month}>{month.replace('-', '年')}月</option>)}</select></label><div class="space-y-4" data-official-list>{items.map(item => <article class="card border border-secondary/40 bg-base-100 shadow-sm" data-official-month={officialMonth(item.collectedAt)}><div class="card-body gap-3"><div class="flex flex-wrap gap-2"><span class="badge badge-outline border-primary/30 text-primary">{item.category}</span><span class="text-sm text-base-content/70">{formatDate(item.publishedAt, item.collectedAt)}</span></div><h2 class="text-xl font-bold">{item.title}</h2><a class="btn btn-primary btn-sm" href={toAbsoluteHttpUrl(item.originalUrl) ?? undefined} target="_blank" rel="noreferrer">元情報を見る</a></div></article>)}</div></> : <p>現在、掲載できる公式情報はありません。</p>}</section>
+</Layout>
+<script>
+  document.querySelector<HTMLSelectElement>('[data-official-filter]')?.addEventListener('change', event => { const value = (event.currentTarget as HTMLSelectElement).value; document.querySelectorAll<HTMLElement>('[data-official-month]').forEach(card => card.hidden = Boolean(value) && card.dataset.officialMonth !== value); });
+</script>
