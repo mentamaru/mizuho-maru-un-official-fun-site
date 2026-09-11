@@ -13,3 +13,14 @@ export function withTimeout<T>(operation: Promise<T>, milliseconds: number): Pro
     operation.then(resolve, reject).finally(() => clearTimeout(timer));
   });
 }
+
+/** Run each task after its predecessor settles, including when it fails. */
+export function createSerialQueue(): <T>(task: () => Promise<T>) => Promise<T> {
+  let tail: Promise<void> = Promise.resolve();
+
+  return <T>(task: () => Promise<T>) => {
+    const result = tail.then(task, task);
+    tail = result.then(() => undefined, () => undefined);
+    return result;
+  };
+}
