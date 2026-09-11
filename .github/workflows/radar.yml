@@ -43,6 +43,8 @@ jobs:
       - if: steps.changed.outputs.has_changes == 'true'
         run: npm run build
       - if: steps.changed.outputs.has_changes == 'true'
+        run: npx playwright install --with-deps chromium
+      - if: steps.changed.outputs.has_changes == 'true'
         run: npm run test:e2e
       - if: steps.changed.outputs.has_changes == 'true'
         run: |
