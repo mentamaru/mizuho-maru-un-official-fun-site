@@ -129,6 +129,7 @@ Markup / CSSへ過剰なUnit Testを作らない。
 - GitHub Actions の現状を確認し、現時点では Copilot 実行Workflowのみが存在し、ジョブログ取得は 404 で未提供だった。
 - Astro + TypeScript + Tailwind CSS + daisyUI の基盤、主要UI、データファイル、スクリプト、テスト、Workflow を追加した。
 - lint / typecheck / unit test / build / Playwright / secret scan / parallel validation を実行した。
+- parallel validation の指摘に基づき、収集IDの安定化、日付fallback、SNSタブのキーボード操作、E2E URL判定を修正した。
 
 ## Findings
 
@@ -157,5 +158,7 @@ SPECを変更しない範囲の実装上の重要判断を記録する。
 - `npm run test:e2e` — PASS
 - `npm run lint` — PASS
 - `npm run typecheck` — PASS
+- `npm run collect` — PASS（RSS source なしのため既存 generated data を保持）
+- `npm run summarize` — PASS
 - `runtime-tools-secret_scanning`（変更ファイル）— PASS
-- `parallel_validation` — PASS（Code Review / CodeQL で追加修正なし）
+- `parallel_validation` — 初回で 5 件の改善提案を確認し修正、再実行で最終確認予定
