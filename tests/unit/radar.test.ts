@@ -1,8 +1,7 @@
 import { describe, expect, test } from 'vitest';
 
 import { dedupeRadarCandidates, radarFingerprint, radarMonth, sortRadarNewestFirst, type RadarCandidate, type RadarItem } from '../../src/lib/radar';
-import { parseVerifiedCandidates } from '../../src/lib/radar-collector';
-import { renderRadarPrompt } from '../../src/lib/radar-collector';
+import { parseVerifiedCandidates, radarModel, renderRadarPrompt } from '../../src/lib/radar-collector';
 import { loadResearchSources } from '../../src/lib/radar';
 
 const candidate: RadarCandidate = { title: 'みずほまるがイベントに登場', summary: 'みずほまるがイベントに登場します。詳しくは元情報をご確認ください。', category: 'event', date: '2026-10-20', dateType: 'event', source: { name: '公式', url: 'https://example.com/event' }, researchSources: [{ title: 'お知らせ', url: 'https://example.com/event' }] };
@@ -34,5 +33,8 @@ describe('radar data', () => {
     expect(prompt).toContain('mizuhokyodo.jp/information');
     expect(prompt).toContain('mizuho_koho');
     expect(prompt).toContain('公式キャラクター決定ページ');
+  });
+  test('uses the project-approved Luna model', () => {
+    expect(radarModel).toBe('gpt-5.6-luna');
   });
 });

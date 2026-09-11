@@ -9,6 +9,8 @@ import { getSources, type SocialConfig } from './site-data';
 
 export type RadarSearchClient = { collect(input: string): Promise<{ text: string; sourceUrls: string[] }> };
 
+export const radarModel = 'gpt-5.6-luna';
+
 export function renderRadarPrompt(config: ResearchSourcesConfig, existing: RadarItem[], now: Date): string {
   const template = readFileSync(resolve(process.cwd(), 'prompts/collect-latest.md'), 'utf8');
   const end = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Tokyo' }).format(now);
@@ -40,10 +42,11 @@ function getRequiredSources(config: ResearchSourcesConfig): Array<{ name: string
 
 export class OpenAiRadarSearchClient implements RadarSearchClient {
   readonly client: OpenAI;
-  constructor(apiKey = process.env.OPENAI_API_KEY) { if (!apiKey) throw new Error('OPENAI_API_KEY is required.'); this.client = new OpenAI({ apiKey }); }
+  readonly model: string;
+  constructor(apiKey = process.env.OPENAI_API_KEY) { if (!apiKey) throw new Error('OPENAI_API_KEY is required.'); this.client = new OpenAI({ apiKey }); this.model = radarModel; }
   async collect(input: string): Promise<{ text: string; sourceUrls: string[] }> {
     const response = await this.client.responses.create({
-      model: 'gpt-5.2',
+      model: this.model,
       input,
       tools: [{ type: 'web_search' }],
       tool_choice: 'required',
