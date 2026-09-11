@@ -3,11 +3,20 @@ import LatestNews from '../components/LatestNews.astro';
 import LinkList from '../components/LinkList.astro';
 import RelatedInfo from '../components/RelatedInfo.astro';
 import SocialFeed from '../components/SocialFeed.astro';
+import RadarNews from '../components/RadarNews.astro';
 import Layout from '../layouts/Layout.astro';
 import { siteCopy } from '../lib/content';
 import { getLatestItems, getLinkGroups, getRelatedGroups, getSocialGroups } from '../lib/site-data';
+import { loadRadarItems } from '../lib/radar';
 
-const latestItems = getLatestItems();
+const radarItems = loadRadarItems();
+const latestRadarItems = radarItems.slice(0, 3);
+const existingLatestItems = getLatestItems(2);
+const existingUrls = new Set(existingLatestItems.map(item => item.originalUrl));
+const latestItems = [...existingLatestItems, ...latestRadarItems.filter(item => !existingUrls.has(item.source.url)).slice(0, 1).map(item => ({
+  id: item.id, title: item.title, source: item.source.name, category: item.category, originalUrl: item.source.url,
+  sourceType: 'other' as const, publishedAt: item.discoveredAt, collectedAt: item.discoveredAt, summary: item.summary, isRadar: true
+}))].sort((a, b) => Date.parse(b.publishedAt ?? b.collectedAt) - Date.parse(a.publishedAt ?? a.collectedAt));
 const relatedGroups = getRelatedGroups();
 const socialGroups = getSocialGroups();
 const linkGroups = getLinkGroups();
@@ -17,6 +26,10 @@ const linkGroups = getLinkGroups();
   <section class="space-y-8">
     <section id="latest-panel" data-tab-panel tabindex="0" role="tabpanel" aria-labelledby="latest-tab" class="space-y-8">
       <LatestNews items={latestItems} />
+    </section>
+
+    <section id="radar-panel" data-tab-panel tabindex="0" role="tabpanel" aria-labelledby="radar-tab" class="space-y-8">
+      <RadarNews items={latestRadarItems} />
     </section>
 
     <section id="related-panel" data-tab-panel tabindex="0" role="tabpanel" aria-labelledby="related-tab" class="space-y-8">

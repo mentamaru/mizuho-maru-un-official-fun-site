@@ -1,0 +1,27 @@
+required:
+  - name: 瑞穂町公式サイト
+    url: https://www.town.mizuho.tokyo.jp/
+  - name: 瑞穂町 みずほまる情報
+    url: https://www.town.mizuho.tokyo.jp/soshiki/sangyoukaihatsu/sangyoukankou/gyomu/tourism/kankoupr/koho/10950.html
+  - name: 瑞穂町 ソーシャルメディアアカウント
+    url: https://www.town.mizuho.tokyo.jp/tyosei/015/010/social1/p005064.html
+  - name: 瑞穂町公式キャラクター決定
+    url: https://www.town.mizuho.tokyo.jp/bunka/006/p008104.html
+  - name: いってんべぇ東京みずほ
+    url: https://www.ittenbee-tokyomizuho.jp/?p=we-page-entrylist&spotlist=26095&nav=none&type=spot&pageno=3&sort=dateD
+  - name: 瑞穂町 みずほまる案内
+    url: https://www.town.mizuho.tokyo.jp/bunka/006/index.html
+  - name: 瑞穂協同組合 お知らせ
+    url: https://mizuhokyodo.jp/information/
+  - name: 瑞穂町広報公式 X
+    url: https://x.com/mizuho_koho
+  - name: みずほまるごとマルシェ Instagram
+    url: https://www.instagram.com/marumaru_mizuho/
+  - name: みずほまるごとマルシェ X
+    url: https://x.com/marumaru_mizuho
+  - name: 箱根ケ崎駅西口フリマ Instagram
+    url: https://www.instagram.com/ekinishifurima/
+  - name: はまきや Instagram
+    url: https://www.instagram.com/hamakiya_4649/
+openWeb:
+  enabled: true
