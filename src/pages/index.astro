@@ -1,23 +1,22 @@
 ---
 import LatestNews from '../components/LatestNews.astro';
 import LinkList from '../components/LinkList.astro';
-import RelatedInfo from '../components/RelatedInfo.astro';
+import OfficialNews from '../components/OfficialNews.astro';
 import SocialFeed from '../components/SocialFeed.astro';
 import RadarNews from '../components/RadarNews.astro';
 import Layout from '../layouts/Layout.astro';
 import { siteCopy } from '../lib/content';
-import { getLatestItems, getLinkGroups, getRelatedGroups, getSocialGroups } from '../lib/site-data';
+import { getLinkGroups, getSocialGroups } from '../lib/site-data';
+import { loadOfficialItems } from '../lib/official';
 import { loadRadarItems } from '../lib/radar';
 
 const radarItems = loadRadarItems();
 const latestRadarItems = radarItems.slice(0, 3);
-const existingLatestItems = getLatestItems(2);
-const existingUrls = new Set(existingLatestItems.map(item => item.originalUrl));
-const latestItems = [...existingLatestItems, ...latestRadarItems.filter(item => !existingUrls.has(item.source.url)).slice(0, 1).map(item => ({
-  id: item.id, title: item.title, source: item.source.name, category: item.category, originalUrl: item.source.url,
-  sourceType: 'other' as const, publishedAt: item.discoveredAt, collectedAt: item.discoveredAt, summary: item.summary, isRadar: true
-}))].sort((a, b) => Date.parse(b.publishedAt ?? b.collectedAt) - Date.parse(a.publishedAt ?? a.collectedAt));
-const relatedGroups = getRelatedGroups();
+const officialItems = loadOfficialItems();
+const latestOfficialItems = officialItems.slice(0, 3);
+const latestItems = latestOfficialItems.map(item => ({
+  ...item, source: '瑞穂町公式サイト', sourceType: 'official' as const, summary: '瑞穂町公式サイトからのお知らせです。'
+}));
 const socialGroups = getSocialGroups();
 const linkGroups = getLinkGroups();
 ---
@@ -32,16 +31,14 @@ const linkGroups = getLinkGroups();
       <RadarNews items={latestRadarItems} />
     </section>
 
-    <section id="related-panel" data-tab-panel tabindex="0" role="tabpanel" aria-labelledby="related-tab" class="space-y-8">
-      <RelatedInfo groups={relatedGroups} />
+    <section id="official-panel" data-tab-panel tabindex="0" role="tabpanel" aria-labelledby="official-tab" class="space-y-8">
+      <OfficialNews items={latestOfficialItems} />
+      <LinkList groups={linkGroups} heading="公式リンク集" />
     </section>
 
     <section id="social-panel" data-tab-panel tabindex="0" role="tabpanel" aria-labelledby="social-tab" class="space-y-8">
       <SocialFeed groups={socialGroups} />
     </section>
 
-    <section id="links-panel" data-tab-panel tabindex="0" role="tabpanel" aria-labelledby="links-tab" class="space-y-8">
-      <LinkList groups={linkGroups} />
-    </section>
   </section>
 </Layout>

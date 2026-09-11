@@ -53,24 +53,19 @@ npm run preview
 
 ## Data Directory
 
-- `data/sources.yml` — 公式情報の参照元定義
+- `data/sources.yml` — 公式リンクの参照元定義
 - `data/social.yml` — SNS Whitelist
 - `data/links.yml` — 恒久リンク集
-- `data/generated/items.json` — 収集または手動投入された表示用アイテム
-- `data/generated/summaries.json` — 要約結果
+- `data/official/YYYY-MM.json` — 公式RSSから収集した月別情報
 - `data/research-sources.yml` — レーダーの重点確認サイト
 - `data/radar/YYYY-MM.json` — レーダーが生成する月別ニュース
 
 ## データパイプライン
 
-RSS/公式情報自動収集・AI要約生成・手動投入の簡易仕様は [ExecPlan 0001](./docs/exec-plans/0001-initial.md) の「Data Pipeline 簡易仕様」セクションに記録しています。
-
-- `npm run collect` — RSS/公式情報自動収集
-- `npm run summarize` — AI要約生成
-- `npm run submit-manual` — 手動投入
+- `npm run collect:official` — 指定RSSから公式情報を収集
 - `npm run collect:radar` — みずほまるレーダーを収集
 
-自動収集（`collect.yml` / `summarize.yml`）は毎日1回のcronに加えて、GitHub Actionsの「Run workflow」（`workflow_dispatch`）からいつでも手動実行できます。サイト構築直後やRSS Feed未確認などで自動収集が動かない場合は、まずこの手動実行、または`submit-manual.yml`からの手動投入でデータを用意してください。
+公式情報（`official.yml`）は毎週木曜日の日本時間13:17頃に実行され、`workflow_dispatch` で同じRSS収集を手動実行できます。対象は指定RSSのタイトルに「みずほまる」を含む記事、またはcategoryが「みずほまる情報」の記事だけです。AIは使用せず、RSS以外は公式リンク集として案内します。結果が0件ならデータ変更・空commitを行いません。
 
 レーダー（`radar.yml`）は毎週木曜日の日本時間13:17頃に実行され、`workflow_dispatch` で同じ収集処理を手動実行できます。結果が0件ならデータ変更・空commitを行いません。レーダーは `OPENAI_API_KEY` をRepository Secretとして必要とします。
 
@@ -78,9 +73,7 @@ RSS/公式情報自動収集・AI要約生成・手動投入の簡易仕様は [
 
 - `ci.yml` — lint / typecheck / unit test / build / Playwright
 - `security.yml` — Dependency Review / CodeQL
-- `collect.yml` — 公式情報収集
-- `summarize.yml` — 収集済み情報だけを要約
-- `submit-manual.yml` — `workflow_dispatch` による手動投入
+- `official.yml` — 毎週木曜日の公式RSS収集、検証、mainへの限定反映
 - `radar.yml` — 毎週木曜日のレーダー収集、検証、mainへの限定反映
 
 ### GitHub Actions Secrets / Variables
@@ -104,6 +97,7 @@ Static 出力を前提にしており、`vercel.json` で Security Headers を�
 - [SPEC.md](./SPEC.md)
 - [ExecPlan 0001](./docs/exec-plans/0001-initial.md)
 - [ExecPlan 0003](./docs/exec-plans/0003-mizuhomaru-radar.md)
+- [ExecPlan 0004](./docs/exec-plans/0004-official-information-radar.md)
 
 ## License / Rights
 
