@@ -1,0 +1,81 @@
+---
+import { navigationTabs } from '../lib/content';
+const isHome = Astro.url.pathname === '/';
+---
+
+<nav
+  aria-label="メインナビゲーション"
+  role={isHome ? "tablist" : undefined}
+  class="tabs tabs-box grid grid-cols-2 gap-2 rounded-3xl border border-secondary/50 bg-base-100 p-2 shadow-sm sm:grid-cols-4"
+>
+  {navigationTabs.map((tab, index) => (
+    isHome ? <button
+      type="button"
+      role="tab"
+      class:list={['tab h-auto rounded-2xl border border-transparent px-4 py-3 text-sm font-semibold', index === 0 && 'tab-active']}
+      id={`${tab.id}-tab`}
+      data-tab-trigger
+      data-target={tab.id}
+      aria-controls={`${tab.id}-panel`}
+      aria-selected={index === 0 ? 'true' : 'false'}
+      tabindex={index === 0 ? '0' : '-1'}
+    >
+      {tab.label}
+    </button> : <a class="tab rounded-2xl px-4 py-3 font-semibold" href={`/#${tab.id}`}>{tab.label}</a>
+  ))}
+</nav>
+
+<script>
+  const triggers = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-tab-trigger]'));
+  const panels = Array.from(document.querySelectorAll<HTMLElement>('[data-tab-panel]'));
+
+  if (triggers.length > 0 && panels.length > 0) {
+    document.documentElement.dataset.tabsReady = 'true';
+
+    const setActiveTab = (targetId: string, options: { moveFocus?: boolean } = {}) => {
+      triggers.forEach((trigger) => {
+        const active = trigger.dataset.target === targetId;
+        trigger.classList.toggle('tab-active', active);
+        trigger.setAttribute('aria-selected', String(active));
+        trigger.setAttribute('tabindex', active ? '0' : '-1');
+        if (active && options.moveFocus) {
+          trigger.focus({ preventScroll: true });
+        }
+      });
+
+      panels.forEach((panel) => {
+        panel.hidden = panel.id !== `${targetId}-panel`;
+      });
+    };
+
+    triggers.forEach((trigger) => {
+      trigger.addEventListener('click', () => {
+        setActiveTab(trigger.dataset.target ?? 'latest');
+        history.replaceState(null, '', `#${trigger.dataset.target}`);
+      });
+      trigger.addEventListener('keydown', (event) => {
+        if (!(event instanceof KeyboardEvent)) {
+          return;
+        }
+
+        const currentIndex = triggers.indexOf(trigger);
+        if (event.key === 'ArrowRight') {
+          event.preventDefault();
+          const next = triggers[(currentIndex + 1) % triggers.length];
+          setActiveTab(next.dataset.target ?? 'latest', { moveFocus: true });
+          return;
+        }
+
+        if (event.key === 'ArrowLeft') {
+          event.preventDefault();
+          const previous = triggers[(currentIndex - 1 + triggers.length) % triggers.length];
+          setActiveTab(previous.dataset.target ?? 'latest', { moveFocus: true });
+        }
+      });
+    });
+
+    const openHash = () => setActiveTab(triggers.some(t => t.dataset.target === location.hash.slice(1)) ? location.hash.slice(1) : 'latest');
+    window.addEventListener('hashchange', openHash);
+    openHash();
+  }
+</script>

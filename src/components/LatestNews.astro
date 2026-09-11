@@ -1,0 +1,56 @@
+---
+import { siteCopy } from '../lib/content';
+import { formatDate, getSourceTypeLabel } from '../lib/site-data';
+import { toAbsoluteHttpUrl } from '../lib/url';
+
+interface LatestItem {
+  id: string;
+  title: string;
+  source: string;
+  category: string;
+  originalUrl: string;
+  sourceType: 'official' | 'instagram' | 'x' | 'shop' | 'other';
+  publishedAt: string | null;
+  collectedAt: string;
+  summary: string;
+}
+
+interface Props {
+  items: LatestItem[];
+}
+
+const { items } = Astro.props;
+const safeItems = items.map((item) => ({
+  ...item,
+  safeOriginalUrl: toAbsoluteHttpUrl(item.originalUrl)
+}));
+---
+
+<section class="space-y-6">
+  <h2 class="text-2xl font-bold text-base-content">最新情報</h2>
+
+  <div class="grid gap-4 lg:grid-cols-3">
+    {safeItems.map((item) => (
+      <article class="card border border-secondary/40 bg-base-100 shadow-sm">
+        <div class="card-body gap-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="badge badge-outline border-primary/30 text-primary">{getSourceTypeLabel(item.sourceType)}</span>
+            <span class="text-sm text-base-content/70">{formatDate(item.publishedAt, item.collectedAt)}</span>
+          </div>
+          <div class="space-y-2">
+            <h3 class="text-lg font-bold leading-7 text-base-content">{item.title}</h3>
+            <p class="text-sm text-base-content/70">{item.source} / {item.category}</p>
+          </div>
+          <p class="leading-7 text-base-content/80">{item.summary}</p>
+          <div class="card-actions items-center justify-between gap-3">
+            {item.safeOriginalUrl ? (
+              <a class="btn btn-primary btn-sm" href={item.safeOriginalUrl} rel="noreferrer" target="_blank">{siteCopy.sourceLinkLabel}</a>
+            ) : (
+              <span class="text-sm text-base-content/80">元情報 URL を確認中です</span>
+            )}
+          </div>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>

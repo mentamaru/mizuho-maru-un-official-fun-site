@@ -1,0 +1,60 @@
+name: Submit Manual Information
+
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        description: 表示タイトル
+        required: true
+        type: string
+      source_url:
+        description: 元情報URL
+        required: true
+        type: string
+      memo:
+        description: メモ
+        required: false
+        type: string
+      source_type:
+        description: sourceType
+        required: true
+        default: other
+        type: choice
+        options:
+          - official
+          - instagram
+          - x
+          - shop
+          - other
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: flatt-security/setup-takumi-guard-npm@v1
+        with:
+          bot-id: ${{ vars.TAKUMI_GUARD_BOT_ID }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run submit-manual
+        env:
+          SUBMIT_TITLE: ${{ inputs.title }}
+          SUBMIT_SOURCE_URL: ${{ inputs.source_url }}
+          SUBMIT_MEMO: ${{ inputs.memo }}
+          SUBMIT_SOURCE_TYPE: ${{ inputs.source_type }}
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: 手動投入データを追加
+          title: 手動投入データを追加
+          body: |
+            workflow_dispatch から投入された情報をレビュー用PRとして作成しました。
+          branch: automation/manual-submission

@@ -1,0 +1,35 @@
+---
+interface LinkEntry {
+  id: string;
+  title: string;
+  url: string;
+  description: string;
+  category: string;
+}
+
+interface Props {
+  groups: Record<string, LinkEntry[]>;
+}
+
+const { groups } = Astro.props;
+---
+
+<section class="space-y-6">
+  <h2 class="text-2xl font-bold text-base-content">リンク集</h2>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    {Object.entries(groups).map(([category, entries]) => (
+      <section class="rounded-3xl border border-secondary/40 bg-base-100 p-5 shadow-sm">
+        <h3 class="text-lg font-bold text-base-content">{category}</h3>
+        <ul class="mt-4 space-y-4">
+          {entries.map((entry) => (
+            <li class="rounded-2xl border border-base-300/70 p-4">
+              <a class="link link-hover text-lg font-semibold text-primary" href={entry.url} rel="noreferrer" target="_blank">{entry.title}</a>
+              <p class="mt-2 text-sm leading-7 text-base-content/75">{entry.description}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</section>

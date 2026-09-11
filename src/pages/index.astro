@@ -1,0 +1,34 @@
+---
+import LatestNews from '../components/LatestNews.astro';
+import LinkList from '../components/LinkList.astro';
+import RelatedInfo from '../components/RelatedInfo.astro';
+import SocialFeed from '../components/SocialFeed.astro';
+import Layout from '../layouts/Layout.astro';
+import { siteCopy } from '../lib/content';
+import { getLatestItems, getLinkGroups, getRelatedGroups, getSocialGroups } from '../lib/site-data';
+
+const latestItems = getLatestItems();
+const relatedGroups = getRelatedGroups();
+const socialGroups = getSocialGroups();
+const linkGroups = getLinkGroups();
+---
+
+<Layout title={siteCopy.siteTitle} description={siteCopy.siteDescription}>
+  <section class="space-y-8">
+    <section id="latest-panel" data-tab-panel tabindex="0" role="tabpanel" aria-labelledby="latest-tab" class="space-y-8">
+      <LatestNews items={latestItems} />
+    </section>
+
+    <section id="related-panel" data-tab-panel tabindex="0" role="tabpanel" aria-labelledby="related-tab" class="space-y-8">
+      <RelatedInfo groups={relatedGroups} />
+    </section>
+
+    <section id="social-panel" data-tab-panel tabindex="0" role="tabpanel" aria-labelledby="social-tab" class="space-y-8">
+      <SocialFeed groups={socialGroups} />
+    </section>
+
+    <section id="links-panel" data-tab-panel tabindex="0" role="tabpanel" aria-labelledby="links-tab" class="space-y-8">
+      <LinkList groups={linkGroups} />
+    </section>
+  </section>
+</Layout>
