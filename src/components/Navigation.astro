@@ -2,7 +2,11 @@
 import { navigationTabs } from '../lib/content';
 ---
 
-<nav aria-label="メインナビゲーション" class="tabs tabs-boxed grid grid-cols-2 gap-2 rounded-3xl border border-secondary/50 bg-base-100 p-2 shadow-sm sm:grid-cols-4">
+<nav
+  aria-label="メインナビゲーション"
+  role="tablist"
+  class="tabs tabs-boxed grid grid-cols-2 gap-2 rounded-3xl border border-secondary/50 bg-base-100 p-2 shadow-sm sm:grid-cols-4"
+>
   {navigationTabs.map((tab, index) => (
     <button
       type="button"
@@ -26,13 +30,13 @@ import { navigationTabs } from '../lib/content';
   if (triggers.length > 0 && panels.length > 0) {
     document.documentElement.dataset.tabsReady = 'true';
 
-    const setActiveTab = (targetId: string) => {
+    const setActiveTab = (targetId: string, options: { moveFocus?: boolean } = {}) => {
       triggers.forEach((trigger) => {
         const active = trigger.dataset.target === targetId;
         trigger.classList.toggle('tab-active', active);
         trigger.setAttribute('aria-selected', String(active));
         trigger.setAttribute('tabindex', active ? '0' : '-1');
-        if (active) {
+        if (active && options.moveFocus) {
           trigger.focus({ preventScroll: true });
         }
       });
@@ -53,14 +57,14 @@ import { navigationTabs } from '../lib/content';
         if (event.key === 'ArrowRight') {
           event.preventDefault();
           const next = triggers[(currentIndex + 1) % triggers.length];
-          setActiveTab(next.dataset.target ?? 'latest');
+          setActiveTab(next.dataset.target ?? 'latest', { moveFocus: true });
           return;
         }
 
         if (event.key === 'ArrowLeft') {
           event.preventDefault();
           const previous = triggers[(currentIndex - 1 + triggers.length) % triggers.length];
-          setActiveTab(previous.dataset.target ?? 'latest');
+          setActiveTab(previous.dataset.target ?? 'latest', { moveFocus: true });
         }
       });
     });

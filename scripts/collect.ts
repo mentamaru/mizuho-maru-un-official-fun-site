@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
 import { dedupeItems, isRelevantItem, sortNewestFirst } from '../src/lib/filter';
@@ -20,8 +21,8 @@ async function main() {
       const xml = await response.text();
       const parsedItems = parseRss(xml)
         .filter((item) => isRelevantItem(item))
-        .map((item, index) => ({
-          id: `${source.id}-${index}`,
+        .map((item) => ({
+          id: `${source.id}-${createHash('sha256').update(`${source.id}:${item.link}`).digest('hex').slice(0, 12)}`,
           title: item.title,
           source: source.name,
           category: source.category,
@@ -45,7 +46,14 @@ async function main() {
     return;
   }
 
-  const existing = JSON.parse(await readFile(outputPath, 'utf8')) as PortalItem[];
+  let existing: PortalItem[] = [];
+  try {
+    existing = JSON.parse(await readFile(outputPath, 'utf8')) as PortalItem[];
+  } catch (error) {
+    if (!(error instanceof Error) || !('code' in error) || error.code !== 'ENOENT') {
+      throw error;
+    }
+  }
   const merged = sortNewestFirst(
     dedupeItems([...collected, ...existing]).map((item) => ({
       ...item,

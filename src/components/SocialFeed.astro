@@ -16,7 +16,10 @@ const { groups } = Astro.props;
     <p class="max-w-3xl text-sm leading-7 text-base-content/80">{siteCopy.socialDisclaimer}</p>
   </div>
 
-  <div class="tabs tabs-boxed grid grid-cols-2 gap-2 rounded-3xl border border-secondary/50 bg-base-100 p-2 shadow-sm">
+  <div
+    role="tablist"
+    class="tabs tabs-boxed grid grid-cols-2 gap-2 rounded-3xl border border-secondary/50 bg-base-100 p-2 shadow-sm"
+  >
     {socialPlatforms.map((platform, index) => (
       <button
         type="button"
@@ -26,6 +29,7 @@ const { groups } = Astro.props;
         data-platform={platform.id}
         aria-controls={`${platform.id}-social-panel`}
         aria-selected={index === 0 ? 'true' : 'false'}
+        tabindex={index === 0 ? '0' : '-1'}
       >
         {platform.label}
       </button>
@@ -76,11 +80,15 @@ const { groups } = Astro.props;
   const socialTriggers = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-social-trigger]'));
   const socialPanels = Array.from(document.querySelectorAll<HTMLElement>('[data-social-panel]'));
 
-  const setActivePanel = (platform: string) => {
+  const setActivePanel = (platform: string, options: { moveFocus?: boolean } = {}) => {
     socialTriggers.forEach((trigger) => {
       const active = trigger.dataset.platform === platform;
       trigger.classList.toggle('tab-active', active);
       trigger.setAttribute('aria-selected', String(active));
+      trigger.setAttribute('tabindex', active ? '0' : '-1');
+      if (active && options.moveFocus) {
+        trigger.focus({ preventScroll: true });
+      }
     });
 
     socialPanels.forEach((panel) => {
@@ -90,6 +98,25 @@ const { groups } = Astro.props;
 
   socialTriggers.forEach((trigger) => {
     trigger.addEventListener('click', () => setActivePanel(trigger.dataset.platform ?? 'x'));
+    trigger.addEventListener('keydown', (event) => {
+      if (!(event instanceof KeyboardEvent)) {
+        return;
+      }
+
+      const currentIndex = socialTriggers.indexOf(trigger);
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        const next = socialTriggers[(currentIndex + 1) % socialTriggers.length];
+        setActivePanel(next.dataset.platform ?? 'x', { moveFocus: true });
+        return;
+      }
+
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        const previous = socialTriggers[(currentIndex - 1 + socialTriggers.length) % socialTriggers.length];
+        setActivePanel(previous.dataset.platform ?? 'x', { moveFocus: true });
+      }
+    });
   });
 
   document.querySelectorAll<HTMLButtonElement>('[data-social-load]').forEach((button) => {

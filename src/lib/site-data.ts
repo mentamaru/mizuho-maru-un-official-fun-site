@@ -64,9 +64,13 @@ function readYaml<T>(relativePath: string): T {
 }
 
 export function getLatestItems(limit = 3) {
-  const summaryById = new Map((summariesJson as PortalSummary[]).map((entry) => [entry.itemId, entry.summary]));
+  return mergeLatestItems(itemsJson as PortalItem[], summariesJson as PortalSummary[], limit);
+}
 
-  return (itemsJson as PortalItem[])
+export function mergeLatestItems(items: PortalItem[], summaries: PortalSummary[], limit = 3) {
+  const summaryById = new Map(summaries.map((entry) => [entry.itemId, entry.summary]));
+
+  return items
     .map((item) => ({
       ...item,
       summary: summaryById.get(item.id) ?? item.description
@@ -108,11 +112,16 @@ export function formatDate(date: string | null, fallbackDate?: string): string {
     return '掲載日未確認';
   }
 
+  const parsedDate = new Date(value);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return '掲載日未確認';
+  }
+
   return new Intl.DateTimeFormat('ja-JP', {
     year: 'numeric',
     month: 'short',
     day: 'numeric'
-  }).format(new Date(value));
+  }).format(parsedDate);
 }
 
 export function getSourceTypeLabel(sourceType: SourceType): string {
