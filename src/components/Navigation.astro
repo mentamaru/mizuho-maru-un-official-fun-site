@@ -6,7 +6,7 @@ const isHome = Astro.url.pathname === '/';
 <nav
   aria-label="メインナビゲーション"
   role={isHome ? "tablist" : undefined}
-  class="tabs tabs-box grid grid-cols-2 gap-2 rounded-3xl border border-secondary/50 bg-base-100 p-2 shadow-sm sm:grid-cols-4"
+  class="tabs tabs-box grid grid-cols-2 gap-2 rounded-3xl border border-secondary/50 bg-base-100 p-2 shadow-sm sm:grid-cols-3 lg:grid-cols-5"
 >
   {navigationTabs.map((tab, index) => (
     isHome ? <button

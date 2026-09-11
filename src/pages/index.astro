@@ -4,6 +4,7 @@ import LinkList from '../components/LinkList.astro';
 import OfficialNews from '../components/OfficialNews.astro';
 import SocialFeed from '../components/SocialFeed.astro';
 import RadarNews from '../components/RadarNews.astro';
+import MapList from '../components/MapList.astro';
 import Layout from '../layouts/Layout.astro';
 import { siteCopy } from '../lib/content';
 import { getLinkGroups, getSocialGroups } from '../lib/site-data';
@@ -38,6 +39,10 @@ const linkGroups = getLinkGroups();
 
     <section id="social-panel" data-tab-panel tabindex="0" role="tabpanel" aria-labelledby="social-tab" class="space-y-8">
       <SocialFeed groups={socialGroups} />
+    </section>
+
+    <section id="maps-panel" data-tab-panel tabindex="0" role="tabpanel" aria-labelledby="maps-tab" class="space-y-8">
+      <MapList />
     </section>
 
   </section>

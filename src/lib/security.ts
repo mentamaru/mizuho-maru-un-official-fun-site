@@ -9,8 +9,8 @@ export const securityHeaders = {
     "script-src 'self' 'unsafe-inline' https://platform.twitter.com https://platform.x.com https://www.instagram.com",
     "connect-src 'self' https://platform.twitter.com https://platform.x.com https://www.instagram.com",
     "font-src 'self' data:",
-    "frame-src https://platform.twitter.com https://platform.x.com https://syndication.twitter.com https://www.instagram.com",
-    "child-src https://platform.twitter.com https://platform.x.com https://syndication.twitter.com https://www.instagram.com"
+    "frame-src https://platform.twitter.com https://platform.x.com https://syndication.twitter.com https://www.instagram.com https://www.google.com",
+    "child-src https://platform.twitter.com https://platform.x.com https://syndication.twitter.com https://www.instagram.com https://www.google.com"
   ].join('; '),
   'Permissions-Policy': 'camera=(), geolocation=(), microphone=(), payment=(), usb=()',
   'Referrer-Policy': 'strict-origin-when-cross-origin',

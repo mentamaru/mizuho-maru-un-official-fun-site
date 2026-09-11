@@ -15,7 +15,8 @@ export const navigationTabs = [
   { id: 'latest', label: '最新情報' },
   { id: 'radar', label: 'みずほまるレーダー' },
   { id: 'official', label: '公式情報' },
-  { id: 'social', label: '関連SNS' }
+  { id: 'social', label: '関連SNS' },
+  { id: 'maps', label: 'マップ' }
 ] as const;
 
 export const socialPlatforms = [
