@@ -49,6 +49,7 @@ npm run preview
 - `AI_API_KEY`
 - `AI_MODEL`
 - `SUMMARY_PROVIDER`
+- `OPENAI_API_KEY` — みずほまるレーダーのOpenAI Responses API用
 
 ## Data Directory
 
@@ -57,6 +58,8 @@ npm run preview
 - `data/links.yml` — 恒久リンク集
 - `data/generated/items.json` — 収集または手動投入された表示用アイテム
 - `data/generated/summaries.json` — 要約結果
+- `data/research-sources.yml` — レーダーの重点確認サイト
+- `data/radar/YYYY-MM.json` — レーダーが生成する月別ニュース
 
 ## データパイプライン
 
@@ -65,8 +68,11 @@ RSS/公式情報自動収集・AI要約生成・手動投入の簡易仕様は [
 - `npm run collect` — RSS/公式情報自動収集
 - `npm run summarize` — AI要約生成
 - `npm run submit-manual` — 手動投入
+- `npm run collect:radar` — みずほまるレーダーを収集
 
 自動収集（`collect.yml` / `summarize.yml`）は毎日1回のcronに加えて、GitHub Actionsの「Run workflow」（`workflow_dispatch`）からいつでも手動実行できます。サイト構築直後やRSS Feed未確認などで自動収集が動かない場合は、まずこの手動実行、または`submit-manual.yml`からの手動投入でデータを用意してください。
+
+レーダー（`radar.yml`）は毎週木曜日の日本時間13:17頃に実行され、`workflow_dispatch` で同じ収集処理を手動実行できます。結果が0件ならデータ変更・空commitを行いません。レーダーは `OPENAI_API_KEY` をRepository Secretとして必要とします。
 
 ## GitHub Actions
 
@@ -75,16 +81,18 @@ RSS/公式情報自動収集・AI要約生成・手動投入の簡易仕様は [
 - `collect.yml` — 公式情報収集
 - `summarize.yml` — 収集済み情報だけを要約
 - `submit-manual.yml` — `workflow_dispatch` による手動投入
+- `radar.yml` — 毎週木曜日のレーダー収集、検証、mainへの限定反映
 
 ### GitHub Actions Secrets / Variables
 
-現状、CIの実行に必須のRepository Secretはありません。
+通常CIに必須のRepository Secretはありません。レーダーworkflowには `OPENAI_API_KEY` が必要です。
 
 - `TAKUMI_GUARD_BOT_ID`（**Secretではなく Variable**）: 全Workflowで [Takumi Guard by GMO](https://github.com/flatt-security/setup-takumi-guard-npm) の監査ログ・Dashboard機能を有効にするための任意のBot ID。
   - 取得先: [Shisho Cloud by GMO](https://cloud.shisho.dev)
   - 登録場所: リポジトリの Settings → Secrets and variables → Actions → **Variables** タブ → New repository variable → Name `TAKUMI_GUARD_BOT_ID`
   - 未設定でもnpm installのBlocking自体は有効なままCIは継続します（認証失敗時はログ機能のみ縮退し、警告が出る程度）。
 - Vercel PreviewはGitHub Actions経由ではなくVercelのGitHub連携によりDeployされるため、Vercel用のSecretをGitHubリポジトリ側へ登録する必要はありません（VercelのProject Settings側でEnvironment Variablesを設定します）。
+- `OPENAI_API_KEY`（**Repository Secret**）: `radar.yml` がOpenAI Responses API + Web Searchを呼び出すためのキー。登録場所は Settings → Secrets and variables → Actions → **Secrets** → New repository secret。Environment SecretではなくRepository Secretとして登録する。
 - 将来外部AI Providerへ接続する場合は、`.env.example` に列挙した `AI_API_KEY` 等をLocalでは `.env`（Gitignore対象）、GitHub Actionsでは Settings → Secrets and variables → Actions → **Secrets** タブへ登録する想定です（v1では未使用のため登録不要）。
 
 ## Vercel Preview
@@ -95,6 +103,7 @@ Static 出力を前提にしており、`vercel.json` で Security Headers を�
 
 - [SPEC.md](./SPEC.md)
 - [ExecPlan 0001](./docs/exec-plans/0001-initial.md)
+- [ExecPlan 0003](./docs/exec-plans/0003-mizuhomaru-radar.md)
 
 ## License / Rights
 
