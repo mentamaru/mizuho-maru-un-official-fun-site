@@ -10,7 +10,7 @@ import { getSources, type SocialConfig } from './site-data';
 export type RadarSearchClient = { collect(input: string): Promise<{ text: string; sourceUrls: string[] }> };
 
 export function resolveRadarModel(value = process.env.OPENAI_RADAR_MODEL): string {
-  const model = value?.trim() || 'gpt-5';
+  const model = value?.trim() || 'gpt-5.6-luna';
   if (!/^[A-Za-z0-9._-]+$/u.test(model)) throw new Error('OPENAI_RADAR_MODEL contains unsupported characters.');
   return model;
 }
