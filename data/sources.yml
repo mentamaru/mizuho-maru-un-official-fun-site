@@ -1,0 +1,22 @@
+# rssUrl は任意項目。設定したSourceのみ `npm run collect` の自動収集対象になる。
+# v1時点で「みずほまる」に関する公式RSS Feed URLは未確認のため、
+# 以下は全てHuman-managed Link (url) のみを保持し、rssUrlは未設定にしている。
+# 実Feed URLが確認でき次第、該当Sourceへ rssUrl を追加すれば自動収集が有効化される。
+- id: mizuho-information
+  name: 瑞穂町 みずほまる情報
+  category: 公式サイト
+  url: https://www.town.mizuho.tokyo.jp/soshiki/sangyoukaihatsu/sangyoukankou/gyomu/tourism/kankoupr/koho/10950.html
+  sourceType: official
+  enabled: true
+- id: mizuho-social
+  name: 瑞穂町 ソーシャルメディアアカウント
+  category: 公式SNS一覧
+  url: https://www.town.mizuho.tokyo.jp/tyosei/015/010/social1/p005064.html
+  sourceType: official
+  enabled: true
+- id: mascot-history
+  name: 瑞穂町公式キャラクター決定！！
+  category: アーカイブ
+  url: https://www.town.mizuho.tokyo.jp/bunka/006/p008104.html
+  sourceType: official
+  enabled: true

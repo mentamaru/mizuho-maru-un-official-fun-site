@@ -1,0 +1,49 @@
+{
+  "name": "mizuho-maru-un-official-fun-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "東京都瑞穂町公式キャラクター『みずほまる』の非公式情報ポータル",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "lint": "eslint .",
+    "typecheck": "astro check",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
+    "collect": "tsx scripts/collect.ts",
+    "summarize": "tsx scripts/summarize.ts",
+    "submit-manual": "tsx scripts/submit-manual.ts"
+  },
+  "engines": {
+    "node": ">=22.22.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mentamaru/mizuho-maru-un-official-fun-site.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "astro": "^7.3.2",
+    "fast-xml-parser": "^5.11.1",
+    "yaml": "^2.9.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.63.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^22.20.2",
+    "daisyui": "^5.7.36",
+    "eslint": "^10.10.0",
+    "eslint-plugin-astro": "^3.1.0",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.13",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.70.0",
+    "vitest": "^5.0.0"
+  }
+}

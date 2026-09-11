@@ -1,0 +1,15 @@
+- id: town-home
+  title: 瑞穂町ホームページ
+  url: https://www.town.mizuho.tokyo.jp/
+  description: 瑞穂町の公式ホームページです。町の最新情報や各種案内を確認できます。
+  category: 瑞穂町公式
+- id: mizuho-maru-info
+  title: みずほまる情報
+  url: https://www.town.mizuho.tokyo.jp/bunka/006/index.html
+  description: みずほまるに関する公式案内への入口です。
+  category: 瑞穂町公式
+- id: social-accounts
+  title: ソーシャルメディアアカウント
+  url: https://www.town.mizuho.tokyo.jp/tyosei/015/010/social1/p005064.html
+  description: 瑞穂町の公開SNS一覧です。関連SNS確認時の基準リンクとして利用できます。
+  category: 瑞穂町公式

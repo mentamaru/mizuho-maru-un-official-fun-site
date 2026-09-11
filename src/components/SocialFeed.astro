@@ -1,0 +1,210 @@
+---
+import { siteCopy, socialPlatforms } from '../lib/content';
+import { type SocialEntry } from '../lib/social';
+
+interface Props {
+  groups: Record<'x' | 'instagram', SocialEntry[]>;
+}
+
+const { groups } = Astro.props;
+---
+
+<section class="space-y-6">
+  <div class="space-y-2">
+    <h2 class="text-2xl font-bold text-base-content">関連SNS</h2>
+    <p class="max-w-3xl text-sm leading-7 text-base-content/80">{siteCopy.socialDisclaimer}</p>
+  </div>
+
+  <div
+    role="tablist"
+    aria-label="SNSの種類"
+    class="tabs tabs-box grid grid-cols-2 gap-2 rounded-3xl border border-secondary/50 bg-base-100 p-2 shadow-sm"
+  >
+    {socialPlatforms.map((platform, index) => (
+      <button
+        type="button"
+        role="tab"
+        class:list={['tab rounded-2xl px-4 py-3 font-semibold', index === 0 && 'tab-active']}
+        id={`${platform.id}-social-tab`}
+        data-social-trigger
+        data-platform={platform.id}
+        aria-controls={`${platform.id}-social-panel`}
+        aria-selected={index === 0 ? 'true' : 'false'}
+        tabindex={index === 0 ? '0' : '-1'}
+      >
+        {platform.label}
+      </button>
+    ))}
+  </div>
+
+  {socialPlatforms.map((platform, index) => (
+    <section
+      id={`${platform.id}-social-panel`}
+      data-social-panel
+      tabindex="0"
+      role="tabpanel"
+      aria-labelledby={`${platform.id}-social-tab`}
+      hidden={index !== 0}
+      class="space-y-4"
+    >
+      {groups[platform.id].length > 0 ? (
+        <div class="grid gap-4 md:grid-cols-2">
+          {groups[platform.id].map((entry) => (
+            <article class="card border border-secondary/40 bg-base-100 shadow-sm">
+              <div class="card-body gap-4">
+                <div class="space-y-1">
+                  <p class="text-sm font-semibold text-accent">{entry.category}</p>
+                  <h3 class="text-lg font-bold text-base-content">
+                    <a class="link text-primary" href={entry.profileUrl} target="_blank" rel="noreferrer">{entry.displayName}</a>
+                  </h3>
+                  <p class="break-all text-sm text-base-content/70">@{entry.accountId}</p>
+                </div>
+                {entry.description && <p class="text-sm leading-7 text-base-content/80">{entry.description}</p>}
+                {entry.platform === 'x' && <>
+                  <button
+                    type="button" class="btn btn-primary btn-sm self-start" hidden
+                    data-social-load data-platform={entry.platform}
+                    data-status-id={`${entry.id}-status`} data-target-id={`${entry.id}-embed`}
+                    data-profile-url={entry.profileUrl} data-display-name={entry.displayName}
+                  >再試行する</button>
+                  <p role="status" aria-live="polite" id={`${entry.id}-status`} class="text-sm text-base-content/70 empty:hidden"></p>
+                </>}
+                {entry.platform === 'x' ? <div id={`${entry.id}-embed`} class="overflow-hidden rounded-2xl" /> : (
+                  <div data-instagram-embed data-account={entry.accountId} data-name={entry.displayName} class="min-w-0 rounded-2xl" />
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div class="rounded-3xl border border-dashed border-secondary/50 bg-base-100 p-6 text-sm leading-7 text-base-content/75">
+          {platform.label} の掲載候補を確認中です。公開プロフィールが確認できたものだけを追加します。
+        </div>
+      )}
+    </section>
+  ))}
+</section>
+
+<script>
+  import { retryableLoader, withTimeout } from '../lib/social-loader';
+  type TwitterWidgets = {
+    widgets: { createTimeline: (source: { sourceType: 'url'; url: string }, target: HTMLElement, options: { height: number; lang: string; dnt: boolean }) => Promise<HTMLElement | undefined> };
+  };
+  const twitterWindow = window as Window & { twttr?: TwitterWidgets };
+  const loadWidgets = retryableLoader(() => withTimeout(new Promise<TwitterWidgets>((resolve, reject) => {
+    if (twitterWindow.twttr?.widgets?.createTimeline) { resolve(twitterWindow.twttr); return; }
+    const script = document.createElement('script');
+    script.src = 'https://platform.x.com/widgets.js';
+    script.async = true;
+    script.onload = () => {
+      if (twitterWindow.twttr?.widgets?.createTimeline) resolve(twitterWindow.twttr);
+      else { script.remove(); reject(new Error('Xの表示機能を利用できません')); }
+    };
+    script.onerror = () => { script.remove(); reject(new Error('Xに接続できません')); };
+    document.head.append(script);
+  }), 15000));
+  const socialTriggers = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-social-trigger]'));
+  const socialPanels = Array.from(document.querySelectorAll<HTMLElement>('[data-social-panel]'));
+
+  const setActivePanel = (platform: string, options: { moveFocus?: boolean } = {}) => {
+    socialTriggers.forEach((trigger) => {
+      const active = trigger.dataset.platform === platform;
+      trigger.classList.toggle('tab-active', active);
+      trigger.setAttribute('aria-selected', String(active));
+      trigger.setAttribute('tabindex', active ? '0' : '-1');
+      if (active && options.moveFocus) {
+        trigger.focus({ preventScroll: true });
+      }
+    });
+
+    socialPanels.forEach((panel) => {
+      panel.hidden = panel.id !== `${platform}-social-panel`;
+    });
+  };
+
+  socialTriggers.forEach((trigger) => {
+    trigger.addEventListener('click', () => setActivePanel(trigger.dataset.platform ?? 'x'));
+    trigger.addEventListener('keydown', (event) => {
+      if (!(event instanceof KeyboardEvent)) {
+        return;
+      }
+
+      const currentIndex = socialTriggers.indexOf(trigger);
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        const next = socialTriggers[(currentIndex + 1) % socialTriggers.length];
+        setActivePanel(next.dataset.platform ?? 'x', { moveFocus: true });
+        return;
+      }
+
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        const previous = socialTriggers[(currentIndex - 1 + socialTriggers.length) % socialTriggers.length];
+        setActivePanel(previous.dataset.platform ?? 'x', { moveFocus: true });
+      }
+    });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-social-load]').forEach((button) => {
+    let started = false;
+    const renderTimeline = async () => {
+      const status = document.getElementById(button.dataset.statusId ?? '');
+      const target = document.getElementById(button.dataset.targetId ?? '');
+      const profileUrl = button.dataset.profileUrl;
+      if (!status || !target || !profileUrl || button.disabled) return;
+      button.disabled = true;
+      button.hidden = true;
+      target.setAttribute('aria-busy', 'true');
+      status.textContent = 'タイムラインを読み込み中です。';
+      const attempt = document.createElement('div');
+      target.replaceChildren(attempt);
+      try {
+        const twitter = await loadWidgets();
+        const widget = await withTimeout(twitter.widgets.createTimeline(
+          { sourceType: 'url', url: profileUrl }, attempt, { height: 480, lang: 'ja', dnt: true }
+        ), 15000);
+        if (!widget || !attempt.contains(widget)) throw new Error('表示できません');
+        status.textContent = '';
+
+      } catch {
+        attempt.remove();
+        status.textContent = 'タイムラインを表示できませんでした。再試行するか、上のアカウント名からXをご覧ください。';
+        button.hidden = false;
+      } finally {
+        button.disabled = false;
+        target.setAttribute('aria-busy', 'false');
+      }
+    };
+    button.addEventListener('click', renderTimeline);
+    const loadWhenVisible = () => {
+      if (started || document.documentElement.dataset.tabsReady !== 'true') return;
+      if (document.getElementById('social-panel')?.hidden || document.getElementById('x-social-panel')?.hidden) return;
+      started = true;
+      void renderTimeline();
+      observer.disconnect();
+    };
+    const observer = new MutationObserver(loadWhenVisible);
+    observer.observe(document.documentElement, {subtree: true, attributes: true, attributeFilter: ['hidden', 'data-tabs-ready']});
+    loadWhenVisible();
+  });
+  document.querySelectorAll<HTMLElement>('[data-instagram-embed]').forEach((target) => {
+    const loadWhenVisible = () => {
+      if (document.documentElement.dataset.tabsReady !== 'true') return;
+      if (document.getElementById('social-panel')?.hidden || document.getElementById('instagram-social-panel')?.hidden) return;
+      const account = target.dataset.account;
+      if (!account || !/^[A-Za-z0-9_.]+$/.test(account)) return;
+      const frame = document.createElement('iframe');
+      frame.title = `${target.dataset.name ?? account} のInstagramプロフィール`;
+      frame.src = `https://www.instagram.com/${encodeURIComponent(account)}/embed/`;
+      frame.width = '100%';
+      frame.height = '560';
+      frame.className = 'block w-full border-0 bg-base-100';
+      frame.referrerPolicy = 'strict-origin-when-cross-origin';
+      target.replaceChildren(frame);
+      observer.disconnect();
+    };
+    const observer = new MutationObserver(loadWhenVisible);
+    observer.observe(document.documentElement, {subtree:true, attributes:true, attributeFilter:['hidden', 'data-tabs-ready']});
+    loadWhenVisible();
+  });
+</script>
