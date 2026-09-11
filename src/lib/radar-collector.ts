@@ -9,11 +9,7 @@ import { getSources, type SocialConfig } from './site-data';
 
 export type RadarSearchClient = { collect(input: string): Promise<{ text: string; sourceUrls: string[] }> };
 
-export function resolveRadarModel(value = process.env.OPENAI_RADAR_MODEL): string {
-  const model = value?.trim() || 'gpt-5.6-luna';
-  if (!/^[A-Za-z0-9._-]+$/u.test(model)) throw new Error('OPENAI_RADAR_MODEL contains unsupported characters.');
-  return model;
-}
+export const radarModel = 'gpt-5.6-luna';
 
 export function renderRadarPrompt(config: ResearchSourcesConfig, existing: RadarItem[], now: Date): string {
   const template = readFileSync(resolve(process.cwd(), 'prompts/collect-latest.md'), 'utf8');
@@ -47,7 +43,7 @@ function getRequiredSources(config: ResearchSourcesConfig): Array<{ name: string
 export class OpenAiRadarSearchClient implements RadarSearchClient {
   readonly client: OpenAI;
   readonly model: string;
-  constructor(apiKey = process.env.OPENAI_API_KEY, model = resolveRadarModel()) { if (!apiKey) throw new Error('OPENAI_API_KEY is required.'); this.client = new OpenAI({ apiKey }); this.model = model; }
+  constructor(apiKey = process.env.OPENAI_API_KEY) { if (!apiKey) throw new Error('OPENAI_API_KEY is required.'); this.client = new OpenAI({ apiKey }); this.model = radarModel; }
   async collect(input: string): Promise<{ text: string; sourceUrls: string[] }> {
     const response = await this.client.responses.create({
       model: this.model,
