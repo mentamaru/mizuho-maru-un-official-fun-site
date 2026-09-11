@@ -35,7 +35,7 @@ test('tab switching and SNS lazy loading work', async ({ page }) => {
     'href',
     'https://twitter.com/mizuho_koho'
   );
-  await expect(page.getByRole('link', { name: '外部プロフィール' }).first()).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Xで見る' }).first()).toBeVisible();
 
   await page.getByRole('tab', { name: 'リンク集' }).click();
   await expect(page.getByRole('heading', { name: 'リンク集' })).toBeVisible();

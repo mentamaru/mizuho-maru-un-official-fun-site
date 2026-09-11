@@ -11,7 +11,6 @@ const { groups } = Astro.props;
 
 <section class="space-y-6">
   <div class="space-y-2">
-    <p class="text-sm font-semibold text-primary">Whitelist / Lazy Load</p>
     <h2 class="text-2xl font-bold text-base-content">関連SNS</h2>
     <p class="max-w-3xl text-sm leading-7 text-base-content/80">{siteCopy.socialDisclaimer}</p>
   </div>
@@ -57,7 +56,7 @@ const { groups } = Astro.props;
                   <p class="break-all text-sm text-base-content/70">@{entry.accountId}</p>
                 </div>
                 <p class="text-sm leading-7 text-base-content/80">
-                  必要な外部リソースは利用時まで読み込みません。X はタイムラインを遅延読み込みし、表示できない場合は外部プロフィールへ移動できます。
+                  必要な外部リソースは利用時まで読み込みません。X はタイムラインを遅延読み込みできます。
                 </p>
                 <div class="flex flex-wrap gap-3">
                   {entry.platform === 'x' ? (
@@ -75,10 +74,12 @@ const { groups } = Astro.props;
                       X タイムラインを読み込む
                     </button>
                   ) : null}
-                  <a class="btn btn-outline btn-sm border-primary/40 text-primary" href={entry.profileUrl} rel="noreferrer" target="_blank">外部プロフィール</a>
+                  <a class="btn btn-outline btn-sm border-primary/40 text-primary" href={entry.profileUrl} rel="noreferrer" target="_blank">
+                    {entry.platform === 'x' ? 'Xで見る' : 'Instagramで見る'}
+                  </a>
                 </div>
                 <p id={`${entry.id}-status`} class="text-sm text-base-content/70">
-                  {entry.platform === 'x' ? '未読み込み' : '外部プロフィールから確認できます。'}
+                  {entry.platform === 'x' ? '未読み込み' : 'Instagramで確認できます。'}
                 </p>
                 {entry.platform === 'x' ? <div id={`${entry.id}-embed`} class="overflow-hidden rounded-2xl" /> : null}
               </div>
@@ -156,7 +157,7 @@ const { groups } = Astro.props;
 
       if (!scriptUrl || !target || !profileUrl) {
         if (status) {
-          status.textContent = '外部プロフィールをご利用ください。';
+          status.textContent = 'Xで見るリンクをご利用ください。';
         }
         return;
       }
@@ -172,7 +173,7 @@ const { groups } = Astro.props;
       if (document.querySelector(`[data-social-script="${scriptUrl}"]`)) {
         twitterWindow.twttr?.widgets?.load(target);
         if (status) {
-          status.textContent = 'タイムラインの表示を更新しました。表示できない場合は外部プロフィールをご利用ください。';
+          status.textContent = 'タイムラインの表示を更新しました。表示できない場合はXで見るをご利用ください。';
         }
         return;
       }
@@ -184,12 +185,12 @@ const { groups } = Astro.props;
       script.onload = () => {
         twitterWindow.twttr?.widgets?.load(target);
         if (status) {
-          status.textContent = 'タイムラインを読み込みました。表示できない場合は外部プロフィールをご利用ください。';
+          status.textContent = 'タイムラインを読み込みました。表示できない場合はXで見るをご利用ください。';
         }
       };
       script.onerror = () => {
         if (status) {
-          status.textContent = 'タイムラインの読み込みに失敗しました。外部プロフィールをご利用ください。';
+          status.textContent = 'タイムラインの読み込みに失敗しました。Xで見るをご利用ください。';
         }
       };
       document.head.append(script);

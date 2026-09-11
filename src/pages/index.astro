@@ -1,7 +1,6 @@
 ---
 import LatestNews from '../components/LatestNews.astro';
 import LinkList from '../components/LinkList.astro';
-import Navigation from '../components/Navigation.astro';
 import RelatedInfo from '../components/RelatedInfo.astro';
 import SocialFeed from '../components/SocialFeed.astro';
 import Layout from '../layouts/Layout.astro';
@@ -15,18 +14,7 @@ const linkGroups = getLinkGroups();
 ---
 
 <Layout title={siteCopy.siteTitle} description={siteCopy.siteDescription}>
-  <section class="space-y-6">
-    <div class="hero rounded-[2rem] border border-secondary/40 bg-base-100 shadow-sm">
-      <div class="hero-content w-full flex-col items-start gap-6 px-6 py-8 sm:px-10 sm:py-10">
-        <div class="max-w-3xl space-y-4">
-          <p class="badge badge-outline border-accent/40 text-accent">Original Source First</p>
-          <h2 class="text-balance text-3xl font-bold leading-tight text-base-content sm:text-4xl">公開情報を整理して、元情報へ迷わずたどり着ける入口を目指します。</h2>
-          <p class="text-sm leading-8 text-base-content/80 sm:text-base">最新情報、関連情報、関連SNS、リンク集を1ページに整理し、必要なときだけ外部SNSリソースを読み込む軽量な情報ポータルとして構築しています。</p>
-        </div>
-        <Navigation />
-      </div>
-    </div>
-
+  <section class="space-y-8">
     <section id="latest-panel" data-tab-panel role="tabpanel" aria-labelledby="latest-tab" class="space-y-8">
       <LatestNews items={latestItems} />
     </section>

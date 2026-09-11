@@ -1,18 +1,22 @@
 ---
+import Navigation from './Navigation.astro';
 import { siteCopy } from '../lib/content';
 ---
 
 <header class="border-b border-secondary/40 bg-base-100">
-  <div class="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-8 sm:px-6 lg:px-8">
+  <div class="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
     <div class="flex items-start gap-4">
-      <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-primary/30 bg-secondary/20 text-2xl font-bold text-primary">
+      <a href="/" class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-primary/30 bg-secondary/20 text-2xl font-bold text-primary" aria-label="ホームへ戻る">
         み
-      </div>
+      </a>
       <div class="space-y-2">
         <p class="badge badge-outline border-primary/40 bg-base-100 text-primary">非公式 / 非営利</p>
-        <h1 class="text-balance text-3xl font-bold tracking-tight text-base-content sm:text-4xl">{siteCopy.siteTitle}</h1>
+        <h1 class="text-balance text-3xl font-bold tracking-tight text-base-content sm:text-4xl">
+          <a href="/" class="hover:text-primary">{siteCopy.siteTitle}</a>
+        </h1>
         <p class="max-w-3xl text-sm leading-7 text-base-content/80 sm:text-base">{siteCopy.siteDescription}</p>
       </div>
     </div>
+    <Navigation />
   </div>
 </header>
