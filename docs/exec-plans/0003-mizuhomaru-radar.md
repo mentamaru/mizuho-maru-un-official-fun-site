@@ -224,7 +224,7 @@ Asia/Tokyoの実行時刻と調査期間を決定
 → 保存
 ```
 
-`radar.yml` は毎日1回のschedule（既存の12:05/12:35 JST処理と重ならない、例えば `17 4 * * *` = JST 13:17 を初期提案）と`workflow_dispatch`を持つ。GitHub Actionsのscheduleは遅延し得るため、実時間はworkflow実行時に採番する。手動実行も同じ収集処理のみで、入力欄を持たない。
+`radar.yml` は毎週木曜日のJST 13:17頃（`17 4 * * 4`）のscheduleと`workflow_dispatch`を持つ。GitHub Actionsのscheduleは遅延し得るため、実時間はworkflow実行時に採番する。手動実行も同じ収集処理のみで、入力欄を持たない。
 
 workflowはcheckout、Takumi Guard、Node 22、`npm ci`、`npm run collect:radar`、差分なしなら後続commitをskip、差分ありなら許可ファイル検査、lint、typecheck、unit、build、Playwrightを順に実行する。成功後に限定したbot identityで `data/radar/YYYY-MM.json` のみをコミットし、`git push origin HEAD:main` で直接mainへ反映する。コミット直前にも `verify-radar-changes` を再実行し、想定月以外、未追跡ファイル、削除、renameを拒否する。Actionsの実行中にgitが意図せず変更したlockfile等も失敗にする。
 
