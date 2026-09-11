@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { appendFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 
 import { dedupeOfficialItems, isMizuhomaruOfficialItem, loadOfficialItems, officialId, officialMonth, type OfficialItem } from '../src/lib/official';
 import { parseRss } from '../src/lib/rss';
@@ -9,6 +9,8 @@ const now = new Date();
 const collectedAt = new Date(now.getTime() + 9 * 60 * 60 * 1000).toISOString().replace('Z', '+09:00');
 const month = officialMonth(collectedAt);
 const output = new URL(`../data/official/${month}.json`, import.meta.url);
+
+if (process.env.GITHUB_ENV) await appendFile(process.env.GITHUB_ENV, `OFFICIAL_MONTH=${month}\n`);
 
 const response = await fetch(rssUrl);
 if (!response.ok) throw new Error(`Official RSS returned HTTP ${response.status}`);
