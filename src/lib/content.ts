@@ -1,4 +1,5 @@
 export const siteCopy = {
+  sourceLinkLabel: '元情報を見る',
   siteTitle: '非公式みずほまる情報ポータル',
   siteDescription:
     '東京都瑞穂町公式キャラクター「みずほまる」に関する公開情報のまとめサイトです。',
@@ -7,7 +8,7 @@ export const siteCopy = {
   unofficialDisclaimer:
     '本サイトは個人が運営する非公式のみずほまる情報サイトです。瑞穂町および掲載している企業・団体等とは関係ありません。',
   contactNote:
-    'お問い合わせ導線は仮実装です。公開前に外部フォーム等へ差し替えてください。'
+    'お問い合わせ窓口は準備中です。受付開始後、このページからご案内します。'
 } as const;
 
 export const navigationTabs = [

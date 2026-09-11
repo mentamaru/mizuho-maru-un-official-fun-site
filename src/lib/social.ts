@@ -3,6 +3,7 @@ export type SocialEntry = {
   platform: 'x' | 'instagram';
   accountId: string;
   displayName: string;
+  description?: string;
   profileUrl: string;
   category: string;
   enabled: boolean;
@@ -16,5 +17,5 @@ export function groupSocialEntries(entries: SocialEntry[]): Record<'x' | 'instag
 }
 
 export function getEmbedScriptUrl(platform: SocialEntry['platform']): string {
-  return platform === 'x' ? 'https://platform.twitter.com/widgets.js' : 'https://www.instagram.com/embed.js';
+  return platform === 'x' ? 'https://platform.x.com/widgets.js' : 'https://www.instagram.com/embed.js';
 }
