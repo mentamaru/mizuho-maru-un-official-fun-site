@@ -13,11 +13,33 @@ export type RssItem = {
 
 const parser = new XMLParser({
   ignoreAttributes: false,
-  trimValues: true
+  trimValues: true,
+  stopNodes: ['*.description', '*.summary', '*.content']
 });
 
-function stripTags(value: string | undefined): string {
-  return (value ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+function xmlText(value: unknown): string {
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    return String(value);
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(xmlText).join(' ');
+  }
+
+  if (!value || typeof value !== 'object') {
+    return '';
+  }
+
+  const object = value as Record<string, unknown>;
+  return [xmlText(object['#text']), ...Object.entries(object)
+    .filter(([key]) => key !== '#text' && !key.startsWith('@_'))
+    .map(([, child]) => xmlText(child))]
+    .filter(Boolean)
+    .join(' ');
+}
+
+function stripTags(value: unknown): string {
+  return xmlText(value).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
 function asArray<T>(value: T | T[] | undefined): T[] {

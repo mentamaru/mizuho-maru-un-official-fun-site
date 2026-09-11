@@ -32,4 +32,10 @@ describe('parseRss', () => {
 
     expect(parseRss(xml)[0]?.categories).toEqual(['みずほまる情報', 'イベント']);
   });
+
+  test('parses descriptions represented as XML objects', () => {
+    const xml = `<?xml version="1.0"?><rss><channel><item><title>お知らせ</title><link>https://example.com/d</link><description><p>みずほまるの<b>新着情報</b>です。</p></description></item></channel></rss>`;
+
+    expect(parseRss(xml)[0]?.description).toBe('みずほまるの 新着情報 です。');
+  });
 });
