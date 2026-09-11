@@ -109,12 +109,13 @@ React / Vue / Svelte等のClient Frameworkを禁止するものではない。
 
 サイトアクセス時は「最新情報」を初期表示する。
 
-Main Navigationは以下の4領域とする。
+Main Navigationは以下の5領域とする。
 
 1. 最新情報
-2. 関連情報
-3. 関連SNS
-4. リンク集
+2. みずほまるレーダー
+3. 関連情報
+4. 関連SNS
+5. リンク集
 
 対応Browserではこれらをタブ形式のUIで切り替える。
 
@@ -539,6 +540,18 @@ AIは投入された情報のみを整理・要約する。
 * Shop Post
 * Flyer
 * その他自動収集で拾えない情報
+
+### 15.4 みずほまるレーダー
+
+OpenAI Responses APIのWeb Searchを用い、「みずほまる」の現在性のある公開Web情報を定期的に調査する。重点確認サイトは `data/research-sources.yml` でHuman-managedに管理し、allowlistにはしない。調査プロンプトは `prompts/collect-latest.md` に分離する。
+
+`data/sources.yml` の有効な参照元および `data/social.yml` の有効なWhitelistアカウントも、重点確認設定と重複排除して調査コンテキストに含める。対象は瑞穂町公式キャラクター決定ページで定義された画像のキャラクター「みずほまる」とし、ポスター・チラシ・イベント告知画像での利用も、本文または一次情報で同定できる場合に確認対象とする。
+
+候補はStructured Outputsで取得するが、AIをSource of Truthにはしない。TypeScriptでstrict schema、HTTP(S) URL、実際のWeb Search sourceとの照合、fingerprintによる重複排除を通過した候補だけを掲載する。不明・不正・source照合不能ならfail-closedで掲載しない。
+
+データ単位は1回の実行ではなく、1つの独立ニュースにつき1要素とする。`data/radar/YYYY-MM.json` は `discoveredAt` のAsia/Tokyo年月で分割し、`id`、title、summary、category、date、dateType、discoveredAt、source、researchSourcesを保持する。表示は必ず `discoveredAt DESC` とし、レーダー一覧では年月絞り込みを提供する。
+
+GitHub Actionsは定期実行と `workflow_dispatch` を提供する。新情報が0件ならファイル変更・空commitをせず正常終了する。通常実行で書き込めるのは実行月の単一 `data/radar/YYYY-MM.json` のみとし、Git差分検査、lint、typecheck、test、buildがすべて成功した場合だけmainへ自動反映する。`OPENAI_API_KEY`以外のSecretやPATは不要とし、main保護導入時は最小権限のGitHub Actions botによるこの限定更新を許可する設定とする。
 
 ---
 

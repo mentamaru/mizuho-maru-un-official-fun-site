@@ -16,7 +16,9 @@
     "test:e2e": "playwright test",
     "collect": "tsx scripts/collect.ts",
     "summarize": "tsx scripts/summarize.ts",
-    "submit-manual": "tsx scripts/submit-manual.ts"
+    "submit-manual": "tsx scripts/submit-manual.ts",
+    "collect:radar": "tsx scripts/collect-radar.ts",
+    "verify:radar-changes": "tsx scripts/verify-radar-changes.ts"
   },
   "engines": {
     "node": ">=22.22.3"
@@ -29,7 +31,9 @@
   "dependencies": {
     "astro": "^7.3.2",
     "fast-xml-parser": "^5.11.1",
-    "yaml": "^2.9.0"
+    "openai": "^7.15.0",
+    "yaml": "^2.9.0",
+    "zod": "^4.6.2"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
