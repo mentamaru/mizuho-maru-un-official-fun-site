@@ -77,7 +77,7 @@ test('layout does not overflow at 375px', async ({ page }) => {
   expect(hasHorizontalOverflow).toBe(false);
 });
 
-for (const path of ['/about', '/operator', '/contact']) {
+for (const path of ['/about', '/operator', '/contact', '/github']) {
   test(`auxiliary navigation works from ${path}`, async ({ page }) => {
     await page.goto(path);
     await page.getByRole('navigation', {name: 'メインナビゲーション'}).getByRole('link', {name: '関連SNS'}).click();
@@ -85,6 +85,20 @@ for (const path of ['/about', '/operator', '/contact']) {
     await expect(page.getByRole('heading', {name: '関連SNS'})).toBeVisible();
   });
 }
+
+test('contact form and GitHub guidance are available', async ({ page }) => {
+  await page.goto('/contact');
+  await expect(page.getByRole('link', { name: 'お問い合わせフォームを開く' })).toHaveAttribute(
+    'href',
+    'https://docs.google.com/forms/d/e/1FAIpQLSd4rG59lzW9_UMBxX1u85l2FMBHQUiaaP9NvqEHHqfL9THLMw/viewform?usp=dialog'
+  );
+
+  await page.goto('/github');
+  await expect(page.getByRole('heading', { name: 'GitHubについて' })).toBeVisible();
+  await expect(page.getByText('現在、GitHubリポジトリは非公開です。')).toBeVisible();
+  await expect(page.getByText('パブリックリポジトリとして公開する予定です。')).toBeVisible();
+  await expect(page.getByRole('contentinfo').getByRole('link', { name: 'GitHub' })).toHaveAttribute('href', '/github');
+});
 
 test('X failures can be retried without losing the external link', async ({ page }) => {
   let attempts = 0;
