@@ -14,3 +14,20 @@
   profileUrl: https://www.instagram.com/marumaru_mizuho/
   category: イベント情報
   enabled: true
+
+- id: marumaru-mizuho-x
+  platform: x
+  accountId: marumaru_mizuho
+  displayName: みずほまるごとマルシェ
+  profileUrl: https://x.com/marumaru_mizuho
+  category: イベント情報
+  enabled: true
+
+- id: ekinishifurima-instagram
+  platform: instagram
+  accountId: ekinishifurima
+  displayName: ekinishifurima
+  description: 瑞穂町の箱根ケ崎駅西口公有地でのイベント情報を発信しているアカウントです。
+  profileUrl: https://www.instagram.com/ekinishifurima/
+  category: イベント情報
+  enabled: true
