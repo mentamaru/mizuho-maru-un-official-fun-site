@@ -76,6 +76,17 @@ RSS/公式情報自動収集・AI要約生成・手動投入の簡易仕様は [
 - `summarize.yml` — 収集済み情報だけを要約
 - `submit-manual.yml` — `workflow_dispatch` による手動投入
 
+### GitHub Actions Secrets / Variables
+
+現状、CIの実行に必須のRepository Secretはありません。
+
+- `TAKUMI_GUARD_BOT_ID`（**Secretではなく Variable**）: 全Workflowで [Takumi Guard by GMO](https://github.com/flatt-security/setup-takumi-guard-npm) の監査ログ・Dashboard機能を有効にするための任意のBot ID。
+  - 取得先: [Shisho Cloud by GMO](https://cloud.shisho.dev)
+  - 登録場所: リポジトリの Settings → Secrets and variables → Actions → **Variables** タブ → New repository variable → Name `TAKUMI_GUARD_BOT_ID`
+  - 未設定でもnpm installのBlocking自体は有効なままCIは継続します（認証失敗時はログ機能のみ縮退し、警告が出る程度）。
+- Vercel PreviewはGitHub Actions経由ではなくVercelのGitHub連携によりDeployされるため、Vercel用のSecretをGitHubリポジトリ側へ登録する必要はありません（VercelのProject Settings側でEnvironment Variablesを設定します）。
+- 将来外部AI Providerへ接続する場合は、`.env.example` に列挙した `AI_API_KEY` 等をLocalでは `.env`（Gitignore対象）、GitHub Actionsでは Settings → Secrets and variables → Actions → **Secrets** タブへ登録する想定です（v1では未使用のため登録不要）。
+
 ## Vercel Preview
 
 Static 出力を前提にしており、`vercel.json` で Security Headers を設定しています。公開前に Preview Deployment と実機確認を行う想定です。
