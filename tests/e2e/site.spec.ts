@@ -84,7 +84,6 @@ for (const width of [375, 1280]) {
   test(`all panels fit at ${width}px and keyboard navigation works`, async ({page}) => {
     await page.setViewportSize({width, height:900});
     await page.goto('/');
-    await page.screenshot({path: `/private/tmp/mizuho-ui-${width}.png`, fullPage:true});
     for (const name of ['最新情報', '関連情報', '関連SNS', 'リンク集']) {
       await page.getByRole('tab', {name, exact:true}).click();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
