@@ -162,3 +162,4 @@ SPECを変更しない範囲の実装上の重要判断を記録する。
 - `npm run summarize` — PASS
 - `runtime-tools-secret_scanning`（変更ファイル）— PASS
 - `parallel_validation` — 初回で 5 件の改善提案を確認し修正、再実行で最終確認予定
+- `parallel_validation` 再実行 — Code Review の追加指摘を確認して修正済み / CodeQL はタイムアウト

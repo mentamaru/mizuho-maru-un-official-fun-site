@@ -25,6 +25,7 @@ const { groups } = Astro.props;
         type="button"
         role="tab"
         class:list={['tab rounded-2xl px-4 py-3 font-semibold', index === 0 && 'tab-active']}
+        id={`${platform.id}-social-tab`}
         data-social-trigger
         data-platform={platform.id}
         aria-controls={`${platform.id}-social-panel`}
@@ -37,7 +38,14 @@ const { groups } = Astro.props;
   </div>
 
   {socialPlatforms.map((platform, index) => (
-    <section id={`${platform.id}-social-panel`} data-social-panel hidden={index !== 0} class="space-y-4">
+    <section
+      id={`${platform.id}-social-panel`}
+      data-social-panel
+      role="tabpanel"
+      aria-labelledby={`${platform.id}-social-tab`}
+      hidden={index !== 0}
+      class="space-y-4"
+    >
       {groups[platform.id].length > 0 ? (
         <div class="grid gap-4 md:grid-cols-2">
           {groups[platform.id].map((entry) => (

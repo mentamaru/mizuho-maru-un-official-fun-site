@@ -80,10 +80,14 @@ export function mergeLatestItems(items: PortalItem[], summaries: PortalSummary[]
 }
 
 export function getRelatedGroups() {
-  const items = itemsJson as PortalItem[];
+  return groupItemsBySourceAndCategory(itemsJson as PortalItem[]);
+}
+
+export function groupItemsBySourceAndCategory(items: PortalItem[]) {
   return items.reduce<Record<string, PortalItem[]>>((groups, item) => {
-    groups[item.source] ??= [];
-    groups[item.source].push(item);
+    const groupKey = `${item.source} / ${item.category}`;
+    groups[groupKey] ??= [];
+    groups[groupKey].push(item);
     return groups;
   }, {});
 }

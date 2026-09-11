@@ -26,9 +26,11 @@ test('tab switching and SNS lazy loading work', async ({ page }) => {
   await page.getByRole('tab', { name: '関連SNS' }).click();
   await expect(page.getByText('瑞穂町公式アカウントとは限りません。')).toBeVisible();
   expect(requests.some(isSocialEmbedRequest)).toBe(false);
+  await expect(page.locator('#mizuho-koho-x-status')).toHaveText('未読み込み');
 
   await page.getByRole('button', { name: 'X の埋め込みを読み込む' }).click();
   await expect.poll(() => requests.some((url) => new URL(url).hostname === 'platform.twitter.com')).toBeTruthy();
+  await expect(page.locator('#mizuho-koho-x-status')).toContainText('外部リソース');
   await expect(page.getByRole('link', { name: '外部プロフィール' }).first()).toBeVisible();
 
   await page.getByRole('tab', { name: 'リンク集' }).click();
