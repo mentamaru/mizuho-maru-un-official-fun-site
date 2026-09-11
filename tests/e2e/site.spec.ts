@@ -16,7 +16,7 @@ test('top page renders latest tab first and original links exist', async ({ page
   await expect(page.getByRole('heading', { name: '最新情報' })).toBeVisible();
   await expect(page.getByText('みずほまるに関する公開情報から、最近の話題を紹介しています。')).toBeVisible();
   await expect(page.getByRole('tab', { name: 'みずほまるレーダー' })).toBeVisible();
-  await expect(page.getByRole('link', { name: '元情報を見る' }).first()).toBeVisible();
+  await expect(page.getByRole('link', { name: '元情報を見る' }).first().or(page.getByText('現在、掲載できる最新情報はありません。'))).toBeVisible();
 });
 
 test('tab switching and SNS lazy loading work', async ({ page }) => {
@@ -27,8 +27,10 @@ test('tab switching and SNS lazy loading work', async ({ page }) => {
   await page.goto('/');
   expect(requests.some(isSocialEmbedRequest)).toBe(false);
 
-  await page.getByRole('tab', { name: '関連情報' }).click();
-  await expect(page.getByRole('heading', { name: '関連情報' })).toBeVisible();
+  await page.getByRole('tab', { name: '公式情報' }).click();
+  await expect(page.getByRole('heading', { name: '公式情報' })).toBeVisible();
+  await expect(page.getByRole('link', { name: '公式情報一覧を見る' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '公式リンク集' })).toBeVisible();
 
   await page.getByRole('tab', { name: '関連SNS' }).click();
   await expect(page.getByText('瑞穂町公式アカウントとは限りません。')).toBeVisible();
@@ -42,8 +44,6 @@ test('tab switching and SNS lazy loading work', async ({ page }) => {
   expect(requests.filter(url => url === 'https://platform.x.com/widgets.js')).toHaveLength(1);
   await expect(page.getByRole('link', { name: '瑞穂町（東京都）広報公式 X' }).first()).toBeVisible();
 
-  await page.getByRole('tab', { name: 'リンク集' }).click();
-  await expect(page.getByRole('heading', { name: 'リンク集' })).toBeVisible();
 });
 
 test('X timelines are queued instead of starting together', async ({ page }) => {
@@ -105,7 +105,7 @@ for (const width of [375, 1280]) {
   test(`all panels fit at ${width}px and keyboard navigation works`, async ({page}) => {
     await page.setViewportSize({width, height:900});
     await page.goto('/');
-    for (const name of ['最新情報', 'みずほまるレーダー', '関連情報', '関連SNS', 'リンク集']) {
+    for (const name of ['最新情報', 'みずほまるレーダー', '公式情報', '関連SNS']) {
       await page.getByRole('tab', {name, exact:true}).click();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     }

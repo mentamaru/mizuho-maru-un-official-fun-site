@@ -11,6 +11,7 @@ describe('parseRss', () => {
         link: 'https://example.com/a',
         publishedAt: '2026-09-11T00:00:00.000Z',
         description: '最新情報です。',
+        categories: [],
         sourceType: 'official'
       }
     ]);
@@ -24,5 +25,11 @@ describe('parseRss', () => {
   test('drops non-http links', () => {
     const xml = `<?xml version="1.0"?><rss><channel><item><title>みずほまるニュース</title><link>javascript:alert(1)</link><description>最新情報です。</description></item></channel></rss>`;
     expect(parseRss(xml)).toEqual([]);
+  });
+
+  test('parses every RSS category as plain text', () => {
+    const xml = `<?xml version="1.0"?><rss><channel><item><title>お知らせ</title><link>https://example.com/c</link><category>みずほまる情報</category><category><![CDATA[イベント]]></category></item></channel></rss>`;
+
+    expect(parseRss(xml)[0]?.categories).toEqual(['みずほまる情報', 'イベント']);
   });
 });

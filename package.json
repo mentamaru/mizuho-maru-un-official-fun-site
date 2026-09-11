@@ -14,9 +14,8 @@
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
-    "collect": "tsx scripts/collect.ts",
-    "summarize": "tsx scripts/summarize.ts",
-    "submit-manual": "tsx scripts/submit-manual.ts",
+    "collect:official": "tsx scripts/collect-official.ts",
+    "verify:official-changes": "tsx scripts/verify-official-changes.ts",
     "collect:radar": "tsx scripts/collect-radar.ts",
     "verify:radar-changes": "tsx scripts/verify-radar-changes.ts"
   },
