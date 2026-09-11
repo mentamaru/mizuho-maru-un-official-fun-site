@@ -8,6 +8,10 @@ describe('toAbsoluteHttpUrl', () => {
     expect(toAbsoluteHttpUrl('http://example.com/path')).toBe('http://example.com/path');
   });
 
+  test('normalizes equivalent urls to a canonical http(s) form', () => {
+    expect(toAbsoluteHttpUrl('https://Example.com/path/#section')).toBe('https://example.com/path');
+  });
+
   test('rejects non-web schemes and relative urls', () => {
     expect(toAbsoluteHttpUrl('javascript:alert(1)')).toBeNull();
     expect(toAbsoluteHttpUrl('data:text/html,hello')).toBeNull();

@@ -7,7 +7,16 @@ export function toAbsoluteHttpUrl(value: string | null | undefined): string | nu
 
   try {
     const parsed = new URL(value);
-    return allowedProtocols.has(parsed.protocol) ? parsed.toString() : null;
+    if (!allowedProtocols.has(parsed.protocol)) {
+      return null;
+    }
+
+    parsed.hash = '';
+    if (parsed.pathname !== '/') {
+      parsed.pathname = parsed.pathname.replace(/\/+$/u, '') || '/';
+    }
+
+    return parsed.toString();
   } catch {
     return null;
   }
