@@ -83,7 +83,7 @@ function collectSourceUrls(response: unknown): string[] {
 const radarJsonSchema = {
   type: 'object', additionalProperties: false, required: ['candidates'], properties: {
     candidates: { type: 'array', maxItems: 20, items: { type: 'object', additionalProperties: false, required: ['title', 'summary', 'category', 'date', 'dateType', 'source', 'researchSources'], properties: {
-      title: { type: 'string' }, summary: { type: 'string' }, category: { type: 'string', enum: ['event', 'appearance', 'goods', 'sale', 'collaboration', 'media', 'broadcast', 'campaign', 'recruitment', 'other'] }, date: { type: ['string', 'null'] }, dateType: { type: 'string', enum: ['published', 'updated', 'event', 'sale', 'broadcast', 'other'] },
+      title: { type: 'string' }, summary: { type: 'string' }, category: { type: 'string', enum: ['event', 'appearance', 'goods', 'sale', 'collaboration', 'media', 'broadcast', 'campaign', 'recruitment', 'other'] }, date: { type: ['string', 'null'], pattern: '^\\d{4}-\\d{2}-\\d{2}$' }, dateType: { type: 'string', enum: ['published', 'updated', 'event', 'sale', 'broadcast', 'other'] },
       source: { type: 'object', additionalProperties: false, required: ['name', 'url'], properties: { name: { type: 'string' }, url: { type: 'string' } } },
       researchSources: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['title', 'url'], properties: { title: { type: 'string' }, url: { type: 'string' } } } }
     } } }
