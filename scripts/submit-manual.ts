@@ -6,7 +6,14 @@ import type { PortalItem, PortalSummary } from '../src/lib/site-data';
 const title = process.env.SUBMIT_TITLE?.trim();
 const sourceUrl = process.env.SUBMIT_SOURCE_URL?.trim();
 const memo = process.env.SUBMIT_MEMO?.trim() ?? '';
-const sourceType = (process.env.SUBMIT_SOURCE_TYPE?.trim() ?? 'other') as PortalItem['sourceType'];
+const allowedSourceTypes: PortalItem['sourceType'][] = ['official', 'instagram', 'x', 'shop', 'other'];
+const requestedSourceType = process.env.SUBMIT_SOURCE_TYPE?.trim() ?? 'other';
+
+if (!allowedSourceTypes.includes(requestedSourceType as PortalItem['sourceType'])) {
+  throw new Error(`Unsupported SUBMIT_SOURCE_TYPE: ${requestedSourceType}`);
+}
+
+const sourceType = requestedSourceType as PortalItem['sourceType'];
 
 if (!title || !sourceUrl) {
   throw new Error('SUBMIT_TITLE and SUBMIT_SOURCE_URL are required.');

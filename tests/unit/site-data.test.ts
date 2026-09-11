@@ -1,6 +1,12 @@
 import { describe, expect, test } from 'vitest';
 
-import { formatDate, mergeLatestItems, type PortalItem, type PortalSummary } from '../../src/lib/site-data';
+import {
+  formatDate,
+  groupItemsBySourceAndCategory,
+  mergeLatestItems,
+  type PortalItem,
+  type PortalSummary
+} from '../../src/lib/site-data';
 
 describe('formatDate', () => {
   test('returns fallback label for invalid dates', () => {
@@ -51,5 +57,42 @@ describe('mergeLatestItems', () => {
     expect(latest.map((item) => item.id)).toEqual(['newer', 'older']);
     expect(latest[0]?.summary).toBe('newer summary');
     expect(latest[1]?.summary).toBe('older fallback');
+  });
+});
+
+describe('groupItemsBySourceAndCategory', () => {
+  test('separates items with different categories under the same source', () => {
+    const items: PortalItem[] = [
+      {
+        id: 'one',
+        title: 'One',
+        source: '瑞穂町ホームページ',
+        category: '公式サイト',
+        originalUrl: 'https://example.com/one',
+        sourceType: 'official',
+        publishMethod: 'manual',
+        publishedAt: null,
+        collectedAt: '2026-09-10T00:00:00.000Z',
+        description: 'one',
+        locale: 'ja-JP'
+      },
+      {
+        id: 'two',
+        title: 'Two',
+        source: '瑞穂町ホームページ',
+        category: '公式SNS一覧',
+        originalUrl: 'https://example.com/two',
+        sourceType: 'official',
+        publishMethod: 'manual',
+        publishedAt: null,
+        collectedAt: '2026-09-11T00:00:00.000Z',
+        description: 'two',
+        locale: 'ja-JP'
+      }
+    ];
+
+    const grouped = groupItemsBySourceAndCategory(items);
+
+    expect(Object.keys(grouped)).toEqual(['瑞穂町ホームページ / 公式サイト', '瑞穂町ホームページ / 公式SNS一覧']);
   });
 });
