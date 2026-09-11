@@ -50,6 +50,7 @@ npm run preview
 - `AI_MODEL`
 - `SUMMARY_PROVIDER`
 - `OPENAI_API_KEY` — みずほまるレーダーのOpenAI Responses API用
+- `OPENAI_RADAR_MODEL` — 任意。レーダーが使うProject許可済みモデル。未設定時は `gpt-5`
 
 ## Data Directory
 
@@ -93,6 +94,7 @@ RSS/公式情報自動収集・AI要約生成・手動投入の簡易仕様は [
   - 未設定でもnpm installのBlocking自体は有効なままCIは継続します（認証失敗時はログ機能のみ縮退し、警告が出る程度）。
 - Vercel PreviewはGitHub Actions経由ではなくVercelのGitHub連携によりDeployされるため、Vercel用のSecretをGitHubリポジトリ側へ登録する必要はありません（VercelのProject Settings側でEnvironment Variablesを設定します）。
 - `OPENAI_API_KEY`（**Repository Secret**）: `radar.yml` がOpenAI Responses API + Web Searchを呼び出すためのキー。登録場所は Settings → Secrets and variables → Actions → **Secrets** → New repository secret。Environment SecretではなくRepository Secretとして登録する。
+- `OPENAI_RADAR_MODEL`（任意の**Repository Variable**）: Projectで許可されたWeb Search対応モデルID。未設定時は `gpt-5` を使う。403 `model_not_found` 時は、OpenAI PlatformのProjectで利用可能なモデルIDをこのVariableへ設定する。
 - 将来外部AI Providerへ接続する場合は、`.env.example` に列挙した `AI_API_KEY` 等をLocalでは `.env`（Gitignore対象）、GitHub Actionsでは Settings → Secrets and variables → Actions → **Secrets** タブへ登録する想定です（v1では未使用のため登録不要）。
 
 ## Vercel Preview
