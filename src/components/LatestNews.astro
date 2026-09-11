@@ -13,6 +13,7 @@ interface LatestItem {
   publishedAt: string | null;
   collectedAt: string;
   summary: string;
+  isRadar?: boolean;
 }
 
 interface Props {
@@ -28,13 +29,15 @@ const safeItems = items.map((item) => ({
 
 <section class="space-y-6">
   <h2 class="text-2xl font-bold text-base-content">最新情報</h2>
+  <p class="leading-7 text-base-content/80">みずほまるに関する公開情報から、最近の話題を紹介しています。詳しい内容は各元情報をご確認ください。</p>
 
-  <div class="grid gap-4 lg:grid-cols-3">
+  {safeItems.length > 0 ? <div class="grid gap-4 lg:grid-cols-3">
     {safeItems.map((item) => (
       <article class="card border border-secondary/40 bg-base-100 shadow-sm">
         <div class="card-body gap-4">
           <div class="flex flex-wrap items-center gap-2">
             <span class="badge badge-outline border-primary/30 text-primary">{getSourceTypeLabel(item.sourceType)}</span>
+            {item.isRadar && <span class="badge badge-outline border-primary/30 text-primary">レーダー</span>}
             <span class="text-sm text-base-content/70">{formatDate(item.publishedAt, item.collectedAt)}</span>
           </div>
           <div class="space-y-2">
@@ -52,5 +55,5 @@ const safeItems = items.map((item) => ({
         </div>
       </article>
     ))}
-  </div>
+  </div> : <p class="text-base-content/70">現在、掲載できる最新情報はありません。</p>}
 </section>

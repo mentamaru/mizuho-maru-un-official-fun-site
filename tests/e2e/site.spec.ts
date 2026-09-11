@@ -14,6 +14,8 @@ test('top page renders latest tab first and original links exist', async ({ page
 
   await expect(page.getByRole('tab', { name: '最新情報' })).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByRole('heading', { name: '最新情報' })).toBeVisible();
+  await expect(page.getByText('みずほまるに関する公開情報から、最近の話題を紹介しています。')).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'みずほまるレーダー' })).toBeVisible();
   await expect(page.getByRole('link', { name: '元情報を見る' }).first()).toBeVisible();
 });
 
@@ -72,7 +74,7 @@ test('X failures can be retried without losing the external link', async ({ page
     return attempts === 1 ? route.abort() : route.fulfill({ contentType: 'application/javascript', body: `window.twttr = {widgets: {createTimeline: async (source, target) => { const frame = document.createElement('iframe'); frame.title = 'X'; target.append(frame); return frame; }}};` });
   });
   await page.goto('/#social');
-  await expect(page.getByRole('status')).toContainText('表示できませんでした');
+  await expect(page.locator('#mizuho-koho-x-status')).toContainText('表示できませんでした');
   await expect(page.getByRole('link', {name:'瑞穂町（東京都）広報公式 X', exact:true})).toBeVisible();
   await page.getByRole('button', {name:'再試行する'}).click();
   await expect(page.locator('#mizuho-koho-x-embed iframe')).toBeVisible();
@@ -84,14 +86,14 @@ for (const width of [375, 1280]) {
   test(`all panels fit at ${width}px and keyboard navigation works`, async ({page}) => {
     await page.setViewportSize({width, height:900});
     await page.goto('/');
-    for (const name of ['最新情報', '関連情報', '関連SNS', 'リンク集']) {
+    for (const name of ['最新情報', 'みずほまるレーダー', '関連情報', '関連SNS', 'リンク集']) {
       await page.getByRole('tab', {name, exact:true}).click();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     }
     await page.getByRole('tab', {name:'最新情報', exact:true}).focus();
     await page.keyboard.press('ArrowRight');
-    await expect(page.getByRole('tab', {name:'関連情報', exact:true})).toBeFocused();
-    await expect(page.getByRole('heading', {name:'関連情報', exact:true})).toBeVisible();
+    await expect(page.getByRole('tab', {name:'みずほまるレーダー', exact:true})).toBeFocused();
+    await expect(page.getByRole('heading', {name:'みずほまるレーダー', exact:true})).toBeVisible();
   });
 }
 
