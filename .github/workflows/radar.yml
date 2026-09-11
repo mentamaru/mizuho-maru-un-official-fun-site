@@ -29,11 +29,13 @@ jobs:
       - run: npm run collect:radar
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      - name: Set radar month
+        run: echo "RADAR_MONTH=$(TZ=Asia/Tokyo date +%Y-%m)" >> "$GITHUB_ENV"
       - id: changed
         run: |
           if [ -n "$(git status --porcelain)" ]; then echo "has_changes=true" >> "$GITHUB_OUTPUT"; else echo "has_changes=false" >> "$GITHUB_OUTPUT"; fi
       - if: steps.changed.outputs.has_changes == 'true'
-        run: RADAR_MONTH=$(TZ=Asia/Tokyo date +%Y-%m) npm run verify:radar-changes
+        run: npm run verify:radar-changes
       - if: steps.changed.outputs.has_changes == 'true'
         run: npm run lint
       - if: steps.changed.outputs.has_changes == 'true'
@@ -48,7 +50,7 @@ jobs:
         run: npm run test:e2e
       - if: steps.changed.outputs.has_changes == 'true'
         run: |
-          RADAR_MONTH=$(TZ=Asia/Tokyo date +%Y-%m) npm run verify:radar-changes
+          npm run verify:radar-changes
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add "data/radar/$RADAR_MONTH.json"
