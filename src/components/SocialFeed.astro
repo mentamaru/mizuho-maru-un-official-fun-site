@@ -131,6 +131,8 @@ const { groups } = Astro.props;
     target.setAttribute('aria-busy', 'true');
     const container = document.createElement('div');
     container.dataset.socialLoadingUi = 'true';
+    container.setAttribute('role', 'status');
+    container.setAttribute('aria-live', 'polite');
     container.className = 'flex min-h-32 items-center justify-center gap-3 px-4 text-sm text-base-content/60';
     const spinner = document.createElement('span');
     spinner.className = 'loading loading-spinner loading-md';
