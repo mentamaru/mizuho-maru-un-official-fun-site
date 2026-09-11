@@ -27,6 +27,10 @@ describe('radar data', () => {
     expect(parseVerifiedCandidates(text, ['https://example.com/event'])).toHaveLength(1);
     expect(parseVerifiedCandidates(text, ['https://other.example/'])).toHaveLength(0);
   });
+  test('rejects non-ISO dates rather than publishing them', () => {
+    const invalid = { ...candidate, date: '2026年10月20日' };
+    expect(() => parseVerifiedCandidates(JSON.stringify({ candidates: [invalid] }), ['https://example.com/event'])).toThrow();
+  });
   test('includes configured, source, and social references in the research prompt', () => {
     const prompt = renderRadarPrompt(loadResearchSources(), [], new Date('2026-09-12T00:00:00+09:00'));
     expect(prompt).toContain('ittenbee-tokyomizuho.jp');
