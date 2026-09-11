@@ -51,7 +51,7 @@ jobs:
           SUBMIT_SOURCE_URL: ${{ inputs.source_url }}
           SUBMIT_MEMO: ${{ inputs.memo }}
           SUBMIT_SOURCE_TYPE: ${{ inputs.source_type }}
-      - uses: peter-evans/create-pull-request@v7
+      - uses: peter-evans/create-pull-request@v8
         with:
           commit-message: 手動投入データを追加
           title: 手動投入データを追加
