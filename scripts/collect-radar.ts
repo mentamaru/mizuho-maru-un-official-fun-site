@@ -4,8 +4,9 @@ import { OpenAiRadarSearchClient, parseVerifiedCandidates, renderRadarPrompt } f
 import { dedupeRadarCandidates, loadRadarItems, loadResearchSources, radarId, radarItemsSchema, radarMonth, type RadarItem } from '../src/lib/radar';
 
 const now = new Date();
-const offset = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Tokyo', timeZoneName: 'longOffset' }).formatToParts(now).find(part => part.type === 'timeZoneName')?.value.replace('GMT', '') ?? '+09:00';
-const timestamp = `${new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Tokyo', dateStyle: undefined, timeStyle: 'medium', hour12: false }).format(now).replace(' ', 'T')}${offset}`;
+// Japan has no daylight-saving time. Shift before serializing so the timestamp is
+// always a valid, offset-bearing ISO 8601 value rather than a locale-dependent string.
+const timestamp = new Date(now.getTime() + 9 * 60 * 60 * 1000).toISOString().replace('Z', '+09:00');
 const month = radarMonth(timestamp);
 const output = new URL(`../data/radar/${month}.json`, import.meta.url);
 
