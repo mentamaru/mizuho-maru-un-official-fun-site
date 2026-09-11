@@ -1,0 +1,63 @@
+[
+  {
+    "id": "radar-bac849c51a4c544e",
+    "discoveredAt": "2026-09-12T00:50:17.167+09:00",
+    "title": "第20回瑞穂町こどもフェスティバルにみずほまるが登場",
+    "summary": "2026年9月13日に瑞穂ビューパーク・スカイホールで開催されるこどもフェスティバルに、みずほまるが登場します。登場する時間や場所は当日のお楽しみと案内されており、工作、ゲーム、スポーツ、ミニSLなどの体験企画も予定されています。",
+    "category": "appearance",
+    "date": "2026-09-13",
+    "dateType": "event",
+    "source": {
+      "name": "瑞穂町教育委員会公式サイト",
+      "url": "https://www.town.mizuho.tokyo.jp/event/e001/p011872.html"
+    },
+    "researchSources": [
+      {
+        "title": "第20回瑞穂町こどもフェスティバルを開催します",
+        "url": "https://www.town.mizuho.tokyo.jp/event/e001/p011872.html"
+      }
+    ]
+  },
+  {
+    "id": "radar-d7351e1edf9b7b01",
+    "discoveredAt": "2026-09-12T00:50:17.167+09:00",
+    "title": "瑞穂町スポーツフェスティバル2026でみずほまるがグリーティング",
+    "summary": "2026年10月11日に瑞穂ビューパーク・競技場・スカイホールで開催されるスポーツフェスティバルに、みずほまるが登場します。18種目の体験ブース、スタンプラリー、オリジナル景品や缶バッジの配布などがあり、みずほまるは他のキャラクターとともにグリーティングを行う予定です。",
+    "category": "appearance",
+    "date": "2026-10-11",
+    "dateType": "event",
+    "source": {
+      "name": "瑞穂町教育委員会公式サイト",
+      "url": "https://www.town.mizuho.tokyo.jp/kyoikuiinkai/sports/001/p011730.html"
+    },
+    "researchSources": [
+      {
+        "title": "瑞穂町スポーツフェスティバル2026を開催します！",
+        "url": "https://www.town.mizuho.tokyo.jp/kyoikuiinkai/sports/001/p011730.html"
+      }
+    ]
+  },
+  {
+    "id": "radar-56fceda76697f4f4",
+    "discoveredAt": "2026-09-12T00:50:17.167+09:00",
+    "title": "西多摩フェア2026に西多摩8市町村の公式キャラクターが集合",
+    "summary": "2026年9月26日にJR八王子駅で開催される西多摩フェア2026に、瑞穂町のみずほまるを含む西多摩8市町村の公式キャラクターが登場します。各市町村の観光PRやキャラクターグリーティングが行われ、来場者には8市町村公式キャラクターのオリジナルコットンバッグが数量限定で配布されます。",
+    "category": "appearance",
+    "date": "2026-09-26",
+    "dateType": "event",
+    "source": {
+      "name": "西多摩地域広域行政圏協議会「にしたまねっと」",
+      "url": "https://www.nishitama-kouiki.jp/news/%E8%A5%BF%E5%A4%9A%E6%91%A9%E3%83%95%E3%82%A7%E3%82%A2%EF%BC%92%EF%BC%90%EF%BC%92%EF%BC%96%E9%96%8B%E5%82%AC%E3%81%AE%E3%81%8A%E7%9F%A5%E3%82%89%E3%81%9B/"
+    },
+    "researchSources": [
+      {
+        "title": "西多摩フェア２０２６開催のお知らせ",
+        "url": "https://www.nishitama-kouiki.jp/news/%E8%A5%BF%E5%A4%9A%E6%91%A9%E3%83%95%E3%82%A7%E3%82%A2%EF%BC%92%EF%BC%90%EF%BC%92%EF%BC%96%E9%96%8B%E5%82%AC%E3%81%AE%E3%81%8A%E7%9F%A5%E3%82%89%E3%81%9B/"
+      },
+      {
+        "title": "〖東京・多摩地域〗この秋は多摩を巡ろう！ 立川バル街・酒蔵スタンプラリー・30市町村デジタルチェックインラリーなど続々開催！",
+        "url": "https://prtimes.jp/main/html/rd/p/000000022.000132649.html"
+      }
+    ]
+  }
+]
