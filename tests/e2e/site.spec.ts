@@ -28,9 +28,13 @@ test('tab switching and SNS lazy loading work', async ({ page }) => {
   expect(requests.some(isSocialEmbedRequest)).toBe(false);
   await expect(page.locator('#mizuho-koho-x-status')).toHaveText('未読み込み');
 
-  await page.getByRole('button', { name: 'X の埋め込みを読み込む' }).click();
+  await page.getByRole('button', { name: 'X タイムラインを読み込む' }).click();
   await expect.poll(() => requests.some((url) => new URL(url).hostname === 'platform.twitter.com')).toBeTruthy();
-  await expect(page.locator('#mizuho-koho-x-status')).toContainText('外部リソース');
+  await expect(page.locator('#mizuho-koho-x-status')).toContainText('タイムライン');
+  await expect(page.locator('#mizuho-koho-x-embed a.twitter-timeline')).toHaveAttribute(
+    'href',
+    'https://twitter.com/mizuho_koho'
+  );
   await expect(page.getByRole('link', { name: '外部プロフィール' }).first()).toBeVisible();
 
   await page.getByRole('tab', { name: 'リンク集' }).click();

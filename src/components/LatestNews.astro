@@ -1,5 +1,6 @@
 ---
 import { formatDate, getSourceTypeLabel } from '../lib/site-data';
+import { toAbsoluteHttpUrl } from '../lib/url';
 
 interface LatestItem {
   id: string;
@@ -18,6 +19,10 @@ interface Props {
 }
 
 const { items } = Astro.props;
+const safeItems = items.map((item) => ({
+  ...item,
+  safeOriginalUrl: toAbsoluteHttpUrl(item.originalUrl)
+}));
 ---
 
 <section class="space-y-6">
@@ -30,7 +35,7 @@ const { items } = Astro.props;
   </div>
 
   <div class="grid gap-4 lg:grid-cols-3">
-    {items.map((item) => (
+    {safeItems.map((item) => (
       <article class="card border border-secondary/40 bg-base-100 shadow-sm">
         <div class="card-body gap-4">
           <div class="flex flex-wrap items-center gap-2">
@@ -44,7 +49,11 @@ const { items } = Astro.props;
           <p class="leading-7 text-base-content/80">{item.summary}</p>
           <div class="card-actions items-center justify-between gap-3">
             <span class="text-sm text-base-content/60">元情報へ案内します</span>
-            <a class="btn btn-primary btn-sm" href={item.originalUrl} rel="noreferrer" target="_blank">Original Source</a>
+            {item.safeOriginalUrl ? (
+              <a class="btn btn-primary btn-sm" href={item.safeOriginalUrl} rel="noreferrer" target="_blank">Original Source</a>
+            ) : (
+              <span class="text-sm text-base-content/60">元情報 URL を確認中です</span>
+            )}
           </div>
         </div>
       </article>

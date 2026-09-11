@@ -11,6 +11,15 @@ function normalize(value: string): string {
   return value.toLowerCase().replace(/\s+/g, ' ').trim();
 }
 
+function toTimestamp(value: string | null | undefined): number {
+  if (!value) {
+    return 0;
+  }
+
+  const timestamp = new Date(value).getTime();
+  return Number.isFinite(timestamp) ? timestamp : 0;
+}
+
 export function isRelevantItem(item: Pick<FilterableItem, 'title' | 'description'>): boolean {
   const haystack = normalize(`${item.title} ${item.description ?? ''}`);
 
@@ -25,7 +34,7 @@ export function dedupeItems<T extends FilterableItem>(items: T[]): T[] {
   const seen = new Set<string>();
 
   return items.filter((item) => {
-    const key = `${item.originalUrl}::${item.publishedAt ?? ''}::${normalize(item.title)}`;
+    const key = item.originalUrl;
 
     if (seen.has(key)) {
       return false;
@@ -38,8 +47,8 @@ export function dedupeItems<T extends FilterableItem>(items: T[]): T[] {
 
 export function sortNewestFirst<T extends FilterableItem>(items: T[]): T[] {
   return [...items].sort((left, right) => {
-    const leftTime = left.publishedAt ? new Date(left.publishedAt).getTime() : 0;
-    const rightTime = right.publishedAt ? new Date(right.publishedAt).getTime() : 0;
+    const leftTime = toTimestamp(left.publishedAt);
+    const rightTime = toTimestamp(right.publishedAt);
 
     return rightTime - leftTime;
   });

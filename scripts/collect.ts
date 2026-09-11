@@ -4,6 +4,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dedupeItems, isRelevantItem, sortNewestFirst } from '../src/lib/filter';
 import { parseRss } from '../src/lib/rss';
 import { getSources, type PortalItem } from '../src/lib/site-data';
+import { toAbsoluteHttpUrl } from '../src/lib/url';
 
 const outputPath = new URL('../data/generated/items.json', import.meta.url);
 
@@ -21,19 +22,28 @@ async function main() {
       const xml = await response.text();
       const parsedItems = parseRss(xml)
         .filter((item) => isRelevantItem(item))
-        .map((item) => ({
-          id: `${source.id}-${createHash('sha256').update(`${source.id}:${item.link}`).digest('hex').slice(0, 12)}`,
-          title: item.title,
-          source: source.name,
-          category: source.category,
-          originalUrl: item.link,
-          sourceType: 'official' as const,
-          publishMethod: 'auto' as const,
-          publishedAt: item.publishedAt,
-          collectedAt: new Date().toISOString(),
-          description: item.description,
-          locale: 'ja-JP' as const
-        }));
+        .reduce<PortalItem[]>((results, item) => {
+          const originalUrl = toAbsoluteHttpUrl(item.link);
+          if (!originalUrl) {
+            return results;
+          }
+
+          results.push({
+            id: `${source.id}-${createHash('sha256').update(`${source.id}:${originalUrl}`).digest('hex').slice(0, 12)}`,
+            title: item.title,
+            source: source.name,
+            category: source.category,
+            originalUrl,
+            sourceType: 'official' as const,
+            publishMethod: 'auto' as const,
+            publishedAt: item.publishedAt,
+            collectedAt: new Date().toISOString(),
+            description: item.description,
+            locale: 'ja-JP' as const
+          });
+
+          return results;
+        }, []);
 
       collected.push(...parsedItems);
     } catch (error) {
