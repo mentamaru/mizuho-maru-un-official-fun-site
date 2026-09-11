@@ -58,6 +58,16 @@ npm run preview
 - `data/generated/items.json` — 収集または手動投入された表示用アイテム
 - `data/generated/summaries.json` — 要約結果
 
+## データパイプライン
+
+RSS/公式情報自動収集・AI要約生成・手動投入の簡易仕様は [ExecPlan 0001](./docs/exec-plans/0001-initial.md) の「Data Pipeline 簡易仕様」セクションに記録しています。
+
+- `npm run collect` — RSS/公式情報自動収集
+- `npm run summarize` — AI要約生成
+- `npm run submit-manual` — 手動投入
+
+自動収集（`collect.yml` / `summarize.yml`）は毎日1回のcronに加えて、GitHub Actionsの「Run workflow」（`workflow_dispatch`）からいつでも手動実行できます。サイト構築直後やRSS Feed未確認などで自動収集が動かない場合は、まずこの手動実行、または`submit-manual.yml`からの手動投入でデータを用意してください。
+
 ## GitHub Actions
 
 - `ci.yml` — lint / typecheck / unit test / build / Playwright

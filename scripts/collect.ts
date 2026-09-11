@@ -10,6 +10,14 @@ const outputPath = new URL('../data/generated/items.json', import.meta.url);
 
 async function main() {
   const sources = getSources().filter((source) => source.enabled && source.rssUrl);
+
+  if (sources.length === 0) {
+    console.info(
+      'No source has rssUrl configured in data/sources.yml. Auto collection is a no-op; existing generated items are kept as-is.'
+    );
+    return;
+  }
+
   const collected: PortalItem[] = [];
 
   for (const source of sources) {
@@ -52,7 +60,7 @@ async function main() {
   }
 
   if (collected.length === 0) {
-    console.info('No RSS sources collected. Keeping existing generated items.');
+    console.info('All configured RSS sources failed or returned no relevant items. Keeping existing generated items.');
     return;
   }
 
