@@ -171,6 +171,7 @@ GitHub Actionsの `workflow_dispatch`（`submit-manual.yml`）から人間が `t
 - ヘッダーからサイトへの導線・冗長なHero文言・内部実装ラベルのUI露出を見直し、Main NavigationタブをSPECのタブUI要件を維持したままHeader内へ移動した。
 - SPEC 15章のRSS収集 / AI要約 / 手動投入について簡易仕様を明文化し、`resolveSummaryProvider` によるProvider切替の土台と、収集no-op時の理由が分かるログ出力を追加し、README へ運用手順を追記した。
 - 自動収集がサイト構築直後やローカル環境で機能しない場合に備え、`collect.yml` / `summarize.yml` に既存の `workflow_dispatch` を手動収集トリガーとして利用できることをREADME / ExecPlanへ明記した（新規Workflow追加は不要と判断）。
+- X ProfileのSNS埋め込みを、Xの「X Publish」機能が生成する埋め込みコード（`platform.x.com/widgets.js` / `x.com`ドメイン）に合わせて更新した。`data/social.yml` の対象アカウントの `profileUrl` を `x.com` ドメインへ変更し、埋め込みScript読み込み先を `platform.x.com/widgets.js` へ切り替え、CSP（`src/lib/security.ts` / `vercel.json`）に `platform.x.com` を許可Originとして追加した（移行期の互換のため `platform.twitter.com` / `syndication.twitter.com` は残置）。
 
 ## Findings
 
@@ -181,6 +182,7 @@ GitHub Actionsの `workflow_dispatch`（`submit-manual.yml`）から人間が `t
 - 瑞穂町ドメインへの直接 fetch はこの環境で名前解決できなかったため、Human-managed Data には確認済みURLのみを記録し、収集Scriptは失敗時に既存Generated Dataを保持する構成とした。
 - SPEC.md「5. Main UI」がMain Navigationのタブ形式UIを明示的に要求しており、Minimum E2Eにも `Tab Switching` 検証が含まれるため、タブ廃止案はSPEC違反であることを実装前に確認し、Header内へタブを移動する方針へ修正した。
 - 瑞穂町ホームページのRSS配信案内ページ（`/tyosei/015/011/p002510.html`）はJavaScriptでSidebar/本文を描画する構成であり、この開発環境からの自動fetchでは実際のFeed URLを機械的に確認できなかった。
+- 同一Working Directoryで並行セッションがSNS埋め込み・CSP共通化（`src/lib/security.ts` / `src/middleware.ts` / `src/lib/social-loader.ts` 等）を並行して実装しており、一部ファイル（`vercel.json` / `SocialFeed.astro` / テスト類）は行レベルで変更が混在したため、機械的に分離可能な範囲（`data/social.yml` / `src/lib/social.ts`）のみを分けてコミットし、残りは並行セッションの作業完了後にまとめてコミットした。
 
 ## Decisions
 
@@ -195,6 +197,7 @@ SPECを変更しない範囲の実装上の重要判断を記録する。
 - 実Feed URLが確認できるまで `data/sources.yml` は `rssUrl` 未設定のまま運用し、RSS自動収集は意図的にno-op（既存Generated Data保持）とする。
 - AI要約は外部AI Provider接続を行わず、v1はDeterministicな要約Generatorのみをサポートする。将来接続する場合に備え `SUMMARY_PROVIDER` 等のENV変数とFallback付きのProvider解決関数のみを用意する。
 - 手動収集トリガーは新規Workflowを追加せず、`collect.yml` / `summarize.yml` に既存の `workflow_dispatch` を「基本は自動、動かない場合は手動実行」の入口として位置づけることにした。
+- X埋め込みは、ユーザーがX Publishで生成した実際の埋め込みコードを基準に `platform.x.com` / `x.com` ドメインへ切り替え、`platform.twitter.com` 系は非破壊の互換Originとして残す方針にした（アカウント単位の設定は `data/social.yml` の `profileUrl` のみで完結する汎用実装を維持）。
 
 ## Verification Results
 
@@ -212,4 +215,5 @@ SPECを変更しない範囲の実装上の重要判断を記録する。
 - `parallel_validation` 再実行 — Code Review の追加指摘を確認して修正済み / CodeQL はタイムアウト
 - UI導線見直し後、`npm run lint` / `npm run typecheck` / `npm run test:unit`（17 tests）/ `npm run test:e2e`（3 tests）/ `npm run build` を再実行しPASSを確認した。
 - Data Pipeline簡易仕様の実装後、`resolveSummaryProvider` 向けの単体テストを追加した `npm run test:unit`（20 tests）、`npm run lint`、`npm run typecheck`、`npm run build`、`npm run collect`（no-opログを確認）、`npm run summarize`（deterministic providerログを確認）を実行しPASSを確認した。
+- X Publish対応後、`npm run lint` / `npm run typecheck`（38 files）/ `npm run test:unit`（7 files, 23 tests）/ `npm run build` / `npm run test:e2e`（10 tests PASS, 1 skip）を実行しPASSを確認した。
 
