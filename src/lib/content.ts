@@ -14,9 +14,8 @@ export const siteCopy = {
 export const navigationTabs = [
   { id: 'latest', label: '最新情報' },
   { id: 'radar', label: 'みずほまるレーダー' },
-  { id: 'related', label: '関連情報' },
-  { id: 'social', label: '関連SNS' },
-  { id: 'links', label: 'リンク集' }
+  { id: 'official', label: '公式情報' },
+  { id: 'social', label: '関連SNS' }
 ] as const;
 
 export const socialPlatforms = [

@@ -9,13 +9,14 @@ interface LinkEntry {
 
 interface Props {
   groups: Record<string, LinkEntry[]>;
+  heading?: string;
 }
 
-const { groups } = Astro.props;
+const { groups, heading = 'リンク集' } = Astro.props;
 ---
 
 <section class="space-y-6">
-  <h2 class="text-2xl font-bold text-base-content">リンク集</h2>
+  <h2 class="text-2xl font-bold text-base-content">{heading}</h2>
 
   <div class="grid gap-6 lg:grid-cols-2">
     {Object.entries(groups).map(([category, entries]) => (

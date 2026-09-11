@@ -109,13 +109,12 @@ React / Vue / Svelte等のClient Frameworkを禁止するものではない。
 
 サイトアクセス時は「最新情報」を初期表示する。
 
-Main Navigationは以下の5領域とする。
+Main Navigationは以下の4領域とする。
 
 1. 最新情報
 2. みずほまるレーダー
-3. 関連情報
+3. 公式情報
 4. 関連SNS
-5. リンク集
 
 対応Browserではこれらをタブ形式のUIで切り替える。
 
@@ -155,38 +154,17 @@ AI要約は原則2〜3文程度。
 
 ---
 
-## 7. 関連情報
+## 7. 公式情報
 
-RSSおよび登録済みSourceから取得した元情報を閲覧する領域。
+瑞穂町の公式RSSから取得したみずほまる情報と、恒久的に参照したい公式リンクを掲載する領域。
 
-AI要約とは独立させる。
+タブ内は以下の順に表示する。
 
-AIが最新情報として選択・要約しなかった情報も確認可能とする。
+1. 最新3件の公式情報
+2. 公式情報一覧へのリンク
+3. 公式リンク集
 
-Source / Category単位で整理できる構造とする。
-
-例:
-
-* 瑞穂町
-
-  * Item A
-  * Item B
-* みずほまる情報
-
-  * Item C
-  * Item D
-
-原則として表示するのは、
-
-* Title
-* Published Date
-* Category
-* 必要最小限のMetadata
-* Original URL
-
-とする。
-
-記事全文を転載しない。
+公式情報一覧では年月絞り込みを提供する。記事全文を転載せず、Title、Published Date、Category、必要最小限のMetadata、Original URLを表示する。
 
 ---
 
@@ -218,26 +196,9 @@ Instagram / XはTop-levelで別画面にせず、関連SNS内でFilter / Switch�
 
 ---
 
-## 9. リンク集
+## 9. 公式リンク集
 
-恒久的に参照したい関連Sourceを掲載する。
-
-例:
-
-* 瑞穂町 みずほまる情報
-* 瑞穂町イベント情報
-* 関連企業
-* 商品販売元
-* 店舗
-* その他関連Page
-
-関連情報とリンク集は役割を分ける。
-
-関連情報:
-取得した記事・News・Event等。
-
-リンク集:
-恒久的なSource Directory / Bookmark。
+公式情報タブ内に、恒久的に参照したい瑞穂町の公式Source Directory / Bookmarkを掲載する。
 
 ---
 
@@ -492,6 +453,8 @@ Web Page取得が必要な場合は低頻度とする。
 
 「瑞穂丸」は無関係な同名対象が存在するため、安易なKeywordとして使用しない。
 
+公式情報は `https://www.town.mizuho.tokyo.jp/bunka/news.xml` だけを毎週木曜日に取得する。タイトルに「みずほまる」を含む記事、またはRSS categoryが「みずほまる情報」の記事だけを対象とする。AIは使用しない。RSS以外のSourceは自動収集せず、公式リンク集として案内する。既存の収集済みデータは引き継がない。Generated Dataは `data/official/YYYY-MM.json` に収集時点のAsia/Tokyo年月で分割し、URLで重複排除する。新規0件ではファイル変更・空commitを作らない。Actionsはレーダーと同じく、実行月の単一JSONのみを変更可能とする差分検証、lint、typecheck、unit test、build、E2E testの成功後にのみmainへ反映する。SecretやPATは使用しない。
+
 ### 15.2 AI Summary
 
 情報収集とは別Workflowとする。
@@ -625,6 +588,7 @@ Generated:
 
 * `data/generated/items.json`
 * `data/generated/summaries.json`
+* `data/official/YYYY-MM.json`
 
 Automation / AIが理由なくHuman-managed Dataを書き換えてはならない。
 
@@ -948,9 +912,9 @@ Code Generationだけで完了扱いしない。
 * Top Page renders
 * 最新情報が初期表示される
 * 最新情報の初期Itemsが表示される
-* 関連情報Tabを開ける
+* 公式情報Tabを開ける
 * 関連SNS Tabを開ける
-* リンク集Tabを開ける
+* 公式情報から一覧と公式リンク集を開ける
 * Tab Switchingが正常に動作する
 * Original Source Linkが存在する
 * 375pxでHorizontal Scrollが発生しない
