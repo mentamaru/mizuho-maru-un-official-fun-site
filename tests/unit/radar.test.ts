@@ -35,7 +35,7 @@ describe('radar data', () => {
     expect(prompt).toContain('公式キャラクター決定ページ');
   });
   test('uses a configurable project-approved radar model', () => {
-    expect(resolveRadarModel()).toBe('gpt-5');
+    expect(resolveRadarModel()).toBe('gpt-5.6-luna');
     expect(resolveRadarModel('gpt-4.1')).toBe('gpt-4.1');
     expect(() => resolveRadarModel('bad model')).toThrow('OPENAI_RADAR_MODEL');
   });
