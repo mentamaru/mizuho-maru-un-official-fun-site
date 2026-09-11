@@ -1,0 +1,12 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { siteCopy } from '../lib/content';
+---
+
+<Layout title="このサイトについて | 非公式みずほまる情報ポータル" description={siteCopy.siteDescription}>
+  <article class="prose max-w-3xl rounded-3xl border border-secondary/40 bg-base-100 p-8 shadow-sm">
+    <h1>このサイトについて</h1>
+    <p>{siteCopy.siteDescription}</p>
+    <p>一次情報の代替ではなく、公開元へ移動しやすくする整理用ポータルとして運営します。</p>
+  </article>
+</Layout>

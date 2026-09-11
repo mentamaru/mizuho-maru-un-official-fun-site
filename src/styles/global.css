@@ -1,0 +1,72 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+:root {
+  color-scheme: light;
+  --color-base-100: #ffffff;
+  --color-base-200: #fff9fc;
+  --color-base-300: #f6dce9;
+  --color-base-content: #33252f;
+  --color-primary: #b65aa5;
+  --color-primary-content: #ffffff;
+  --color-secondary: #e8a9c7;
+  --color-secondary-content: #33252f;
+  --color-accent: #16823b;
+  --color-accent-content: #ffffff;
+  --color-neutral: #33252f;
+  --color-neutral-content: #ffffff;
+  --color-info: #2563eb;
+  --color-success: #15803d;
+  --color-warning: #b45309;
+  --color-error: #b91c1c;
+  --radius-box: 1.5rem;
+  --radius-field: 1rem;
+  --radius-selector: 1rem;
+  --font-sans:
+    "UD Digi Kyokasho N-R",
+    "UD Digi Kyokasho NP-R",
+    "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans",
+    "Yu Gothic",
+    "YuGothic",
+    "Noto Sans JP",
+    sans-serif;
+}
+
+html {
+  font-family: var(--font-sans);
+  background: var(--color-base-200);
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+a {
+  text-underline-offset: 0.2em;
+}
+
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-primary) 55%, white 45%);
+  outline-offset: 3px;
+}
+
+.hero {
+  background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(246, 220, 233, 0.45));
+}
+
+[data-tabs-ready='true'] [data-tab-panel][hidden] {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

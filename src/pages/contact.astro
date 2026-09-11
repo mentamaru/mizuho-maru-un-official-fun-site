@@ -1,0 +1,18 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { siteCopy } from '../lib/content';
+---
+
+<Layout title="お問い合わせ | 非公式みずほまる情報ポータル" description="お問い合わせ導線の案内です。">
+  <article class="prose max-w-3xl rounded-3xl border border-secondary/40 bg-base-100 p-8 shadow-sm">
+    <h1>お問い合わせ</h1>
+    <p>{siteCopy.contactNote}</p>
+    <ul>
+      <li>掲載内容について</li>
+      <li>掲載・リンクの取り下げ</li>
+      <li>情報提供</li>
+      <li>その他</li>
+    </ul>
+    <p>公開前に Google Form などの外部フォームへ差し替える想定です。</p>
+  </article>
+</Layout>
