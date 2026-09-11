@@ -1,6 +1,6 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 
-import { buildSummaries, generateSummary, isValidSummary } from '../../src/lib/summary';
+import { buildSummaries, generateSummary, isValidSummary, resolveSummaryProvider } from '../../src/lib/summary';
 
 describe('summary helpers', () => {
   test('generates two-sentence summary when description exists', () => {
@@ -33,5 +33,26 @@ describe('summary helpers', () => {
     );
 
     expect(summaries[0]?.generatedAt).toBe('2026-09-01T00:00:00.000Z');
+  });
+});
+
+describe('resolveSummaryProvider', () => {
+  test('defaults to deterministic when unset', () => {
+    expect(resolveSummaryProvider(undefined)).toBe('deterministic');
+  });
+
+  test('accepts explicit deterministic provider', () => {
+    expect(resolveSummaryProvider('deterministic')).toBe('deterministic');
+  });
+
+  test('falls back to deterministic and warns for unsupported providers', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    expect(resolveSummaryProvider('gpt-5')).toBe('deterministic');
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('Unsupported SUMMARY_PROVIDER "gpt-5"')
+    );
+
+    warn.mockRestore();
   });
 });

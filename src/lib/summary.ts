@@ -9,6 +9,28 @@ export type SummarySnapshot = {
   generatedAt: string;
 };
 
+/**
+ * v1でサポートするAI Summary Providerは deterministic (規則ベース) のみ。
+ * SUMMARY_PROVIDERへ未対応の値が指定された場合もSourceを壊さないため
+ * deterministicへFallbackし、警告のみ出力する。
+ */
+export type SummaryProvider = 'deterministic';
+
+const SUPPORTED_SUMMARY_PROVIDERS: readonly SummaryProvider[] = ['deterministic'];
+
+export function resolveSummaryProvider(rawProvider: string | undefined): SummaryProvider {
+  const normalized = rawProvider?.trim();
+
+  if (!normalized || SUPPORTED_SUMMARY_PROVIDERS.includes(normalized as SummaryProvider)) {
+    return 'deterministic';
+  }
+
+  console.warn(
+    `Unsupported SUMMARY_PROVIDER "${normalized}"; falling back to deterministic summarizer.`
+  );
+  return 'deterministic';
+}
+
 function toSentences(value: string): string[] {
   return value
     .replace(/\s+/g, ' ')
