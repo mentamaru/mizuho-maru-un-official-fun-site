@@ -76,7 +76,7 @@ test('X failures can be retried without losing the external link', async ({ page
   await page.goto('/#social');
   await expect(page.locator('#mizuho-koho-x-status')).toContainText('表示できませんでした');
   await expect(page.getByRole('link', {name:'瑞穂町（東京都）広報公式 X', exact:true})).toBeVisible();
-  await page.getByRole('button', {name:'再試行する'}).click();
+  await page.locator('[data-status-id="mizuho-koho-x-status"]').click();
   await expect(page.locator('#mizuho-koho-x-embed iframe')).toBeVisible();
   await expect(page.locator('#mizuho-koho-x-status')).toBeEmpty();
   expect(attempts).toBe(2);
