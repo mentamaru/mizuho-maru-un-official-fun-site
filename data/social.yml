@@ -31,3 +31,12 @@
   profileUrl: https://www.instagram.com/ekinishifurima/
   category: イベント情報
   enabled: true
+
+- id: hamakiya_4649
+  platform: instagram
+  accountId: hamakiya_4649
+  displayName: hamakiya_4649
+  description: みずほまるオリジナルグッズの情報を発信しているアカウントです。
+  profileUrl: https://www.instagram.com/hamakiya_4649/
+  category: グッズ
+  enabled: true
