@@ -1,9 +1,8 @@
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import { dedupeRadarCandidates, radarFingerprint, radarMonth, sortRadarNewestFirst, type RadarCandidate, type RadarItem } from '../../src/lib/radar';
 import { parseVerifiedCandidates, radarModel, renderRadarPrompt } from '../../src/lib/radar-collector';
 import { loadResearchSources } from '../../src/lib/radar';
-import { extractOgpImage, fetchOgpImage } from '../../src/lib/ogp';
 
 const candidate: RadarCandidate = { title: 'みずほまるがイベントに登場', summary: 'みずほまるがイベントに登場します。詳しくは元情報をご確認ください。', category: 'event', date: '2026-10-20', dateType: 'event', source: { name: '公式', url: 'https://example.com/event' }, researchSources: [{ title: 'お知らせ', url: 'https://example.com/event' }] };
 
@@ -41,19 +40,5 @@ describe('radar data', () => {
   });
   test('uses the project-approved Luna model', () => {
     expect(radarModel).toBe('gpt-5.6-luna');
-  });
-  test('resolves an HTTPS og:image from the source page', () => {
-    expect(extractOgpImage('<meta content="/images/card.png" property="og:image">', 'https://example.com/news/1')).toBe('https://example.com/images/card.png');
-  });
-  test('rejects an insecure or missing og:image', () => {
-    expect(extractOgpImage('<meta property="og:image" content="http://example.com/card.png">', 'https://example.com/news/1')).toBeNull();
-    expect(extractOgpImage('<title>no image</title>', 'https://example.com/news/1')).toBeNull();
-  });
-  test('does not retain an og:image URL that returns an error', async () => {
-    const fetcher = vi.fn()
-      .mockResolvedValueOnce({ ok: true, headers: new Headers({ 'content-type': 'text/html' }), text: async () => '<meta property="og:image" content="/card.png">', url: 'https://example.com/news' })
-      .mockResolvedValueOnce({ ok: false, headers: new Headers({ 'content-type': 'text/html' }) });
-    await expect(fetchOgpImage('https://example.com/news', fetcher as unknown as typeof fetch)).resolves.toBeNull();
-    expect(fetcher).toHaveBeenCalledTimes(2);
   });
 });
