@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { isMizuhomaruOfficialItem, officialId, sortOfficialNewestFirst } from '../../src/lib/official';
+import { isMizuhomaruOfficialItem, officialId, officialItemSchema, sortOfficialNewestFirst } from '../../src/lib/official';
 
 describe('isMizuhomaruOfficialItem', () => {
   test('accepts a title that includes みずほまる', () => {
@@ -17,6 +17,9 @@ describe('isMizuhomaruOfficialItem', () => {
 });
 
 describe('official item helpers', () => {
+  test('accepts an optional HTTPS OGP thumbnail URL', () => {
+    expect(officialItemSchema.parse({ id: 'official-0000000000000001', title: '公式のお知らせ', category: 'みずほまる情報', originalUrl: 'https://example.com/official', thumbnailUrl: 'https://images.example.com/card.png', publishedAt: null, collectedAt: '2026-09-12T00:00:00.000Z' }).thumbnailUrl).toBe('https://images.example.com/card.png');
+  });
   test('uses source URL as the stable identifier and orders by published date', () => {
     expect(officialId('https://example.com/a')).toMatch(/^official-[a-f0-9]{16}$/);
     expect(sortOfficialNewestFirst([

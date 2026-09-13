@@ -6,11 +6,12 @@ import { z } from 'zod';
 
 import { toAbsoluteHttpUrl } from './url';
 
-const officialItemSchema = z.object({
+export const officialItemSchema = z.object({
   id: z.string().regex(/^official-[a-f0-9]{16}$/u),
   title: z.string().min(1),
   category: z.string().min(1),
   originalUrl: z.string().url(),
+  thumbnailUrl: z.string().url().refine(value => value.startsWith('https://'), 'サムネイルはHTTPS URLが必要です').optional(),
   publishedAt: z.string().nullable(),
   collectedAt: z.string().datetime({ offset: true })
 }).strict();
