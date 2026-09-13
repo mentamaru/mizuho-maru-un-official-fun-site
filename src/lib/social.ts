@@ -5,6 +5,7 @@ export type SocialEntry = {
   displayName: string;
   description?: string;
   profileUrl: string;
+  ogImageUrl?: string;
   category: string;
   enabled: boolean;
 };
