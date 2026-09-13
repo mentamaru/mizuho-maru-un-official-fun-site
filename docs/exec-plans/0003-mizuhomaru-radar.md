@@ -224,7 +224,7 @@ Asia/Tokyoの実行時刻と調査期間を決定
 → 保存
 ```
 
-`radar.yml` は毎週木曜日のJST 13:17頃（`17 4 * * 4`）のscheduleと`workflow_dispatch`を持つ。GitHub Actionsのscheduleは遅延し得るため、実時間はworkflow実行時に採番する。手動実行も同じ収集処理のみで、入力欄を持たない。
+`radar.yml` は毎日1回のschedule（既存の12:05/12:35 JST処理と重ならない、例えば `17 4 * * *` = JST 13:17 を初期提案）と`workflow_dispatch`を持つ。GitHub Actionsのscheduleは遅延し得るため、実時間はworkflow実行時に採番する。手動実行も同じ収集処理のみで、入力欄を持たない。
 
 workflowはcheckout、Takumi Guard、Node 22、`npm ci`、`npm run collect:radar`、差分なしなら後続commitをskip、差分ありなら許可ファイル検査、lint、typecheck、unit、build、Playwrightを順に実行する。成功後に限定したbot identityで `data/radar/YYYY-MM.json` のみをコミットし、`git push origin HEAD:main` で直接mainへ反映する。コミット直前にも `verify-radar-changes` を再実行し、想定月以外、未追跡ファイル、削除、renameを拒否する。Actionsの実行中にgitが意図せず変更したlockfile等も失敗にする。
 
@@ -234,7 +234,7 @@ mainへの直接pushには、GitHub branch protection/rulesetが`github-actions[
 
 ## 変更可能ファイル制限とfail-closed
 
-許可パスは実行日から厳密に導いた単一の `data/radar/YYYY-MM.json` のみ。新月はその1ファイルの追加を許容し、既存月はその1ファイルの変更を許容する。workflowの差分有無判定は`git status --porcelain`でtracked・untrackedの両方を検出し、その後に`git diff --name-status` と`git ls-files --others --exclude-standard`をbase checkoutと比較する。追加・変更・削除・renameのいずれもこの厳密パス以外なら失敗する。`src/**`、`.github/**`、`scripts/**`、`prompts/**`、SPEC、AGENTS、package/lock、`data/research-sources.yml`、既存Generated Dataは通常レーダー実行で変更不能である。
+許可パスは実行日から厳密に導いた単一の `data/radar/YYYY-MM.json` のみ。新月はその1ファイルの追加を許容し、既存月はその1ファイルの変更を許容する。`git diff --name-status` と`git ls-files --others --exclude-standard`をbase checkoutと比較し、追加・変更・削除・renameのいずれもこの厳密パス以外なら失敗する。`src/**`、`.github/**`、`scripts/**`、`prompts/**`、SPEC、AGENTS、package/lock、`data/research-sources.yml`、既存Generated Dataは通常レーダー実行で変更不能である。
 
 API/Web Search/Structured Outputs/schema/source照合/URL/fingerprint/保存後schema/許可ファイル/テスト/typecheck/buildのどれかが失敗・不明なら、pushしない。破損しかけた対象ファイルはcommitせずjobをfailにする。0件は正常・空commitなし。「今週は情報なし」要素も作らない。
 

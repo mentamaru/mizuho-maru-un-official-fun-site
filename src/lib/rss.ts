@@ -14,9 +14,16 @@ export type RssItem = {
 const parser = new XMLParser({
   ignoreAttributes: false,
   trimValues: true,
-  stopNodes: ['*.description', '*.summary', '*.content']
+  stopNodes: ['*.description', '*.summary', '*.content', '*.content:encoded']
 });
 
+const xmlEntities: Record<string, string> = {
+  amp: '&',
+  apos: "'",
+  gt: '>',
+  lt: '<',
+  quot: '"'
+};
 function xmlText(value: unknown): string {
   if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
     return String(value);
@@ -38,8 +45,24 @@ function xmlText(value: unknown): string {
     .join(' ');
 }
 
+function decodeXmlEntities(value: string): string {
+  return value.replace(/&(?:(amp|apos|gt|lt|quot)|#(x[\da-f]+|\d+));/giu, (match, named: string | undefined, numeric: string | undefined) => {
+    if (named) {
+      return xmlEntities[named] ?? match;
+    }
+
+    const hexadecimal = numeric?.startsWith('x') ?? false;
+    const codePoint = Number.parseInt(numeric?.slice(hexadecimal ? 1 : 0) ?? '', hexadecimal ? 16 : 10);
+    if (!Number.isInteger(codePoint) || codePoint < 0 || codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff)) {
+      return match;
+    }
+
+    return String.fromCodePoint(codePoint);
+  });
+}
+
 function stripTags(value: unknown): string {
-  return xmlText(value).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  return decodeXmlEntities(xmlText(value).replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
 }
 
 function asArray<T>(value: T | T[] | undefined): T[] {
@@ -50,17 +73,36 @@ function asArray<T>(value: T | T[] | undefined): T[] {
   return Array.isArray(value) ? value : [value];
 }
 
+type RssCategory = string | { '#text'?: string; '@_term'?: string };
+
 function categories(value: unknown): string[] {
-  return asArray(value as string | string[] | undefined)
-    .map((category) => stripTags(typeof category === 'string' ? category : String(category)))
+  return asArray(value as RssCategory | RssCategory[] | undefined)
+    .map((category) => stripTags(typeof category === 'string' ? category : category['#text'] ?? category['@_term']))
     .filter(Boolean);
 }
 
-export function parseRss(xml: string): RssItem[] {
+function toRssHttpUrl(value: unknown, feedUrl?: string): string | null {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const absoluteUrl = toAbsoluteHttpUrl(value);
+  if (absoluteUrl || !feedUrl) {
+    return absoluteUrl;
+  }
+
+  try {
+    return toAbsoluteHttpUrl(new URL(value, feedUrl).toString());
+  } catch {
+    return null;
+  }
+}
+
+export function parseRss(xml: string, feedUrl?: string): RssItem[] {
   const parsed = parser.parse(xml);
   const rssItems = asArray(parsed?.rss?.channel?.item).map((item) => ({
     title: stripTags(item.title),
-    link: toAbsoluteHttpUrl(typeof item.link === 'string' ? item.link : item.link?.['@_href']) ?? '',
+    link: toRssHttpUrl(typeof item.link === 'string' ? item.link : item.link?.['@_href'], feedUrl) ?? '',
     publishedAt: item.pubDate ?? item.isoDate ?? null,
     description: stripTags(item.description ?? item['content:encoded']),
     categories: categories(item.category),
@@ -74,11 +116,12 @@ export function parseRss(xml: string): RssItem[] {
   return asArray(parsed?.feed?.entry)
     .map((entry) => ({
       title: stripTags(entry.title),
-      link: toAbsoluteHttpUrl(
+      link: toRssHttpUrl(
         typeof entry.link === 'string'
           ? entry.link
           : asArray(entry.link).find((candidate) => candidate?.['@_rel'] === 'alternate')?.['@_href'] ??
-              asArray(entry.link)[0]?.['@_href']
+              asArray(entry.link)[0]?.['@_href'],
+        feedUrl
       ) ?? '',
       publishedAt: entry.published ?? entry.updated ?? null,
       description: stripTags(entry.summary ?? entry.content),

@@ -109,12 +109,13 @@ React / Vue / Svelte等のClient Frameworkを禁止するものではない。
 
 サイトアクセス時は「最新情報」を初期表示する。
 
-Main Navigationは以下の4領域とする。
+Main Navigationは以下の5領域とする。
 
 1. 最新情報
 2. みずほまるレーダー
 3. 公式情報
 4. 関連SNS
+5. マップ
 
 対応Browserではこれらをタブ形式のUIで切り替える。
 
@@ -202,7 +203,22 @@ Instagram / XはTop-levelで別画面にせず、関連SNS内でFilter / Switch�
 
 ---
 
-## 10. Rich UI / JavaScript
+## 10. マップ
+
+「マップ」タブでは、みずほまるに関連する地図を紹介する。
+
+タブ内には「みずほまる関連の地図です。主に東京都瑞穂町を中心に紹介しています。」と同趣旨の説明を表示する。
+
+以下のGoogle マイマップを、それぞれ見出しとともに埋め込み表示する。
+
+* みずほまるグッズマップ
+* みずほまるイベントマップ
+
+地図は画面幅に合わせて表示し、スマートフォンで横方向にはみ出さないようにする。外部地図の読み込みは初期表示を不必要に妨げないよう遅延読み込みを利用する。
+
+---
+
+## 11. Rich UI / JavaScript
 
 JavaScriptの利用を過度に制限しない。
 
@@ -225,7 +241,7 @@ JavaScript無効環境ですべてのInteractive Functionを再現すること�
 
 ---
 
-## 11. Visual Design
+## 12. Visual Design
 
 基本デザインは**White Base**とする。
 
@@ -309,7 +325,7 @@ daisyUIのTheme Tokenを利用し、Component単位で大量のColorをHardcode�
 
 ---
 
-## 12. Typography
+## 13. Typography
 
 日本語の可読性を最優先する。
 
@@ -370,7 +386,7 @@ Smartphone実機でも可読性を確認する。
 
 ---
 
-## 13. Performance
+## 14. Performance
 
 目標は、
 
@@ -401,7 +417,7 @@ Lighthouse Performance 90以上を目安とする。
 
 ---
 
-## 14. SNS Loading
+## 15. SNS Loading
 
 Instagram / X等のExternal SNS Resourceは、サイト初期表示をBlockingしてはならない。
 
@@ -422,11 +438,11 @@ SNS障害によってサイト本体を利用不能にしない。
 
 ---
 
-## 15. Information Pipeline
+## 16. Information Pipeline
 
 情報取得・生成は3経路とする。
 
-### 15.1 RSS / 公式情報収集
+### 16.1 RSS / 公式情報収集
 
 GitHub Actionsで自動実行する。
 
@@ -455,7 +471,7 @@ Web Page取得が必要な場合は低頻度とする。
 
 公式情報は `https://www.town.mizuho.tokyo.jp/bunka/news.xml` だけを毎週木曜日に取得する。タイトルに「みずほまる」を含む記事、またはRSS categoryが「みずほまる情報」の記事だけを対象とする。AIは使用しない。RSS以外のSourceは自動収集せず、公式リンク集として案内する。既存の収集済みデータは引き継がない。Generated Dataは `data/official/YYYY-MM.json` に収集時点のAsia/Tokyo年月で分割し、URLで重複排除する。新規0件ではファイル変更・空commitを作らない。Actionsはレーダーと同じく、実行月の単一JSONのみを変更可能とする差分検証、lint、typecheck、unit test、build、E2E testの成功後にのみmainへ反映する。SecretやPATは使用しない。
 
-### 15.2 AI Summary
+### 16.2 AI Summary
 
 情報収集とは別Workflowとする。
 
@@ -477,7 +493,7 @@ AI Summary Rules:
 
 AIはEditing / Summary Layerであり、Discovery Sourceではない。
 
-### 15.3 Manual SNS / Other Submission
+### 16.3 Manual SNS / Other Submission
 
 SNSをBotで無差別収集しない。
 
@@ -504,7 +520,7 @@ AIは投入された情報のみを整理・要約する。
 * Flyer
 * その他自動収集で拾えない情報
 
-### 15.4 みずほまるレーダー
+### 16.4 みずほまるレーダー
 
 OpenAI Responses APIのWeb Searchを用い、「みずほまる」の現在性のある公開Web情報を定期的に調査する。重点確認サイトは `data/research-sources.yml` でHuman-managedに管理し、allowlistにはしない。調査プロンプトは `prompts/collect-latest.md` に分離する。
 
@@ -512,13 +528,13 @@ OpenAI Responses APIのWeb Searchを用い、「みずほまる」の現在性�
 
 候補はStructured Outputsで取得するが、AIをSource of Truthにはしない。TypeScriptでstrict schema、HTTP(S) URL、実際のWeb Search sourceとの照合、fingerprintによる重複排除を通過した候補だけを掲載する。不明・不正・source照合不能ならfail-closedで掲載しない。
 
-データ単位は1回の実行ではなく、1つの独立ニュースにつき1要素とする。`data/radar/YYYY-MM.json` は `discoveredAt` のAsia/Tokyo年月で分割し、`id`、title、summary、category、date、dateType、discoveredAt、source、researchSourcesを保持する。表示は必ず `discoveredAt DESC` とし、レーダー一覧では年月絞り込みを提供する。
+データ単位は1回の実行ではなく、1つの独立ニュースにつき1要素とする。`data/radar/YYYY-MM.json` は `discoveredAt` のAsia/Tokyo年月で分割し、`id`、title、summary、category、date、dateType、discoveredAt、source、researchSourcesを保持する。主な情報元ページの `og:image` が、公開IPへ解決するHTTPS URLであり、リダイレクト先を含めて画像として取得できた場合のみ、任意の `thumbnailUrl` を保持する。第三者画像をRepositoryへ保存・転載せず、レーダーのトップ表示と一覧では `thumbnailUrl` があるカードに遅延読み込みのサムネイルを表示する。OGP未設定・取得失敗・壊れた画像URL・非公開宛先の場合はデータを変更せず、画像を表示しない。表示は必ず `discoveredAt DESC` とし、レーダー一覧では年月絞り込みを提供する。
 
 GitHub Actionsは毎週木曜日のJST 13:17頃の定期実行と `workflow_dispatch` を提供する。新情報が0件ならファイル変更・空commitをせず正常終了する。通常実行で書き込めるのは実行月の単一 `data/radar/YYYY-MM.json` のみとし、tracked・untrackedの両方を含むGit差分検査、lint、typecheck、test、buildがすべて成功した場合だけmainへ自動反映する。`OPENAI_API_KEY`以外のSecretやPATは不要とし、main保護導入時は最小権限のGitHub Actions botによるこの限定更新を許可する設定とする。
 
 ---
 
-## 16. SNS Automated Collection Policy
+## 17. SNS Automated Collection Policy
 
 Instagram / Xの一般公開画面をBotで無差別Scrapingしない。
 
@@ -528,7 +544,7 @@ SNS情報はHuman-in-the-loopを基本とする。
 
 ---
 
-## 17. Provenance
+## 18. Provenance
 
 情報の出自を内部Dataに保持する。
 
@@ -553,7 +569,7 @@ summary: ...
 
 ---
 
-## 18. Source of Truth
+## 19. Source of Truth
 
 Source of Truthは、
 
@@ -574,7 +590,7 @@ Source DataとGenerated Summaryを区別する。
 
 ---
 
-## 19. Data Ownership
+## 20. Data Ownership
 
 Human-managed DataとGenerated Dataを分離する。
 
@@ -594,7 +610,7 @@ Automation / AIが理由なくHuman-managed Dataを書き換えてはならな�
 
 ---
 
-## 20. SNS Whitelist
+## 21. SNS Whitelist
 
 SNS AccountはWhitelist方式で管理する。
 
@@ -621,7 +637,7 @@ Secret / TokenはData Fileへ保存しない。
 
 ---
 
-## 21. Responsive Design
+## 22. Responsive Design
 
 Mobile First。
 
@@ -638,7 +654,7 @@ Mobileだからという理由だけでBrand Colorや必要なVisual Hierarchy�
 
 ---
 
-## 22. Accessibility
+## 23. Accessibility
 
 最低限、
 
@@ -659,7 +675,7 @@ Mobileだからという理由だけでBrand Colorや必要なVisual Hierarchy�
 
 ---
 
-## 23. Internationalization
+## 24. Internationalization
 
 v1の表示言語は日本語とする。
 
@@ -707,7 +723,7 @@ Original URLおよびOriginal Content Languageを保持できる設計とする�
 
 ---
 
-## 24. Footer / Operator
+## 25. Footer / Operator
 
 Footerに以下への導線を置く。
 
@@ -739,7 +755,7 @@ FooterではみずほまるのBrand Colorを比較的大きな面積で使用し
 
 ---
 
-## 25. Character Artwork / Rights
+## 26. Character Artwork / Rights
 
 公式みずほまるArtworkを、
 
@@ -762,7 +778,7 @@ Source Code Licenseと第三者Artwork / Contentの権利を混同しない。
 
 ---
 
-## 26. Security
+## 27. Security
 
 Vercel / GitHubが提供するPlatform SecurityとApplication側Securityを区別する。
 
@@ -800,7 +816,7 @@ CSP設定後、必要なSNS Embedが正常動作することも確認する。
 
 ---
 
-## 27. GitHub Security
+## 28. GitHub Security
 
 導入する。
 
@@ -829,7 +845,7 @@ Untrusted PR / ForkからSecretへアクセスできる構成を避ける。
 
 ---
 
-## 28. Secrets
+## 29. Secrets
 
 RepositoryへCommitしない。
 
@@ -850,7 +866,7 @@ VercelではEnvironment Variables。
 
 ---
 
-## 29. Testing / TDD
+## 30. Testing / TDD
 
 Logicは原則TDD。
 
@@ -882,7 +898,7 @@ Bug Fixでは可能な限り、
 
 ---
 
-## 30. Execution Verification
+## 31. Execution Verification
 
 Code Generationだけで完了扱いしない。
 
@@ -905,7 +921,7 @@ Code Generationだけで完了扱いしない。
 
 ---
 
-## 31. Minimum E2E
+## 32. Minimum E2E
 
 最低限確認する。
 
@@ -914,6 +930,7 @@ Code Generationだけで完了扱いしない。
 * 最新情報の初期Itemsが表示される
 * 公式情報Tabを開ける
 * 関連SNS Tabを開ける
+* マップTabを開き、2つの地図を表示できる
 * 公式情報から一覧と公式リンク集を開ける
 * Tab Switchingが正常に動作する
 * Original Source Linkが存在する
@@ -926,7 +943,7 @@ Code Generationだけで完了扱いしない。
 
 ---
 
-## 32. Release
+## 33. Release
 
 初期v1のGoalは、
 
