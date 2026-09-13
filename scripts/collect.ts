@@ -28,7 +28,7 @@ async function main() {
       }
 
       const xml = await response.text();
-      const parsedItems = parseRss(xml)
+      const parsedItems = parseRss(xml, source.rssUrl)
         .filter((item) => isRelevantItem(item))
         .reduce<PortalItem[]>((results, item) => {
           const originalUrl = toAbsoluteHttpUrl(item.link);

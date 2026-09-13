@@ -15,7 +15,7 @@ if (process.env.GITHUB_ENV) await appendFile(process.env.GITHUB_ENV, `OFFICIAL_M
 const response = await fetch(rssUrl);
 if (!response.ok) throw new Error(`Official RSS returned HTTP ${response.status}`);
 const existing = loadOfficialItems();
-const additions = parseRss(await response.text())
+const additions = parseRss(await response.text(), rssUrl)
   .filter(isMizuhomaruOfficialItem)
   .flatMap(item => {
     const originalUrl = toAbsoluteHttpUrl(item.link);
