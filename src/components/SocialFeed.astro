@@ -60,32 +60,28 @@ const { groups } = Astro.props;
                   <p class="break-all text-sm text-base-content/70">@{entry.accountId}</p>
                 </div>
                 {entry.description && <p class="text-sm leading-7 text-base-content/80">{entry.description}</p>}
-                {entry.platform === 'x' && <>
-                  <button
-                    type="button" class="btn btn-primary btn-sm self-start" hidden
-                    data-social-retry data-platform={entry.platform}
-                    data-status-id={`${entry.id}-status`} data-target-id={`${entry.id}-embed`}
-                    data-profile-url={entry.profileUrl} data-display-name={entry.displayName}
-                  >再試行する</button>
-                  <p role="status" aria-live="polite" id={`${entry.id}-status`} class="text-sm text-base-content/70 empty:hidden"></p>
-                </>}
                 <div
                   id={`${entry.id}-embed`}
                   data-social-embed
                   data-platform={entry.platform}
                   data-account={entry.accountId}
                   data-name={entry.displayName}
-                  data-profile-url={entry.profileUrl}
                   aria-busy="false"
                   class:list={[
                     'min-h-32 min-w-0 overflow-hidden rounded-2xl bg-base-200/40',
                     entry.platform === 'x' && 'overflow-hidden',
                   ]}
                 >
-                  <div data-social-loading-ui class="flex min-h-32 items-center justify-center gap-3 px-4 text-sm text-base-content/60">
-                    <span class="loading loading-spinner loading-md"></span>
-                    <span>{entry.platform === 'x' ? 'Xのタイムラインを読み込んでいます' : 'Instagramを読み込んでいます'}</span>
-                  </div>
+                  {entry.platform === 'x' ? (
+                    <div class="space-y-3 p-3">
+                      {entry.ogImageUrl && <img src={entry.ogImageUrl} alt={`${entry.displayName} のプロフィール画像`} loading="lazy" class="h-28 w-28 rounded-full object-cover shadow-sm" />}
+                    </div>
+                  ) : (
+                    <div data-social-loading-ui class="flex min-h-32 items-center justify-center gap-3 px-4 text-sm text-base-content/60">
+                      <span class="loading loading-spinner loading-md"></span>
+                      <span>Instagramを読み込んでいます</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </article>
@@ -101,27 +97,9 @@ const { groups } = Astro.props;
 </section>
 
 <script>
-  import { createSerialQueue, retryableLoader, withTimeout } from '../lib/social-loader';
-  type TwitterWidgets = {
-    widgets: { createTimeline: (source: { sourceType: 'url'; url: string }, target: HTMLElement, options: { height: number; lang: string; dnt: boolean }) => Promise<HTMLElement | undefined> };
-  };
-  const twitterWindow = window as Window & { twttr?: TwitterWidgets };
-  const loadWidgets = retryableLoader(() => withTimeout(new Promise<TwitterWidgets>((resolve, reject) => {
-    if (twitterWindow.twttr?.widgets?.createTimeline) { resolve(twitterWindow.twttr); return; }
-    const script = document.createElement('script');
-    script.src = 'https://platform.x.com/widgets.js';
-    script.async = true;
-    script.onload = () => {
-      if (twitterWindow.twttr?.widgets?.createTimeline) resolve(twitterWindow.twttr);
-      else { script.remove(); reject(new Error('Xの表示機能を利用できません')); }
-    };
-    script.onerror = () => { script.remove(); reject(new Error('Xに接続できません')); };
-    document.head.append(script);
-  }), 15000));
   const socialTriggers = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-social-trigger]'));
   const socialPanels = Array.from(document.querySelectorAll<HTMLElement>('[data-social-panel]'));
   const socialEmbeds = Array.from(document.querySelectorAll<HTMLElement>('[data-social-embed]'));
-  const xQueue = createSerialQueue();
 
   const isSocialPanelVisible = (platform: string) =>
     !document.getElementById('social-panel')?.hidden && !document.getElementById(`${platform}-social-panel`)?.hidden;
@@ -183,47 +161,12 @@ const { groups } = Astro.props;
     target.append(frame);
   };
 
-  const renderX = (target: HTMLElement, retryButton?: HTMLButtonElement) => {
-    if (target.dataset.loaded === 'true' || target.dataset.loading === 'true' || target.dataset.queued === 'true') return;
-    const profileUrl = target.dataset.profileUrl;
-    if (!profileUrl) return;
-    target.dataset.queued = 'true';
-    setLoading(target, 'Xのタイムラインを読み込んでいます');
-    if (retryButton) { retryButton.disabled = true; retryButton.hidden = true; }
-    void xQueue(async () => {
-      try {
-        const twitter = await loadWidgets();
-        const attempt = document.createElement('div');
-        attempt.className = 'hidden';
-        target.append(attempt);
-        const widget = await withTimeout(twitter.widgets.createTimeline(
-          { sourceType: 'url', url: profileUrl }, attempt, { height: 480, lang: 'ja', dnt: true }
-        ), 15000);
-        if (!widget || !attempt.contains(widget)) throw new Error('表示できません');
-        removeLoadingUi(target);
-        attempt.classList.remove('hidden');
-        finishLoading(target, true);
-        document.getElementById(`${target.id.replace('-embed', '')}-status`)?.replaceChildren();
-      } catch {
-        renderFailure(target, 'タイムラインを表示できませんでした。');
-        finishLoading(target, false);
-        const status = document.getElementById(`${target.id.replace('-embed', '')}-status`);
-        if (status) status.textContent = 'タイムラインを表示できませんでした。再試行するか、上のアカウント名からXをご覧ください。';
-        if (retryButton) retryButton.hidden = false;
-      } finally {
-        if (retryButton) retryButton.disabled = false;
-      }
-    });
-  };
-
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
       const target = entry.target as HTMLElement;
       observer.unobserve(target);
-      if (target.dataset.platform === 'x') {
-        renderX(target, document.querySelector<HTMLButtonElement>(`[data-target-id="${target.id}"]`) ?? undefined);
-      } else {
+      if (target.dataset.platform === 'instagram') {
         renderInstagram(target);
       }
     });
@@ -232,7 +175,7 @@ const { groups } = Astro.props;
   const syncEmbeds = () => {
     socialEmbeds.forEach((target) => {
       observer.unobserve(target);
-      if (target.dataset.loaded !== 'true' && target.dataset.loading !== 'true' && isSocialPanelVisible(target.dataset.platform ?? '')) {
+      if (target.dataset.platform === 'instagram' && target.dataset.loaded !== 'true' && target.dataset.loading !== 'true' && isSocialPanelVisible('instagram')) {
         observer.observe(target);
       }
     });
@@ -275,12 +218,6 @@ const { groups } = Astro.props;
         const previous = socialTriggers[(currentIndex - 1 + socialTriggers.length) % socialTriggers.length];
         setActivePanel(previous.dataset.platform ?? 'x', { moveFocus: true });
       }
-    });
-  });
-  document.querySelectorAll<HTMLButtonElement>('[data-social-retry]').forEach((button) => {
-    button.addEventListener('click', () => {
-      const target = document.getElementById(button.dataset.targetId ?? '');
-      if (target) renderX(target, button);
     });
   });
   window.addEventListener('site-tabchange', syncEmbeds);

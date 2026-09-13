@@ -20,6 +20,6 @@ export const navigationTabs = [
 ] as const;
 
 export const socialPlatforms = [
-  { id: 'x', label: 'X' },
-  { id: 'instagram', label: 'Instagram' }
+  { id: 'instagram', label: 'Instagram' },
+  { id: 'x', label: 'X' }
 ] as const;
