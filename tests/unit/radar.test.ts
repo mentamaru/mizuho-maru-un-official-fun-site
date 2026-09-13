@@ -45,6 +45,9 @@ describe('radar data', () => {
   test('resolves an HTTPS og:image from the source page', () => {
     expect(extractOgpImage('<meta content="/images/card.png" property="og:image">', 'https://example.com/news/1')).toBe('https://example.com/images/card.png');
   });
+  test('decodes entities and continues to a later valid OGP image', () => {
+    expect(extractOgpImage('<meta property="og:image" content="http://invalid.example/card.png"><meta name="og:image:url" content="https://example.com/card.png?a=1&amp;b=2">', 'https://example.com/news/1')).toBe('https://example.com/card.png?a=1&b=2');
+  });
   test('rejects an insecure or missing og:image', () => {
     expect(extractOgpImage('<meta property="og:image" content="http://example.com/card.png">', 'https://example.com/news/1')).toBeNull();
     expect(extractOgpImage('<title>no image</title>', 'https://example.com/news/1')).toBeNull();
@@ -53,7 +56,27 @@ describe('radar data', () => {
     const fetcher = vi.fn()
       .mockResolvedValueOnce({ ok: true, headers: new Headers({ 'content-type': 'text/html' }), text: async () => '<meta property="og:image" content="/card.png">', url: 'https://example.com/news' })
       .mockResolvedValueOnce({ ok: false, headers: new Headers({ 'content-type': 'text/html' }) });
-    await expect(fetchOgpImage('https://example.com/news', fetcher as unknown as typeof fetch)).resolves.toBeNull();
+    const resolver = vi.fn().mockResolvedValue([{ address: '93.184.216.34', family: 4 }]);
+    await expect(fetchOgpImage('https://example.com/news', fetcher as unknown as typeof fetch, resolver)).resolves.toBeNull();
     expect(fetcher).toHaveBeenCalledTimes(2);
+  });
+  test('does not fetch a source resolving to a private address', async () => {
+    const fetcher = vi.fn();
+    const resolver = vi.fn().mockResolvedValue([{ address: '127.0.0.1', family: 4 }]);
+    await expect(fetchOgpImage('https://example.com/news', fetcher as unknown as typeof fetch, resolver)).resolves.toBeNull();
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+  test('does not follow a redirect to a private address', async () => {
+    const fetcher = vi.fn().mockResolvedValue({ status: 302, headers: new Headers({ location: 'https://127.0.0.1/internal' }) });
+    const resolver = vi.fn().mockResolvedValue([{ address: '93.184.216.34', family: 4 }]);
+    await expect(fetchOgpImage('https://example.com/news', fetcher as unknown as typeof fetch, resolver)).resolves.toBeNull();
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+  test('accepts XHTML and stores the validated final HTTPS image URL', async () => {
+    const fetcher = vi.fn()
+      .mockResolvedValueOnce({ ok: true, headers: new Headers({ 'content-type': 'application/xhtml+xml; charset=utf-8' }), text: async () => '<meta property="og:image" content="https://cdn.example/card.png">' })
+      .mockResolvedValueOnce({ ok: true, headers: new Headers({ 'content-type': 'image/png' }) });
+    const resolver = vi.fn().mockResolvedValue([{ address: '93.184.216.34', family: 4 }]);
+    await expect(fetchOgpImage('https://example.com/news', fetcher as unknown as typeof fetch, resolver)).resolves.toBe('https://cdn.example/card.png');
   });
 });
