@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
 import { OpenAiRadarSearchClient, parseVerifiedCandidates, renderRadarPrompt } from '../src/lib/radar-collector';
+import { fetchOgpImage } from '../src/lib/ogp';
 import { dedupeRadarCandidates, loadRadarItems, loadResearchSources, radarId, radarItemsSchema, radarMonth, type RadarItem } from '../src/lib/radar';
 
 const now = new Date();
@@ -17,7 +18,10 @@ const candidates = dedupeRadarCandidates(parseVerifiedCandidates(result.text, re
 if (candidates.length === 0) { console.info('No new radar items.'); process.exit(0); }
 let monthItems: RadarItem[] = [];
 try { monthItems = radarItemsSchema.parse(JSON.parse(await readFile(output, 'utf8'))); } catch (error) { if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT')) throw error; }
-const additions = candidates.map(candidate => ({ ...candidate, id: radarId(candidate), discoveredAt: timestamp }));
+const additions = await Promise.all(candidates.map(async candidate => {
+  const thumbnailUrl = await fetchOgpImage(candidate.source.url);
+  return { ...candidate, ...(thumbnailUrl ? { thumbnailUrl } : {}), id: radarId(candidate), discoveredAt: timestamp };
+}));
 const combined = radarItemsSchema.parse([...monthItems, ...additions]);
 await mkdir(new URL('../data/radar/', import.meta.url), { recursive: true });
 await writeFile(output, `${JSON.stringify(combined, null, 2)}\n`);
