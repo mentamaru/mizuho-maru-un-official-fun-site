@@ -5,6 +5,7 @@ export type SocialEntry = {
   displayName: string;
   description?: string;
   profileUrl: string;
+  ogImageUrl?: string;
   category: string;
   enabled: boolean;
 };
@@ -14,8 +15,4 @@ export function groupSocialEntries(entries: SocialEntry[]): Record<'x' | 'instag
     x: entries.filter((entry) => entry.enabled && entry.platform === 'x'),
     instagram: entries.filter((entry) => entry.enabled && entry.platform === 'instagram')
   };
-}
-
-export function getEmbedScriptUrl(platform: SocialEntry['platform']): string {
-  return platform === 'x' ? 'https://platform.x.com/widgets.js' : 'https://www.instagram.com/embed.js';
 }

@@ -7,6 +7,7 @@ import { toAbsoluteHttpUrl } from './url';
 
 import itemsJson from '../../data/generated/items.json';
 import summariesJson from '../../data/generated/summaries.json';
+import socialOgJson from '../../data/generated/social-og.json';
 
 export type SourceType = 'official' | 'instagram' | 'x' | 'shop' | 'other';
 export type PublishMethod = 'auto' | 'manual';
@@ -100,7 +101,8 @@ export function groupItemsBySourceAndCategory(items: PortalItem[]) {
 
 export function getSocialGroups() {
   const entries = readYaml<SocialConfig[]>('data/social.yml');
-  return groupSocialEntries(entries);
+  const ogImages = socialOgJson as Record<string, string>;
+  return groupSocialEntries(entries.map((entry) => ({ ...entry, ogImageUrl: ogImages[entry.id] })));
 }
 
 export function getLinkGroups() {
