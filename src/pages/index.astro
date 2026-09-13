@@ -7,6 +7,7 @@ import RadarNews from '../components/RadarNews.astro';
 import MapList from '../components/MapList.astro';
 import Layout from '../layouts/Layout.astro';
 import { siteCopy } from '../lib/content';
+import { buildLatestItems } from '../lib/latest';
 import { getLinkGroups, getSocialGroups } from '../lib/site-data';
 import { loadOfficialItems } from '../lib/official';
 import { loadRadarItems } from '../lib/radar';
@@ -15,9 +16,7 @@ const radarItems = loadRadarItems();
 const latestRadarItems = radarItems.slice(0, 3);
 const officialItems = loadOfficialItems();
 const latestOfficialItems = officialItems.slice(0, 3);
-const latestItems = latestOfficialItems.map(item => ({
-  ...item, source: '瑞穂町公式サイト', sourceType: 'official' as const, summary: '瑞穂町公式サイトからのお知らせです。'
-}));
+const latestItems = buildLatestItems(latestOfficialItems, latestRadarItems);
 const socialGroups = getSocialGroups();
 const linkGroups = getLinkGroups();
 ---

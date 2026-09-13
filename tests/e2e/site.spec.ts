@@ -17,6 +17,7 @@ test('top page renders latest tab first and original links exist', async ({ page
   await expect(page.getByText('みずほまるに関する公開情報から、最近の話題を紹介しています。')).toBeVisible();
   await expect(page.getByRole('tab', { name: 'みずほまるレーダー' })).toBeVisible();
   await expect(page.getByRole('tab', { name: 'マップ' })).toBeVisible();
+  await expect(page.locator('#latest-panel').getByText('第20回瑞穂町こどもフェスティバルにみずほまるが登場')).toBeVisible();
   await expect(page.getByRole('link', { name: '元情報を見る' }).first().or(page.getByText('現在、掲載できる最新情報はありません。'))).toBeVisible();
 });
 
