@@ -1,6 +1,6 @@
 import { appendFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 
-import { dedupeOfficialItems, isMizuhomaruOfficialItem, loadOfficialItems, officialId, officialMonth, type OfficialItem } from '../src/lib/official';
+import { isMizuhomaruOfficialItem, loadOfficialItems, newOfficialCandidates, officialId, officialMonth, type OfficialItem } from '../src/lib/official';
 import { fetchOgpImage } from '../src/lib/ogp';
 import { parseRss } from '../src/lib/rss';
 import { toAbsoluteHttpUrl } from '../src/lib/url';
@@ -23,13 +23,11 @@ const candidates = parseRss(await response.text(), rssUrl)
     if (!originalUrl) return [];
     return [{ id: officialId(originalUrl), title: item.title, category: item.categories[0] ?? 'みずほまる情報', originalUrl, publishedAt: item.publishedAt, collectedAt }];
   });
-const additions = await Promise.all(candidates.map(async candidate => {
+const additions = await Promise.all(newOfficialCandidates(candidates, existing).map(async candidate => {
   const thumbnailUrl = await fetchOgpImage(candidate.originalUrl);
   return { ...candidate, ...(thumbnailUrl ? { thumbnailUrl } : {}) } satisfies OfficialItem;
 }));
-const unique = dedupeOfficialItems([...existing, ...additions]);
-const existingUrls = new Set(existing.map(item => toAbsoluteHttpUrl(item.originalUrl)));
-const newItems = unique.filter(item => !existingUrls.has(toAbsoluteHttpUrl(item.originalUrl)));
+const newItems = additions;
 
 if (newItems.length === 0) {
   console.info('No new official items.');

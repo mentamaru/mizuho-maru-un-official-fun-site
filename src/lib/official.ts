@@ -55,6 +55,16 @@ export function dedupeOfficialItems(items: OfficialItem[]): OfficialItem[] {
   });
 }
 
+export function newOfficialCandidates<T extends Pick<OfficialItem, 'originalUrl'>>(candidates: T[], existing: OfficialItem[]): T[] {
+  const seen = new Set(existing.map(item => toAbsoluteHttpUrl(item.originalUrl)).filter((url): url is string => url !== null));
+  return candidates.filter(candidate => {
+    const url = toAbsoluteHttpUrl(candidate.originalUrl);
+    if (!url || seen.has(url)) return false;
+    seen.add(url);
+    return true;
+  });
+}
+
 function sortableTime(item: OfficialItem): number {
   for (const value of [item.publishedAt, item.collectedAt]) {
     const time = value ? Date.parse(value) : NaN;
