@@ -10,7 +10,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: mizuho-maru-radar
+  group: mizuho-maru-data-collectors
   cancel-in-progress: false
 
 jobs:

@@ -10,7 +10,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: mizuho-maru-official
+  group: mizuho-maru-data-collectors
   cancel-in-progress: false
 
 jobs:
@@ -27,8 +27,6 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run collect:official
-      - name: Set official month
-        run: echo "OFFICIAL_MONTH=$(TZ=Asia/Tokyo date +%Y-%m)" >> "$GITHUB_ENV"
       - id: changed
         run: |
           if [ -n "$(git status --porcelain)" ]; then echo "has_changes=true" >> "$GITHUB_OUTPUT"; else echo "has_changes=false" >> "$GITHUB_OUTPUT"; fi

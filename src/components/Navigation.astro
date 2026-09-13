@@ -46,6 +46,7 @@ const isHome = Astro.url.pathname === '/';
       panels.forEach((panel) => {
         panel.hidden = panel.id !== `${targetId}-panel`;
       });
+      window.dispatchEvent(new CustomEvent('site-tabchange', { detail: { targetId } }));
     };
 
     triggers.forEach((trigger) => {
