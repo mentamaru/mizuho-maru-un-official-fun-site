@@ -17,7 +17,7 @@ const { items } = Astro.props;
   <section aria-labelledby="official-latest-heading" class="space-y-4">
     <h3 id="official-latest-heading" class="text-xl font-bold text-base-content">最新情報</h3>
     {items.length > 0 ? <div class="grid gap-4 lg:grid-cols-3">
-      {items.map(item => <article class="card border border-secondary/40 bg-base-100 shadow-sm"><div class="card-body gap-3"><div class="flex flex-wrap items-center gap-2"><span class="badge badge-outline border-primary/30 text-primary">{item.category}</span><span class="text-sm text-base-content/70">{formatDate(item.publishedAt, item.collectedAt)}</span></div><h4 class="text-lg font-bold leading-7">{item.title}</h4><a class="btn btn-primary btn-sm" href={toAbsoluteHttpUrl(item.originalUrl) ?? undefined} target="_blank" rel="noreferrer">元情報を見る</a></div></article>)}
+      {items.map(item => <article class="card overflow-hidden border border-secondary/40 bg-base-100 shadow-sm">{item.thumbnailUrl && <img data-official-thumbnail src={item.thumbnailUrl} alt="" loading="lazy" class="aspect-[1.91/1] w-full object-cover" />}<div class="card-body gap-3"><div class="flex flex-wrap items-center gap-2"><span class="badge badge-outline border-primary/30 text-primary">{item.category}</span><span class="text-sm text-base-content/70">{formatDate(item.publishedAt, item.collectedAt)}</span></div><h4 class="text-lg font-bold leading-7">{item.title}</h4><a class="btn btn-primary btn-sm" href={toAbsoluteHttpUrl(item.originalUrl) ?? undefined} target="_blank" rel="noreferrer">元情報を見る</a></div></article>)}
     </div> : <p class="text-base-content/70">現在、掲載できる公式情報はありません。</p>}
   </section>
 
