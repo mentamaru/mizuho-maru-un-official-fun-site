@@ -24,7 +24,6 @@ const xmlEntities: Record<string, string> = {
   lt: '<',
   quot: '"'
 };
-
 function xmlText(value: unknown): string {
   if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
     return String(value);
