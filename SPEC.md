@@ -604,6 +604,7 @@ Generated:
 
 * `data/generated/items.json`
 * `data/generated/summaries.json`
+* `data/generated/social-og.json`
 * `data/official/YYYY-MM.json`
 
 Automation / AIが理由なくHuman-managed Dataを書き換えてはならない。
