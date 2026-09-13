@@ -13,7 +13,7 @@ const output = new URL(`../data/official/${month}.json`, import.meta.url);
 const response = await fetch(rssUrl);
 if (!response.ok) throw new Error(`Official RSS returned HTTP ${response.status}`);
 const existing = loadOfficialItems();
-const additions = parseRss(await response.text())
+const additions = parseRss(await response.text(), rssUrl)
   .filter(isMizuhomaruOfficialItem)
   .flatMap(item => {
     const originalUrl = toAbsoluteHttpUrl(item.link);
