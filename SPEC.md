@@ -442,7 +442,7 @@ SNS障害によってサイト本体を利用不能にしない。
 
 情報取得・生成は3経路とする。
 
-### 15.1 RSS / 公式情報収集
+### 16.1 RSS / 公式情報収集
 
 GitHub Actionsで自動実行する。
 
@@ -471,7 +471,7 @@ Web Page取得が必要な場合は低頻度とする。
 
 公式情報は `https://www.town.mizuho.tokyo.jp/bunka/news.xml` だけを毎週木曜日に取得する。タイトルに「みずほまる」を含む記事、またはRSS categoryが「みずほまる情報」の記事だけを対象とする。AIは使用しない。RSS以外のSourceは自動収集せず、公式リンク集として案内する。既存の収集済みデータは引き継がない。Generated Dataは `data/official/YYYY-MM.json` に収集時点のAsia/Tokyo年月で分割し、URLで重複排除する。新規0件ではファイル変更・空commitを作らない。Actionsはレーダーと同じく、実行月の単一JSONのみを変更可能とする差分検証、lint、typecheck、unit test、build、E2E testの成功後にのみmainへ反映する。SecretやPATは使用しない。
 
-### 15.2 AI Summary
+### 16.2 AI Summary
 
 情報収集とは別Workflowとする。
 
@@ -493,7 +493,7 @@ AI Summary Rules:
 
 AIはEditing / Summary Layerであり、Discovery Sourceではない。
 
-### 15.3 Manual SNS / Other Submission
+### 16.3 Manual SNS / Other Submission
 
 SNSをBotで無差別収集しない。
 
@@ -520,7 +520,7 @@ AIは投入された情報のみを整理・要約する。
 * Flyer
 * その他自動収集で拾えない情報
 
-### 15.4 みずほまるレーダー
+### 16.4 みずほまるレーダー
 
 OpenAI Responses APIのWeb Searchを用い、「みずほまる」の現在性のある公開Web情報を定期的に調査する。重点確認サイトは `data/research-sources.yml` でHuman-managedに管理し、allowlistにはしない。調査プロンプトは `prompts/collect-latest.md` に分離する。
 
