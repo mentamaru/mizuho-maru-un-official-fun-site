@@ -73,6 +73,8 @@ test('X uses cached profile OGP cards and makes no X embed request', async ({ pa
   await page.getByRole('tab', { name: '関連SNS', exact: true }).click();
   await page.getByRole('tab', { name: 'X', exact: true }).click();
   await expect(page.locator('#mizuho-koho-x-embed')).toBeVisible();
+  await expect(page.locator('#mizuho-koho-x-embed img')).toHaveAttribute('src', 'https://pbs.twimg.com/profile_images/832159545178722304/gyOcS0gO_200x200.jpg');
+  await expect(page.locator('#mizuho-koho-x-embed img')).toHaveAttribute('alt', '瑞穂町（東京都）広報公式 X のプロフィール画像');
   expect(requests.filter(isXEmbedRequest)).toHaveLength(0);
 });
 
