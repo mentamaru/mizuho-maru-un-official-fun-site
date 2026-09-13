@@ -11,7 +11,32 @@ test('top page renders latest tab first and original links exist', async ({ page
   await expect(page.getByRole('heading', { name: '最新情報' })).toBeVisible();
   await expect(page.getByText('みずほまるに関する公開情報から、最近の話題を紹介しています。')).toBeVisible();
   await expect(page.getByRole('tab', { name: 'みずほまるレーダー' })).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'マップ' })).toBeVisible();
+  await expect(page.locator('#latest-panel').getByText('第20回瑞穂町こどもフェスティバルにみずほまるが登場')).toBeVisible();
   await expect(page.getByRole('link', { name: '元情報を見る' }).first().or(page.getByText('現在、掲載できる最新情報はありません。'))).toBeVisible();
+});
+
+test('map tab displays both Mizuho-maru maps responsively', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 900 });
+  await page.goto('/');
+
+  await page.getByRole('tab', { name: 'マップ', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'マップ', exact: true })).toBeVisible();
+  await expect(page.getByText('みずほまる関連の地図です。主に東京都瑞穂町を中心に紹介しています。')).toBeVisible();
+  await expect(page.getByText('主にグッズを取り扱っているエリアを紹介しています。')).toBeVisible();
+  await expect(page.getByText('イベントでの出演が多いエリアを紹介しています。')).toBeVisible();
+
+  for (const [title, mid] of [
+    ['みずほまるグッズマップ', '1ZV5EpLJDfQTXTPZs6x1O5tqj8546h3I'],
+    ['みずほまるイベントマップ', '1MORDRyzpqRKW5FQ0cB5FrqS_4VYqvag']
+  ]) {
+    const map = page.locator(`iframe[title="${title}"]`);
+    await expect(map).toBeVisible();
+    await expect(map).toHaveAttribute('src', new RegExp(`mid=${mid}`));
+    await expect(map).toHaveAttribute('loading', 'lazy');
+  }
+
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
 test('tab switching and SNS lazy loading work', async ({ page }) => {
@@ -29,7 +54,6 @@ test('tab switching and SNS lazy loading work', async ({ page }) => {
 
   await page.getByRole('tab', { name: '関連SNS' }).click();
   await expect(page.getByText('瑞穂町公式アカウントとは限りません。')).toBeVisible();
-  await page.getByRole('tab', { name: 'X', exact: true }).click();
   await expect(page.getByRole('tab', { name: 'Instagram', exact: true })).toHaveAttribute('aria-selected', 'true');
   await expect(page.locator('iframe[title="marumaru_mizuho のInstagramプロフィール"]')).toBeVisible();
   await page.getByRole('tab', { name: 'X', exact: true }).click();
@@ -64,7 +88,7 @@ test('layout does not overflow at 375px', async ({ page }) => {
   expect(hasHorizontalOverflow).toBe(false);
 });
 
-for (const path of ['/about', '/operator', '/contact']) {
+for (const path of ['/about', '/operator', '/contact', '/github']) {
   test(`auxiliary navigation works from ${path}`, async ({ page }) => {
     await page.goto(path);
     await page.getByRole('navigation', {name: 'メインナビゲーション'}).getByRole('link', {name: '関連SNS'}).click();
@@ -73,12 +97,25 @@ for (const path of ['/about', '/operator', '/contact']) {
   });
 }
 
+test('contact form and GitHub guidance are available', async ({ page }) => {
+  await page.goto('/contact');
+  await expect(page.getByRole('link', { name: 'お問い合わせフォームを開く' })).toHaveAttribute(
+    'href',
+    'https://docs.google.com/forms/d/e/1FAIpQLSd4rG59lzW9_UMBxX1u85l2FMBHQUiaaP9NvqEHHqfL9THLMw/viewform?usp=dialog'
+  );
+
+  await page.goto('/github');
+  await expect(page.getByRole('heading', { name: 'GitHubについて' })).toBeVisible();
+  await expect(page.getByText('現在、GitHubリポジトリは非公開です。')).toBeVisible();
+  await expect(page.getByText('パブリックリポジトリとして公開する予定です。')).toBeVisible();
+  await expect(page.getByRole('contentinfo').getByRole('link', { name: 'GitHub' })).toHaveAttribute('href', '/github');
+});
 
 for (const width of [375, 1280]) {
   test(`all panels fit at ${width}px and keyboard navigation works`, async ({page}) => {
     await page.setViewportSize({width, height:900});
     await page.goto('/');
-    for (const name of ['最新情報', 'みずほまるレーダー', '公式情報', '関連SNS']) {
+    for (const name of ['最新情報', 'みずほまるレーダー', '公式情報', '関連SNS', 'マップ']) {
       await page.getByRole('tab', {name, exact:true}).click();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     }
