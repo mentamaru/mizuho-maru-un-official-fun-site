@@ -469,7 +469,7 @@ Web Page取得が必要な場合は低頻度とする。
 
 「瑞穂丸」は無関係な同名対象が存在するため、安易なKeywordとして使用しない。
 
-公式情報は `https://www.town.mizuho.tokyo.jp/bunka/news.xml` だけを毎週木曜日に取得する。タイトルに「みずほまる」を含む記事、またはRSS categoryが「みずほまる情報」の記事だけを対象とする。AIは使用しない。RSS以外のSourceは自動収集せず、公式リンク集として案内する。既存の収集済みデータは引き継がない。Generated Dataは `data/official/YYYY-MM.json` に収集時点のAsia/Tokyo年月で分割し、URLで重複排除する。新規0件ではファイル変更・空commitを作らない。Actionsはレーダーと同じく、実行月の単一JSONのみを変更可能とする差分検証、lint、typecheck、unit test、build、E2E testの成功後にのみmainへ反映する。SecretやPATは使用しない。
+公式情報は `https://www.town.mizuho.tokyo.jp/bunka/news.xml` だけを毎週木曜日に取得する。タイトルに「みずほまる」を含む記事、またはRSS categoryが「みずほまる情報」の記事だけを対象とする。AIは使用しない。RSS以外のSourceは自動収集せず、公式リンク集として案内する。既存の収集済みデータは引き継がない。Generated Dataは `data/official/YYYY-MM.json` に収集時点のAsia/Tokyo年月で分割し、URLで重複排除する。主な情報元ページの `og:image` が、公開IPへ解決するHTTPS URLであり、リダイレクト先を含めて画像として取得できた場合のみ、任意の `thumbnailUrl` を保持して公式情報のトップ表示と一覧で遅延読み込みサムネイルを表示する。既存データは保持し、既存URLをOGP取得の対象にしない。OGP未設定・取得失敗・非公開宛先の記事に画像情報は追加せず、画像なしで表示する。新規0件ではファイル変更・空commitを作らない。Actionsはレーダーと同じく、実行月の単一JSONのみを変更可能とする差分検証、lint、typecheck、unit test、build、E2E testの成功後にのみmainへ反映する。SecretやPATは使用しない。
 
 ### 16.2 AI Summary
 

@@ -1,6 +1,7 @@
 import { appendFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 
-import { dedupeOfficialItems, isMizuhomaruOfficialItem, loadOfficialItems, officialId, officialMonth, type OfficialItem } from '../src/lib/official';
+import { isMizuhomaruOfficialItem, loadOfficialItems, newOfficialCandidates, officialId, officialMonth, type OfficialItem } from '../src/lib/official';
+import { fetchOgpImage } from '../src/lib/ogp';
 import { parseRss } from '../src/lib/rss';
 import { toAbsoluteHttpUrl } from '../src/lib/url';
 
@@ -15,16 +16,18 @@ if (process.env.GITHUB_ENV) await appendFile(process.env.GITHUB_ENV, `OFFICIAL_M
 const response = await fetch(rssUrl);
 if (!response.ok) throw new Error(`Official RSS returned HTTP ${response.status}`);
 const existing = loadOfficialItems();
-const additions = parseRss(await response.text(), rssUrl)
+const candidates = parseRss(await response.text(), rssUrl)
   .filter(isMizuhomaruOfficialItem)
   .flatMap(item => {
     const originalUrl = toAbsoluteHttpUrl(item.link);
     if (!originalUrl) return [];
-    return [{ id: officialId(originalUrl), title: item.title, category: item.categories[0] ?? 'みずほまる情報', originalUrl, publishedAt: item.publishedAt, collectedAt } satisfies OfficialItem];
+    return [{ id: officialId(originalUrl), title: item.title, category: item.categories[0] ?? 'みずほまる情報', originalUrl, publishedAt: item.publishedAt, collectedAt }];
   });
-const unique = dedupeOfficialItems([...existing, ...additions]);
-const existingUrls = new Set(existing.map(item => toAbsoluteHttpUrl(item.originalUrl)));
-const newItems = unique.filter(item => !existingUrls.has(toAbsoluteHttpUrl(item.originalUrl)));
+const additions = await Promise.all(newOfficialCandidates(candidates, existing).map(async candidate => {
+  const thumbnailUrl = await fetchOgpImage(candidate.originalUrl);
+  return { ...candidate, ...(thumbnailUrl ? { thumbnailUrl } : {}) } satisfies OfficialItem;
+}));
+const newItems = additions;
 
 if (newItems.length === 0) {
   console.info('No new official items.');

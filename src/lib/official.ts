@@ -6,11 +6,12 @@ import { z } from 'zod';
 
 import { toAbsoluteHttpUrl } from './url';
 
-const officialItemSchema = z.object({
+export const officialItemSchema = z.object({
   id: z.string().regex(/^official-[a-f0-9]{16}$/u),
   title: z.string().min(1),
   category: z.string().min(1),
   originalUrl: z.string().url(),
+  thumbnailUrl: z.string().url().refine(value => value.startsWith('https://'), 'サムネイルはHTTPS URLが必要です').optional(),
   publishedAt: z.string().nullable(),
   collectedAt: z.string().datetime({ offset: true })
 }).strict();
@@ -48,6 +49,16 @@ export function dedupeOfficialItems(items: OfficialItem[]): OfficialItem[] {
   const seen = new Set<string>();
   return items.filter(item => {
     const url = toAbsoluteHttpUrl(item.originalUrl);
+    if (!url || seen.has(url)) return false;
+    seen.add(url);
+    return true;
+  });
+}
+
+export function newOfficialCandidates<T extends Pick<OfficialItem, 'originalUrl'>>(candidates: T[], existing: OfficialItem[]): T[] {
+  const seen = new Set(existing.map(item => toAbsoluteHttpUrl(item.originalUrl)).filter((url): url is string => url !== null));
+  return candidates.filter(candidate => {
+    const url = toAbsoluteHttpUrl(candidate.originalUrl);
     if (!url || seen.has(url)) return false;
     seen.add(url);
     return true;
