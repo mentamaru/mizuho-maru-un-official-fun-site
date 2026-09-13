@@ -28,8 +28,7 @@ const radarFields = {
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable(),
   dateType: z.enum(dateTypes),
   source: sourceSchema,
-  researchSources: z.array(researchSourceSchema).min(1).max(10),
-  thumbnailUrl: webUrl.refine(value => value.startsWith('https://'), 'サムネイルはHTTPS URLが必要です').optional()
+  researchSources: z.array(researchSourceSchema).min(1).max(10)
 };
 const validateRadarDates = (item: { date: string | null; dateType: string; researchSources: Array<{ url: string }> }, context: z.RefinementCtx) => {
   if (item.date && Number.isNaN(Date.parse(`${item.date}T00:00:00Z`))) context.addIssue({ code: 'custom', message: '不正な日付です', path: ['date'] });
@@ -39,7 +38,7 @@ const validateRadarDates = (item: { date: string | null; dateType: string; resea
 };
 export const radarItemSchema = z.object({ id: z.string().regex(/^radar-[a-f0-9]{16}$/), discoveredAt: z.string().datetime({ offset: true }), ...radarFields }).strict().superRefine(validateRadarDates);
 export const radarItemsSchema = z.array(radarItemSchema);
-export const radarCandidateSchema = z.object(radarFields).omit({ thumbnailUrl: true }).strict().superRefine(validateRadarDates);
+export const radarCandidateSchema = z.object(radarFields).strict().superRefine(validateRadarDates);
 export const radarCandidatesSchema = z.object({ candidates: z.array(radarCandidateSchema).max(20) }).strict();
 export type RadarItem = z.infer<typeof radarItemSchema>;
 export type ResearchSourcesConfig = z.infer<typeof researchSourcesSchema>;
