@@ -58,7 +58,6 @@ describe('parseRss', () => {
 
     expect(parseRss(xml)[0]?.title).toBe('お知らせ');
   });
-
   test('parses every RSS category as plain text', () => {
     const xml = `<?xml version="1.0"?><rss><channel><item><title>お知らせ</title><link>https://example.com/c</link><category>みずほまる情報</category><category><![CDATA[イベント]]></category></item></channel></rss>`;
 

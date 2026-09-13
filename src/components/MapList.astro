@@ -1,0 +1,39 @@
+---
+const maps = [
+  {
+    title: 'みずほまるグッズマップ',
+    description: '主にグッズを取り扱っているエリアを紹介しています。',
+    src: 'https://www.google.com/maps/d/u/0/embed?mid=1ZV5EpLJDfQTXTPZs6x1O5tqj8546h3I&ehbc=2E312F'
+  },
+  {
+    title: 'みずほまるイベントマップ',
+    description: 'イベントでの出演が多いエリアを紹介しています。',
+    src: 'https://www.google.com/maps/d/u/0/embed?mid=1MORDRyzpqRKW5FQ0cB5FrqS_4VYqvag&ehbc=2E312F'
+  }
+] as const;
+---
+
+<section aria-labelledby="maps-heading" class="space-y-6">
+  <div class="space-y-2">
+    <h2 id="maps-heading" class="text-2xl font-bold text-base-content">マップ</h2>
+    <p class="leading-7 text-base-content/80">みずほまる関連の地図です。主に東京都瑞穂町を中心に紹介しています。</p>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    {maps.map((map) => (
+      <section class="overflow-hidden rounded-3xl border border-secondary/40 bg-base-100 shadow-sm" aria-labelledby={`${map.title}-heading`}>
+        <div class="space-y-1 border-b border-secondary/30 px-5 py-4">
+          <h3 id={`${map.title}-heading`} class="text-lg font-bold text-base-content">{map.title}</h3>
+          <p class="text-sm leading-6 text-base-content/70">{map.description}</p>
+        </div>
+        <iframe
+          class="block aspect-4/3 w-full border-0"
+          src={map.src}
+          title={map.title}
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"
+        ></iframe>
+      </section>
+    ))}
+  </div>
+</section>
