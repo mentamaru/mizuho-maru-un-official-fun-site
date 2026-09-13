@@ -14,9 +14,16 @@ export type RssItem = {
 const parser = new XMLParser({
   ignoreAttributes: false,
   trimValues: true,
-  stopNodes: ['*.description', '*.summary', '*.content']
+  stopNodes: ['*.description', '*.summary', '*.content', '*.content:encoded']
 });
 
+const xmlEntities: Record<string, string> = {
+  amp: '&',
+  apos: "'",
+  gt: '>',
+  lt: '<',
+  quot: '"'
+};
 function xmlText(value: unknown): string {
   if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
     return String(value);
@@ -38,8 +45,24 @@ function xmlText(value: unknown): string {
     .join(' ');
 }
 
+function decodeXmlEntities(value: string): string {
+  return value.replace(/&(?:(amp|apos|gt|lt|quot)|#(x[\da-f]+|\d+));/giu, (match, named: string | undefined, numeric: string | undefined) => {
+    if (named) {
+      return xmlEntities[named] ?? match;
+    }
+
+    const hexadecimal = numeric?.startsWith('x') ?? false;
+    const codePoint = Number.parseInt(numeric?.slice(hexadecimal ? 1 : 0) ?? '', hexadecimal ? 16 : 10);
+    if (!Number.isInteger(codePoint) || codePoint < 0 || codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff)) {
+      return match;
+    }
+
+    return String.fromCodePoint(codePoint);
+  });
+}
+
 function stripTags(value: unknown): string {
-  return xmlText(value).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  return decodeXmlEntities(xmlText(value).replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
 }
 
 function asArray<T>(value: T | T[] | undefined): T[] {

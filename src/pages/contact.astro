@@ -1,20 +1,18 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { toAbsoluteHttpUrl } from '../lib/url';
 import { siteCopy } from '../lib/content';
-const contactUrl = toAbsoluteHttpUrl(import.meta.env.PUBLIC_CONTACT_URL ?? '');
 ---
 
 <Layout title="お問い合わせ | 非公式みずほまる情報ポータル" description="お問い合わせ導線の案内です。">
   <article class="prose max-w-3xl rounded-3xl border border-secondary/40 bg-base-100 p-8 shadow-sm">
     <h1>お問い合わせ</h1>
-    <p>{contactUrl ? "掲載内容のご質問、取り下げ依頼、情報提供は下記フォームからお寄せください。" : siteCopy.contactNote}</p>
+    <p>掲載内容のご質問、取り下げ依頼、情報提供は下記フォームからお寄せください。</p>
     <ul>
       <li>掲載内容について</li>
       <li>掲載・リンクの取り下げ</li>
       <li>情報提供</li>
       <li>その他</li>
     </ul>
-    {contactUrl && <a class="btn btn-primary" href={contactUrl} target="_blank" rel="noreferrer">お問い合わせフォームを開く</a>}
+    <a class="btn btn-primary" href={siteCopy.contactUrl} target="_blank" rel="noreferrer">お問い合わせフォームを開く</a>
   </article>
 </Layout>
