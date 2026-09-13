@@ -50,17 +50,36 @@ function asArray<T>(value: T | T[] | undefined): T[] {
   return Array.isArray(value) ? value : [value];
 }
 
+type RssCategory = string | { '#text'?: string; '@_term'?: string };
+
 function categories(value: unknown): string[] {
-  return asArray(value as string | string[] | undefined)
-    .map((category) => stripTags(typeof category === 'string' ? category : String(category)))
+  return asArray(value as RssCategory | RssCategory[] | undefined)
+    .map((category) => stripTags(typeof category === 'string' ? category : category['#text'] ?? category['@_term']))
     .filter(Boolean);
 }
 
-export function parseRss(xml: string): RssItem[] {
+function toRssHttpUrl(value: unknown, feedUrl?: string): string | null {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const absoluteUrl = toAbsoluteHttpUrl(value);
+  if (absoluteUrl || !feedUrl) {
+    return absoluteUrl;
+  }
+
+  try {
+    return toAbsoluteHttpUrl(new URL(value, feedUrl).toString());
+  } catch {
+    return null;
+  }
+}
+
+export function parseRss(xml: string, feedUrl?: string): RssItem[] {
   const parsed = parser.parse(xml);
   const rssItems = asArray(parsed?.rss?.channel?.item).map((item) => ({
     title: stripTags(item.title),
-    link: toAbsoluteHttpUrl(typeof item.link === 'string' ? item.link : item.link?.['@_href']) ?? '',
+    link: toRssHttpUrl(typeof item.link === 'string' ? item.link : item.link?.['@_href'], feedUrl) ?? '',
     publishedAt: item.pubDate ?? item.isoDate ?? null,
     description: stripTags(item.description ?? item['content:encoded']),
     categories: categories(item.category),
@@ -74,11 +93,12 @@ export function parseRss(xml: string): RssItem[] {
   return asArray(parsed?.feed?.entry)
     .map((entry) => ({
       title: stripTags(entry.title),
-      link: toAbsoluteHttpUrl(
+      link: toRssHttpUrl(
         typeof entry.link === 'string'
           ? entry.link
           : asArray(entry.link).find((candidate) => candidate?.['@_rel'] === 'alternate')?.['@_href'] ??
-              asArray(entry.link)[0]?.['@_href']
+              asArray(entry.link)[0]?.['@_href'],
+        feedUrl
       ) ?? '',
       publishedAt: entry.published ?? entry.updated ?? null,
       description: stripTags(entry.summary ?? entry.content),
