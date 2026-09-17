@@ -94,8 +94,12 @@
 * GitHub
 * GitHub Actions
 * Vercel
+* Vercel Web Analytics
 
 AstroによるStatic Generationを基本とする。
+
+Vercel Web Analyticsを利用し、VercelへのProduction Deploy後にVisitor数とPage Viewを計測する。
+計測Componentは共通Layoutに1回だけ配置する。
 
 React / Vue / Svelte等のClient Frameworkを禁止するものではない。
 
