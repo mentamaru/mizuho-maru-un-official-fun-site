@@ -88,9 +88,11 @@ npm run preview
 - `OPENAI_API_KEY`（**Repository Secret**）: `radar.yml` がOpenAI Responses API + Web Searchを呼び出すためのキー。登録場所は Settings → Secrets and variables → Actions → **Secrets** → New repository secret。Environment SecretではなくRepository Secretとして登録する。
 - 将来外部AI Providerへ接続する場合は、`.env.example` に列挙した `AI_API_KEY` 等をLocalでは `.env`（Gitignore対象）、GitHub Actionsでは Settings → Secrets and variables → Actions → **Secrets** タブへ登録する想定です（v1では未使用のため登録不要）。
 
-## Vercel Preview
+## Vercel Release
 
-Static 出力を前提にしており、`vercel.json` で Security Headers を設定しています。公開前に Preview Deployment と実機確認を行う想定です。
+Static出力を前提にしており、`vercel.json` でSecurity Headersを設定しています。v2の正式URLは `https://mizuho-maru-un-official-fun-site.vercel.app/` です。Preview Deploymentは検索対象にせず、正式URLのcanonicalやSNS共有URLを出力しません。
+
+`PUBLIC_SITE_URL` で正式URLを上書きできます。値にはHTTPS URLを設定します。VercelのPreview/Production環境では、Vercelが設定する`VERCEL_ENV`を利用します。Secretは不要です。
 
 ## Specification / Plan
 
@@ -98,6 +100,7 @@ Static 出力を前提にしており、`vercel.json` で Security Headers を�
 - [ExecPlan 0001](./docs/exec-plans/0001-initial.md)
 - [ExecPlan 0003](./docs/exec-plans/0003-mizuhomaru-radar.md)
 - [ExecPlan 0004](./docs/exec-plans/0004-official-information-radar.md)
+- [ExecPlan v2-0001](./docs/exec-plans/v2-0001-production-release.md)
 
 ## License / Rights
 

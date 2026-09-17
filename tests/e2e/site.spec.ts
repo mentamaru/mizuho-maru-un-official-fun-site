@@ -16,6 +16,22 @@ test('top page renders latest tab first and original links exist', async ({ page
   await expect(page.getByRole('link', { name: '元情報を見る' }).first().or(page.getByText('現在、掲載できる最新情報はありません。'))).toBeVisible();
 });
 
+test('production SEO metadata and crawler files use the v2 Vercel URL', async ({ page }) => {
+  await page.goto('/');
+
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    'href',
+    'https://mizuho-maru-un-official-fun-site.vercel.app/'
+  );
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'index, follow');
+  await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
+    'content',
+    'https://mizuho-maru-un-official-fun-site.vercel.app/'
+  );
+  await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary');
+
+});
+
 test('map tab displays both Mizuho-maru maps responsively', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 900 });
   await page.goto('/');

@@ -1,6 +1,7 @@
 ---
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import { buildSeoMetadata } from '../lib/site';
 import '../styles/global.css';
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+const metadata = buildSeoMetadata(Astro.url.pathname);
 ---
 
 <!doctype html>
@@ -17,6 +19,22 @@ const { title, description } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    {/* Previewではnoindexだけを出力し、Production向け共有メタデータは出力しない。 */}
+    <meta name="robots" content={metadata.robots} />
+    {metadata.canonicalUrl && <link rel="canonical" href={metadata.canonicalUrl} />}
+    {metadata.shareUrl && (
+      <>
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="ja_JP" />
+        <meta property="og:site_name" content="非公式みずほまる情報ポータル" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={metadata.shareUrl} />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+      </>
+    )}
     <title>{title}</title>
   </head>
   <body class="bg-base-100 text-base-content antialiased">

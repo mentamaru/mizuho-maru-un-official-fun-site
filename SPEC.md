@@ -946,15 +946,15 @@ Code Generationだけで完了扱いしない。
 
 ## 33. Release
 
-初期v1のGoalは、
+v2のGoalは、
 
-**Local + GitHub Private Repository + Vercel Previewで正常動作すること**
+**Vercel Productionで一般公開し、検索・SNS共有・Security Headerが適切に機能すること**
 
 とする。
 
-Public Repository化およびProduction一般公開は別の変更として扱う。
+v2の正式URLは `https://mizuho-maru-un-official-fun-site.vercel.app/` とする。独自ドメインの取得・接続は今回の対象外とし、将来の変更で対応する。
 
-Public化前には、
+Production公開前には、
 
 * Git History Secret Check
 * Personal Information Check
