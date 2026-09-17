@@ -2,6 +2,7 @@ export const securityHeaders = {
   'Content-Security-Policy': [
     "default-src 'self'",
     "base-uri 'self'",
+    "object-src 'none'",
     "form-action 'self'",
     "frame-ancestors 'none'",
     "img-src 'self' data: https:",
