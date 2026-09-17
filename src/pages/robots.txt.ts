@@ -4,13 +4,15 @@ import { isPreviewDeployment, productionUrl } from '../lib/site';
 
 export const prerender = true;
 
-export const GET: APIRoute = () => {
+export function createRobotsTxt(preview = isPreviewDeployment): string {
   // Static buildでもVercel PreviewとProductionでは別ファイルを生成する。
-  const body = isPreviewDeployment
+  return preview
     ? 'User-agent: *\nDisallow: /\n'
     : `User-agent: *\nAllow: /\nSitemap: ${productionUrl('/sitemap.xml')}\n`;
+}
 
-  return new Response(body, {
+export const GET: APIRoute = () => {
+  return new Response(createRobotsTxt(), {
     headers: { 'Content-Type': 'text/plain; charset=utf-8' }
   });
 };
