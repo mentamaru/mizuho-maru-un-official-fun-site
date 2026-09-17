@@ -38,6 +38,12 @@ test('Vercel Analytics is included once in the shared layout', async ({ page }) 
   await expect(page.locator('vercel-analytics')).toHaveCount(1);
 });
 
+test('Google Search Console verification file is served at the site root', async ({ page }) => {
+  await page.goto('/google089697851ef8fe43.html');
+
+  await expect(page.locator('body')).toHaveText('google-site-verification: google089697851ef8fe43.html');
+});
+
 test('map tab displays both Mizuho-maru maps responsively', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 900 });
   await page.goto('/');
