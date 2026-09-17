@@ -32,6 +32,12 @@ test('production SEO metadata and crawler files use the v2 Vercel URL', async ({
 
 });
 
+test('Vercel Analytics is included once in the shared layout', async ({ page }) => {
+  await page.goto('/');
+
+  await expect(page.locator('vercel-analytics')).toHaveCount(1);
+});
+
 test('map tab displays both Mizuho-maru maps responsively', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 900 });
   await page.goto('/');
