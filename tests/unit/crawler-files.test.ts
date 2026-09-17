@@ -1,21 +1,31 @@
 import { expect, test } from 'vitest';
 
-import { GET as robots } from '../../src/pages/robots.txt';
-import { GET as sitemap } from '../../src/pages/sitemap.xml';
+import { createRobotsTxt } from '../../src/pages/robots.txt';
+import { createSitemapXml } from '../../src/pages/sitemap.xml';
 
-test('robots advertises the production sitemap', async () => {
-  const response = await robots({} as Parameters<typeof robots>[0]);
-
-  await expect(response.text()).resolves.toBe(
+test('robots advertises the production sitemap', () => {
+  expect(createRobotsTxt(false)).toBe(
     'User-agent: *\nAllow: /\nSitemap: https://mizuho-maru-un-official-fun-site.vercel.app/sitemap.xml\n'
   );
 });
 
-test('sitemap includes every static public page with the production URL', async () => {
-  const response = await sitemap({} as Parameters<typeof sitemap>[0]);
-  const body = await response.text();
+test('preview crawler files do not expose production URLs', () => {
+  expect(createRobotsTxt(true)).toBe('User-agent: *\nDisallow: /\n');
+  expect(createSitemapXml(true)).not.toContain('<loc>');
+});
 
-  expect(response.headers.get('Content-Type')).toBe('application/xml; charset=utf-8');
-  expect(body).toContain('<loc>https://mizuho-maru-un-official-fun-site.vercel.app/</loc>');
-  expect(body).toContain('<loc>https://mizuho-maru-un-official-fun-site.vercel.app/radar/</loc>');
+test('sitemap includes every static public page with the production URL', () => {
+  const body = createSitemapXml(false);
+
+  for (const url of [
+    'https://mizuho-maru-un-official-fun-site.vercel.app/',
+    'https://mizuho-maru-un-official-fun-site.vercel.app/about/',
+    'https://mizuho-maru-un-official-fun-site.vercel.app/contact/',
+    'https://mizuho-maru-un-official-fun-site.vercel.app/github/',
+    'https://mizuho-maru-un-official-fun-site.vercel.app/official/',
+    'https://mizuho-maru-un-official-fun-site.vercel.app/operator/',
+    'https://mizuho-maru-un-official-fun-site.vercel.app/radar/'
+  ]) {
+    expect(body).toContain(`<loc>${url}</loc>`);
+  }
 });

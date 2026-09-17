@@ -46,7 +46,7 @@ Vercel連携済みのGitHubリポジトリからPreview Deploymentを確認し�
 | Preview相当build（`VERCEL_ENV=preview npm run build`） | PASS。`noindex, nofollow`、robotsの`Disallow: /`、canonical／OGP／X Cardなし |
 | lint | PASS |
 | typecheck | PASS、0 errors（既存のZod非推奨hint 5件） |
-| unit test | PASS、12 files / 55 tests |
+| unit test | PASS、12 files / 56 tests |
 | build | PASS、静的7ページ、`robots.txt`、`sitemap.xml` |
 | E2E | PASS、17 tests |
 | dependency audit | PASS、production dependencyは0 vulnerabilities |
