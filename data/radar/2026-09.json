@@ -59,5 +59,29 @@
         "url": "https://prtimes.jp/main/html/rd/p/000000022.000132649.html"
       }
     ]
+  },
+  {
+    "id": "radar-491b363479b4aa2d",
+    "discoveredAt": "2026-09-24T13:33:24.913+09:00",
+    "title": "亀ノコ堂で「みずほまるバタークッキー」ギフトセットを販売",
+    "summary": "瑞穂町の亀ノコ堂が、2026年9月10日から秋の焼き菓子ギフトを販売しています。みずほまるバタークッキー5個セット（税込972円）のほか、同商品を含むハロウィンギフトやオリジナルのギフト箱詰めにも対応しています。",
+    "category": "goods",
+    "date": "2026-09-10",
+    "dateType": "sale",
+    "source": {
+      "name": "亀ノコ堂店主（note）",
+      "url": "https://note.com/kamenokodo1997/n/n77881d7c3a73"
+    },
+    "researchSources": [
+      {
+        "title": "秋の焼き菓子ギフト🎁9/10(木)〜",
+        "url": "https://note.com/kamenokodo1997/n/n77881d7c3a73"
+      },
+      {
+        "title": "亀ノコ堂 焼菓子オンラインショップ",
+        "url": "https://kamenokodo.base.shop/items/all"
+      }
+    ],
+    "thumbnailUrl": "https://assets.st-note.com/production/uploads/images/312556485/rectangle_large_type_2_f99884d7fb4e3e48b20930f2b61affcb.jpg?fit=bounds&quality=85&width=1280"
   }
 ]
