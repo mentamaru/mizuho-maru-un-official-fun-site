@@ -45,6 +45,20 @@ function isPublicAddress(address: string): boolean {
   return isIP(address) === 4 ? isPublicIpv4(address) : isIP(address) === 6 && isPublicIpv6(address);
 }
 
+/** Validate saved image URLs without DNS or HTTP requests during static rendering. */
+export function savedThumbnailUrl(value: unknown): string | undefined {
+  if (typeof value !== 'string' || !value.trim()) return undefined;
+  try {
+    const url = new URL(value);
+    const host = url.hostname.replace(/^\[|\]$/gu, '').replace(/\.$/u, '');
+    if (url.protocol !== 'https:' || url.username || url.password ||
+        !host.includes('.') && !isIP(host) ||
+        host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.local') ||
+        isIP(host) && !isPublicAddress(host)) return undefined;
+    return url.href;
+  } catch { return undefined; }
+}
+
 async function isSafeHttpsUrl(value: string, resolver: HostResolver): Promise<boolean> {
   const normalized = toAbsoluteHttpUrl(value);
   if (!normalized) return false;

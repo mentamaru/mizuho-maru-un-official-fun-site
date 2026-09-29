@@ -23,6 +23,7 @@ export type PortalItem = {
   publishedAt: string | null;
   collectedAt: string;
   description: string;
+  thumbnailUrl?: string;
   locale: 'ja-JP';
 };
 
@@ -64,6 +65,10 @@ export type SourceConfig = {
 function readYaml<T>(relativePath: string): T {
   const raw = readFileSync(resolve(process.cwd(), relativePath), 'utf8');
   return parse(raw) as T;
+}
+
+export function getManualLatestItems() {
+  return mergeLatestItems((itemsJson as PortalItem[]).filter(item => item.publishMethod === 'manual'), summariesJson as PortalSummary[], Infinity);
 }
 
 export function getLatestItems(limit = 3) {

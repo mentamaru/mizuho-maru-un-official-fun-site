@@ -4,6 +4,7 @@ import { resolve } from 'node:path';
 
 import { z } from 'zod';
 
+import { savedThumbnailUrl } from './ogp';
 import { toAbsoluteHttpUrl } from './url';
 
 export const officialItemSchema = z.object({
@@ -11,7 +12,7 @@ export const officialItemSchema = z.object({
   title: z.string().min(1),
   category: z.string().min(1),
   originalUrl: z.string().url(),
-  thumbnailUrl: z.string().url().refine(value => value.startsWith('https://'), 'サムネイルはHTTPS URLが必要です').optional(),
+  thumbnailUrl: z.preprocess(savedThumbnailUrl, z.string().optional()),
   publishedAt: z.string().nullable(),
   collectedAt: z.string().datetime({ offset: true })
 }).strict();
