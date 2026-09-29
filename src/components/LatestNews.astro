@@ -3,18 +3,8 @@ import { siteCopy } from '../lib/content';
 import { formatDate, getSourceTypeLabel } from '../lib/site-data';
 import { toAbsoluteHttpUrl } from '../lib/url';
 
-interface LatestItem {
-  id: string;
-  title: string;
-  source: string;
-  category: string;
-  originalUrl: string;
-  sourceType: 'official' | 'instagram' | 'x' | 'shop' | 'other';
-  publishedAt: string | null;
-  collectedAt: string;
-  summary: string;
-  isRadar?: boolean;
-}
+import type { LatestItem } from '../lib/latest';
+import { savedThumbnailUrl } from '../lib/ogp';
 
 interface Props {
   items: LatestItem[];
@@ -23,6 +13,7 @@ interface Props {
 const { items } = Astro.props;
 const safeItems = items.map((item) => ({
   ...item,
+  thumbnailUrl: savedThumbnailUrl(item.thumbnailUrl),
   safeOriginalUrl: toAbsoluteHttpUrl(item.originalUrl)
 }));
 ---
@@ -33,7 +24,8 @@ const safeItems = items.map((item) => ({
 
   {safeItems.length > 0 ? <div class="grid gap-4 lg:grid-cols-3">
     {safeItems.map((item) => (
-      <article class="card border border-secondary/40 bg-base-100 shadow-sm">
+      <article class="card overflow-hidden border border-secondary/40 bg-base-100 shadow-sm">
+        {item.thumbnailUrl && <img data-latest-thumbnail src={item.thumbnailUrl} alt="" loading="lazy" referrerpolicy="no-referrer" class="aspect-[1.91/1] w-full object-cover" />}
         <div class="card-body gap-4">
           <div class="flex flex-wrap items-center gap-2">
             <span class="badge badge-outline border-primary/30 text-primary">{getSourceTypeLabel(item.sourceType)}</span>
@@ -57,3 +49,10 @@ const safeItems = items.map((item) => ({
     ))}
   </div> : <p class="text-base-content/70">現在、掲載できる最新情報はありません。</p>}
 </section>
+
+<script>
+  document.querySelectorAll<HTMLImageElement>('[data-latest-thumbnail]').forEach(image => {
+    image.addEventListener('error', () => image.remove(), { once: true });
+    if (image.complete && image.naturalWidth === 0) image.remove();
+  });
+</script>
