@@ -1,3 +1,5 @@
+import { savedThumbnailUrl } from './ogp';
+import type { SourceType } from './site-data';
 import type { OfficialItem } from './official';
 import type { RadarItem } from './radar';
 
@@ -7,14 +9,15 @@ export type LatestItem = {
   source: string;
   category: string;
   originalUrl: string;
-  sourceType: 'official' | 'other';
+  sourceType: SourceType;
+  thumbnailUrl?: string;
   publishedAt: string | null;
   collectedAt: string;
   summary: string;
   isRadar?: boolean;
 };
 
-export function buildLatestItems(officialItems: OfficialItem[], radarItems: RadarItem[], limit = 3): LatestItem[] {
+export function buildLatestItems(officialItems: OfficialItem[], radarItems: RadarItem[], limit = 3, manualItems: LatestItem[] = []): LatestItem[] {
   const items: LatestItem[] = [
     ...officialItems.map((item) => ({
       ...item,
@@ -32,12 +35,15 @@ export function buildLatestItems(officialItems: OfficialItem[], radarItems: Rada
       publishedAt: item.discoveredAt,
       collectedAt: item.discoveredAt,
       summary: item.summary,
+      thumbnailUrl: item.thumbnailUrl,
       isRadar: true
-    }))
+    })),
+    ...manualItems
   ];
   const seenUrls = new Set<string>();
 
   return items
+    .map(item => ({ ...item, thumbnailUrl: savedThumbnailUrl(item.thumbnailUrl) }))
     .filter((item) => {
       if (seenUrls.has(item.originalUrl)) return false;
       seenUrls.add(item.originalUrl);
