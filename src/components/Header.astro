@@ -5,19 +5,10 @@ const TitleTag = Astro.url.pathname === '/' ? 'h1' : 'p';
 ---
 
 <header class="border-b border-secondary/40 bg-base-100">
-  <div class="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
-    <div class="flex items-start gap-4">
-      <a href="/" class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-accent/40 bg-base-100 text-2xl font-bold text-accent" aria-label="ホームへ戻る">
-        み
-      </a>
-      <div class="space-y-2">
-        <p class="badge badge-outline border-primary/40 bg-base-100 text-primary">非公式 / 非営利</p>
-        <TitleTag class="text-balance text-3xl font-bold tracking-tight text-base-content sm:text-4xl">
-          <a href="/" class="hover:text-primary">{siteCopy.siteTitle}</a>
-        </TitleTag>
-        <p class="max-w-3xl text-sm leading-7 text-base-content/80 sm:text-base">{siteCopy.siteDescription}</p>
-      </div>
-    </div>
+  <div class="mx-auto flex w-full min-w-0 max-w-6xl flex-col gap-3 px-4 pt-4 pb-2 sm:px-6 sm:pt-5 lg:px-8">
+    <TitleTag class="text-balance text-xl leading-relaxed font-bold tracking-tight text-base-content sm:text-2xl">
+      <a href="/" class="hover:text-primary">{siteCopy.siteTitle}</a>
+    </TitleTag>
     <Navigation />
   </div>
 </header>
