@@ -33,16 +33,35 @@ function isPublicIpv4(address: string): boolean {
 }
 
 function isPublicIpv6(address: string): boolean {
-  const normalized = address.toLowerCase();
-  if (normalized === '::' || normalized === '::1' || normalized.startsWith('::ffff:')) return false;
-  const groups = normalized.split(':').filter(Boolean).map(group => Number.parseInt(group, 16));
-  const first = groups[0] ?? 0;
-  const second = groups[1] ?? 0;
-  return (first & 0xfe00) !== 0xfc00 && (first & 0xffc0) !== 0xfe80 && !(first === 0x2001 && second === 0x0db8);
+  // Fail closed: accept ordinary global unicast (2000::/3), excluding
+  // special-purpose protocol, transition and documentation ranges.
+  // https://www.iana.org/assignments/iana-ipv6-special-registry/
+  // Keep empty groups: filtering them would misread ::2001:4860 as 2001:4860::.
+  const groups = address.split(':');
+  const first = Number.parseInt(groups[0] || '0', 16);
+  const second = Number.parseInt(groups[1] || '0', 16);
+  return (first & 0xe000) === 0x2000 &&
+    !(first === 0x2001 && (second < 0x0200 || second === 0x0db8)) &&
+    first !== 0x2002 &&
+    !(first === 0x3fff && second < 0x1000);
 }
 
 function isPublicAddress(address: string): boolean {
   return isIP(address) === 4 ? isPublicIpv4(address) : isIP(address) === 6 && isPublicIpv6(address);
+}
+
+/** Validate saved image URLs without DNS or HTTP requests during static rendering. */
+export function savedThumbnailUrl(value: unknown): string | undefined {
+  if (typeof value !== 'string' || !value.trim()) return undefined;
+  try {
+    const url = new URL(value);
+    const host = url.hostname.replace(/^\[|\]$/gu, '').replace(/\.$/u, '');
+    if (url.protocol !== 'https:' || url.username || url.password ||
+        !host.includes('.') && !isIP(host) ||
+        host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.local') ||
+        isIP(host) && !isPublicAddress(host)) return undefined;
+    return url.href;
+  } catch { return undefined; }
 }
 
 async function isSafeHttpsUrl(value: string, resolver: HostResolver): Promise<boolean> {
@@ -51,8 +70,9 @@ async function isSafeHttpsUrl(value: string, resolver: HostResolver): Promise<bo
   const url = new URL(normalized);
   if (url.protocol !== 'https:' || url.username || url.password) return false;
   try {
-    const family = isIP(url.hostname);
-    const addresses = family ? [{ address: url.hostname, family }] : await resolver(url.hostname);
+    const hostname = url.hostname.replace(/^\[|\]$/gu, '');
+    const family = isIP(hostname);
+    const addresses = family ? [{ address: hostname, family }] : await resolver(hostname);
     return addresses.length > 0 && addresses.every(({ address }) => isPublicAddress(address));
   } catch { return false; }
 }

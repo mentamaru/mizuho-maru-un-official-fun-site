@@ -8,7 +8,7 @@ import MapList from '../components/MapList.astro';
 import Layout from '../layouts/Layout.astro';
 import { siteCopy } from '../lib/content';
 import { buildLatestItems } from '../lib/latest';
-import { getLinkGroups, getSocialGroups } from '../lib/site-data';
+import { getLinkGroups, getSocialGroups, getManualLatestItems } from '../lib/site-data';
 import { loadOfficialItems } from '../lib/official';
 import { loadRadarItems } from '../lib/radar';
 
@@ -16,7 +16,7 @@ const radarItems = loadRadarItems();
 const latestRadarItems = radarItems.slice(0, 3);
 const officialItems = loadOfficialItems();
 const latestOfficialItems = officialItems.slice(0, 3);
-const latestItems = buildLatestItems(latestOfficialItems, latestRadarItems);
+const latestItems = buildLatestItems(latestOfficialItems, latestRadarItems, 3, getManualLatestItems());
 const socialGroups = getSocialGroups();
 const linkGroups = getLinkGroups();
 ---

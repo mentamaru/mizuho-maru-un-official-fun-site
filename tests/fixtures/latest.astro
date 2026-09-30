@@ -1,0 +1,11 @@
+---
+import LatestNews from '../../src/components/LatestNews.astro';
+import Layout from '../../src/layouts/Layout.astro';
+import type { LatestItem } from '../../src/lib/latest';
+const items: LatestItem[] = [ 'https://images.example.com/good.svg', undefined, 'javascript:alert(1)', 'https://images.example.com/broken.png' ].map((thumbnailUrl, index) => ({
+  id: String(index), title: `Fixture ${index}`, source: 'Fixture', category: 'test',
+  originalUrl: `https://example.com/${index}`, sourceType: 'other', publishedAt: null,
+  collectedAt: '2026-09-12T00:00:00Z', summary: '画像なしでも本文とリンクを表示します。', thumbnailUrl
+}));
+---
+<Layout title="Test" description="Test"><LatestNews items={items} /></Layout>
