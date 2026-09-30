@@ -22,11 +22,11 @@ const safeItems = items.map((item) => ({
   <h2 class="text-2xl font-bold text-base-content">最新情報</h2>
   <p class="leading-7 text-base-content/80">みずほまるに関する公開情報から、最近の話題を紹介しています。詳しい内容は各元情報をご確認ください。</p>
 
-  {safeItems.length > 0 ? <div class="grid gap-4 lg:grid-cols-3">
+  {safeItems.length > 0 ? <div class="news-grid">
     {safeItems.map((item) => (
-      <article class="card overflow-hidden border border-secondary/40 bg-base-100 shadow-sm">
+      <article class="news-article">
         {item.thumbnailUrl && <img data-latest-thumbnail src={item.thumbnailUrl} alt="" loading="lazy" referrerpolicy="no-referrer" class="aspect-[1.91/1] w-full object-cover" />}
-        <div class="card-body gap-4">
+        <div class="news-body">
           <div class="flex flex-wrap items-center gap-2">
             <span class="badge badge-outline border-primary/30 text-primary">{getSourceTypeLabel(item.sourceType)}</span>
             {item.isRadar && <span class="badge badge-outline border-primary/30 text-primary">レーダー</span>}
@@ -37,9 +37,9 @@ const safeItems = items.map((item) => ({
             <p class="text-sm text-base-content/70">{item.source} / {item.category}</p>
           </div>
           <p class="leading-7 text-base-content/80">{item.summary}</p>
-          <div class="card-actions items-center justify-between gap-3">
+          <div class="news-actions">
             {item.safeOriginalUrl ? (
-              <a class="btn btn-primary btn-sm" href={item.safeOriginalUrl} rel="noreferrer" target="_blank">{siteCopy.sourceLinkLabel}</a>
+              <a class="news-source-link" href={item.safeOriginalUrl} rel="noreferrer" target="_blank">{siteCopy.sourceLinkLabel}</a>
             ) : (
               <span class="text-sm text-base-content/80">元情報 URL を確認中です</span>
             )}
