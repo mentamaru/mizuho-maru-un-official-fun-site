@@ -15,3 +15,20 @@ test('top radar tab explains the feature even with no radar entries', async ({ p
   await expect(page.getByRole('heading', { name: 'みずほまるレーダー' })).toBeVisible();
   await expect(page.getByText('AIがWeb上を定期的に調査し、みずほまるに関する新しい話題を紹介しています。')).toBeVisible();
 });
+
+for (const width of [375, 1280]) {
+  test(`radar primary source has a 44px touch target at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/radar/');
+    const sources = page.locator('[data-radar-list] article p').filter({ hasText: '主な情報元：' }).getByRole('link');
+    expect(await sources.count()).toBeGreaterThan(0);
+    for (const source of await sources.all()) {
+      expect((await source.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+      await source.focus();
+      await expect(source).toBeFocused();
+      await expect(source).toHaveAttribute('target', '_blank');
+      await expect(source).toHaveAttribute('rel', /noreferrer/);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}

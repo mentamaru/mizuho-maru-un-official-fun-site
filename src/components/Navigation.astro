@@ -6,13 +6,13 @@ const isHome = Astro.url.pathname === '/';
 <nav
   aria-label="メインナビゲーション"
   role={isHome ? "tablist" : undefined}
-  class="tabs tabs-box grid grid-cols-2 gap-2 rounded-3xl border border-secondary/50 bg-base-100 p-2 shadow-sm sm:grid-cols-3 lg:grid-cols-5"
+  class="main-navigation"
 >
   {navigationTabs.map((tab, index) => (
     isHome ? <button
       type="button"
       role="tab"
-      class:list={['tab h-auto rounded-2xl border border-transparent px-4 py-3 text-sm font-semibold', index === 0 && 'tab-active']}
+      class:list={['main-navigation-item', index === 0 && 'tab-active']}
       id={`${tab.id}-tab`}
       data-tab-trigger
       data-target={tab.id}
@@ -21,7 +21,7 @@ const isHome = Astro.url.pathname === '/';
       tabindex={index === 0 ? '0' : '-1'}
     >
       {tab.label}
-    </button> : <a class="tab rounded-2xl px-4 py-3 font-semibold" href={`/#${tab.id}`}>{tab.label}</a>
+    </button> : <a class="main-navigation-item" href={`/#${tab.id}`}>{tab.label}</a>
   ))}
 </nav>
 
@@ -38,8 +38,16 @@ const isHome = Astro.url.pathname === '/';
         trigger.classList.toggle('tab-active', active);
         trigger.setAttribute('aria-selected', String(active));
         trigger.setAttribute('tabindex', active ? '0' : '-1');
-        if (active && options.moveFocus) {
-          trigger.focus({ preventScroll: true });
+        if (active) {
+          if (options.moveFocus) trigger.focus({ preventScroll: true });
+          // Reveal only within the horizontal navigation; never scroll the page vertically.
+          const navigation = trigger.parentElement;
+          if (navigation) {
+            const item = trigger.getBoundingClientRect();
+            const viewport = navigation.getBoundingClientRect();
+            if (item.left < viewport.left) navigation.scrollLeft += item.left - viewport.left;
+            else if (item.right > viewport.right) navigation.scrollLeft += item.right - viewport.right;
+          }
         }
       });
 
