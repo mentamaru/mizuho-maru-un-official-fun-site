@@ -4,10 +4,31 @@ import { siteCopy } from '../lib/content';
 ---
 
 <Layout title="このサイトについて | 非公式みずほまる情報ポータル" description={siteCopy.siteDescription}>
-  <article class="prose max-w-3xl rounded-3xl border border-secondary/40 bg-base-100 p-8 shadow-sm">
-    <h1>このサイトについて</h1>
-    <p>{siteCopy.siteDescription}</p>
-    <p>みずほまるの最新情報を見つけやすくするために開発し、運営しています。</p>
-    <p>個人運営・非営利です。</p>
+  <article class="prose max-w-3xl space-y-8">
+    <div>
+      <h1>このサイトについて</h1>
+      <p>{siteCopy.siteDescription}</p>
+    </div>
+    <section class="space-y-3">
+      <h2 class="text-xl font-bold">サイトの目的</h2>
+      <p>みずほまるのイベントやグッズなどの情報を見つけやすくするために、公開されている情報と元情報へのリンクをまとめています。</p>
+    </section>
+    <section class="space-y-3">
+      <h2 class="text-xl font-bold">掲載情報とAI要約について</h2>
+      <p>瑞穂町公式サイトのお知らせ、Web上の話題を調べる「みずほまるレーダー」、関連する公開SNSなどを紹介しています。</p>
+      <p>レーダーではAIによる調査・要約を利用しています。要約には誤りや情報の不足がある場合があります。開催日時や販売情報などの最新の詳細は、各記事の元情報をご確認ください。</p>
+      <p>「レーダー登録日」はこのサイトに情報を登録した日です。イベントの開催日や元情報の公開日とは異なります。</p>
+    </section>
+    <section class="space-y-3">
+      <h2 class="text-xl font-bold">非公式・非営利のサイトです</h2>
+      <p>{siteCopy.unofficialDisclaimer}</p>
+      <p>個人が非営利で運営しています。掲載先の公式な発表や案内は、それぞれの元情報をご確認ください。</p>
+      <a class="news-source-link" href="/operator/">運営者について</a>
+    </section>
+    <section class="space-y-3">
+      <h2 class="text-xl font-bold">お問い合わせ・情報提供</h2>
+      <p>掲載内容の訂正、掲載・リンクの取り下げ、情報提供などは、お問い合わせページからご連絡ください。</p>
+      <a class="news-source-link" href="/contact/">お問い合わせへ</a>
+    </section>
   </article>
 </Layout>

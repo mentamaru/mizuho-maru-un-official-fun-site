@@ -7,6 +7,7 @@ export default defineConfig({
     name: 'latest-test-fixture',
     hooks: {
       'astro:config:setup': ({ injectRoute }) => {
+        injectRoute({ pattern: '/__test/radar-metadata', entrypoint: './tests/fixtures/radar-metadata.astro' });
         injectRoute({ pattern: '/__test/latest', entrypoint: './tests/fixtures/latest.astro' });
       }
     }

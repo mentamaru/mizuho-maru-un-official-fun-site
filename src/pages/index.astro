@@ -1,4 +1,5 @@
 ---
+import CharacterIntro from '../components/CharacterIntro.astro';
 import LatestNews from '../components/LatestNews.astro';
 import LinkList from '../components/LinkList.astro';
 import OfficialNews from '../components/OfficialNews.astro';
@@ -25,6 +26,7 @@ const linkGroups = getLinkGroups();
   <section class="space-y-8">
     <section id="latest-panel" data-tab-panel tabindex="0" role="tabpanel" aria-labelledby="latest-tab" class="space-y-8">
       <LatestNews items={latestItems} />
+      <CharacterIntro />
     </section>
 
     <section id="radar-panel" data-tab-panel tabindex="0" role="tabpanel" aria-labelledby="radar-tab" class="space-y-8">

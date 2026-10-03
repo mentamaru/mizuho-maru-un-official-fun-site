@@ -1,0 +1,15 @@
+---
+import Layout from '../../src/layouts/Layout.astro';
+import LatestNews from '../../src/components/LatestNews.astro';
+import RadarNews from '../../src/components/RadarNews.astro';
+import { buildLatestItems } from '../../src/lib/latest';
+import { radarItemsSchema } from '../../src/lib/radar';
+const items = radarItemsSchema.parse([{
+  id: 'radar-1234567890abcdef', title: '期間のあるイベント', summary: '複数のタグと日付の表示を確認するイベント情報です。',
+  category: 'appearance', tags: ['event', 'appearance', 'goods', 'giveaway'],
+  date: '2026-10-20', dateType: 'event', startDate: '2026-10-20', endDate: '2026-10-22',
+  discoveredAt: '2026-09-30T00:00:00+09:00', source: { name: 'テスト情報元', url: 'https://example.com/event' },
+  researchSources: [{ title: '元情報', url: 'https://example.com/event' }]
+}]);
+---
+<Layout title="レーダー表示テスト"><LatestNews items={buildLatestItems([], items)} /><RadarNews items={items} /></Layout>
