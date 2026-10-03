@@ -15,6 +15,7 @@ export type LatestItem = {
   collectedAt: string;
   summary: string;
   isRadar?: boolean;
+  radar?: RadarItem;
 };
 
 export function buildLatestItems(officialItems: OfficialItem[], radarItems: RadarItem[], limit = 3, manualItems: LatestItem[] = []): LatestItem[] {
@@ -32,7 +33,8 @@ export function buildLatestItems(officialItems: OfficialItem[], radarItems: Rada
       category: item.category,
       originalUrl: item.source.url,
       sourceType: 'other' as const,
-      publishedAt: item.discoveredAt,
+      publishedAt: null,
+      radar: item,
       collectedAt: item.discoveredAt,
       summary: item.summary,
       thumbnailUrl: item.thumbnailUrl,
