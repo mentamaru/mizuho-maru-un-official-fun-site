@@ -1,3 +1,8 @@
+- id: mizuho-maru-news
+  title: みずほまるNEWS
+  url: https://www.ittenbee-tokyomizuho.jp/?p=we-page-entry&spot=591769&cat=26018&pageno=3&type=spot
+  description: 瑞穂町観光情報サイトの、みずほまるの最新情報をまとめているページです。
+  category: 瑞穂町公式
 - id: town-home
   title: 瑞穂町ホームページ
   url: https://www.town.mizuho.tokyo.jp/
