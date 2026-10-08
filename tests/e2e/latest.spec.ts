@@ -32,3 +32,10 @@ test('home latest panel renders saved thumbnails only', async ({ page }) => {
     await expect(image).toHaveAttribute('loading', 'lazy');
   }
 });
+
+test('latest news renders its empty state for a deterministic empty data set', async ({ page }) => {
+  await page.goto('/__test/latest-empty');
+
+  await expect(page.getByRole('article')).toHaveCount(0);
+  await expect(page.getByText('現在、掲載できる最新情報はありません。')).toBeVisible();
+});
