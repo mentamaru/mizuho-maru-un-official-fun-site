@@ -18,6 +18,37 @@ test('merges official and radar items in newest-first order, removes duplicate U
   expect(buildLatestItems(officialItems, radarItems, 2).map((item) => item.title)).toEqual(['最新のレーダー', '公式のお知らせ']);
 });
 
+test('newly collected articles replace an older article in the latest three', () => {
+  const olderItem: RadarItem = {
+    id: 'radar-0000000000000001',
+    title: '以前の最新記事',
+    summary: '新着が増える前に最新情報へ表示されていた記事です。',
+    category: 'event',
+    date: null,
+    dateType: 'other',
+    discoveredAt: '2026-09-01T00:00:00.000Z',
+    source: { name: '以前の情報元', url: 'https://example.com/older' },
+    researchSources: [{ title: '以前の情報元', url: 'https://example.com/older' }]
+  };
+  const newlyCollectedItems: RadarItem[] = [1, 2, 3].map(index => ({
+    id: `radar-${String(index + 1).padStart(16, '0')}`,
+    title: `新着記事${index}`,
+    summary: `収集で追加された新着記事${index}の要約です。`,
+    category: 'event',
+    date: null,
+    dateType: 'other',
+    discoveredAt: `2026-10-0${index}T00:00:00.000Z`,
+    source: { name: `新着情報元${index}`, url: `https://example.com/new-${index}` },
+    researchSources: [{ title: `新着情報元${index}`, url: `https://example.com/new-${index}` }]
+  }));
+
+  expect(buildLatestItems([], [olderItem, ...newlyCollectedItems]).map(item => item.title)).toEqual([
+    '新着記事3',
+    '新着記事2',
+    '新着記事1'
+  ]);
+});
+
 test.each([undefined, '', 'bad', 'http://example.com/a', 'javascript:alert(1)', 'https://user:pass@example.com/a', 'https://127.0.0.1/a', 'https://[::1]/a', 'https://localhost/a'])('drops unsafe saved thumbnail %s without dropping the card', (thumbnailUrl) => {
   const item: OfficialItem = { id: 'official-0000000000000001', title: 'test', category: 'test', originalUrl: 'https://example.com/a', publishedAt: null, collectedAt: '2026-09-11T00:00:00Z', thumbnailUrl };
   const result = buildLatestItems([item], []);
