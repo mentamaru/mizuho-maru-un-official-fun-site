@@ -12,8 +12,26 @@ test('top page renders latest tab first and original links exist', async ({ page
   await expect(page.getByText('みずほまるに関する公開情報から、最近の話題を紹介しています。')).toBeVisible();
   await expect(page.getByRole('tab', { name: 'みずほまるレーダー' })).toBeVisible();
   await expect(page.getByRole('tab', { name: 'マップ' })).toBeVisible();
-  await expect(page.locator('#latest-panel').getByText('第20回瑞穂町こどもフェスティバルにみずほまるが登場')).toBeVisible();
-  await expect(page.getByRole('link', { name: '元情報を見る' }).first().or(page.getByText('現在、掲載できる最新情報はありません。'))).toBeVisible();
+  const panel = page.locator('#latest-panel');
+  await expect(panel).toBeVisible();
+  const cards = panel.getByRole('article');
+  const emptyMessage = panel.getByText('現在、掲載できる最新情報はありません。');
+  const cardCount = await cards.count();
+  expect(cardCount).toBeLessThanOrEqual(3);
+  if (cardCount === 0) {
+    await expect(emptyMessage).toBeVisible();
+  } else {
+    await expect(emptyMessage).toHaveCount(0);
+    for (let index = 0; index < cardCount; index += 1) {
+      const card = cards.nth(index);
+      await expect(card.getByRole('heading', { level: 3 })).not.toHaveText('');
+      const source = card.getByRole('link', { name: '元情報を見る' });
+      await expect(source).toBeVisible();
+      await expect(source).toHaveAttribute('href', /^https?:\/\//u);
+      await expect(source).toHaveAttribute('target', '_blank');
+      await expect(source).toHaveAttribute('rel', /noreferrer/);
+    }
+  }
 });
 
 test('production SEO metadata and crawler files use the v2 Vercel URL', async ({ page }) => {
