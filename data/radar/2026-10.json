@@ -1,0 +1,112 @@
+[
+  {
+    "id": "radar-0ea18bdd3794d28b",
+    "discoveredAt": "2026-10-08T14:37:35.690+09:00",
+    "title": "ご当地キャラカーニバルinぐんま2026にみずほまるが出演",
+    "summary": "群馬県庁で開催された「ご当地キャラカーニバルinぐんま2026」に、瑞穂町公式キャラクターのみずほまるが参加しました。公式サイトの参加キャラクター一覧で、9月26日・27日の出演予定が確認できます。",
+    "category": "appearance",
+    "date": "2026-09-26",
+    "tags": [
+      "event",
+      "appearance"
+    ],
+    "startDate": "2026-09-26",
+    "endDate": "2026-09-27",
+    "dateType": "event",
+    "source": {
+      "name": "ご当地キャラカーニバルinぐんま2026 公式サイト",
+      "url": "https://gunma-characarnival.com/chara2026/"
+    },
+    "researchSources": [
+      {
+        "title": "キャラクター2026｜ご当地キャラカーニバルinぐんま2026",
+        "url": "https://gunma-characarnival.com/chara2026/"
+      },
+      {
+        "title": "ご当地キャラカーニバルinぐんま2026 公式サイト",
+        "url": "https://gunma-characarnival.com/"
+      }
+    ],
+    "thumbnailUrl": "https://gunma-characarnival.com/wp-content/uploads/2025/09/ogimg.jpg"
+  },
+  {
+    "id": "radar-b784d4919b33a340",
+    "discoveredAt": "2026-10-08T14:37:35.690+09:00",
+    "title": "ゆるバース2026でみずほまるが82位に決定",
+    "summary": "全国のご当地キャラクターなどが参加した「ゆるバース2026」で、みずほまるは4,924ポイントを獲得し、総合82位となりました。10月4日に最終ランキングと獲得ポイントが公開されています。",
+    "category": "other",
+    "date": "2026-10-04",
+    "tags": [
+      "other"
+    ],
+    "startDate": null,
+    "endDate": null,
+    "dateType": "updated",
+    "source": {
+      "name": "ゆるキャラ｜2026年 ゆるバース総合結果・順位",
+      "url": "https://yuru-character.com/rankings?category=overall&page=2&year=2026"
+    },
+    "researchSources": [
+      {
+        "title": "ゆるバース2026 最終ランキング＆獲得ポイントを更新！",
+        "url": "https://www.yurugp.jp/navi_news/116"
+      },
+      {
+        "title": "2026年 ゆるバース 総合 結果・順位（2ページ目）",
+        "url": "https://yuru-character.com/rankings?category=overall&page=2&year=2026"
+      }
+    ],
+    "thumbnailUrl": "https://yuru-character.com/assets/img/head.gif"
+  },
+  {
+    "id": "radar-b06013bfa5b5f523",
+    "discoveredAt": "2026-10-08T14:37:35.690+09:00",
+    "title": "東京多摩観光フェアにみずほまるが登場",
+    "summary": "10月6日から10日までJA東京アグリパークで開催される東京多摩観光フェアに、みずほまるが登場します。登場予定は10月9日の12時05分～12時20分と15時00分～15時15分です。",
+    "category": "appearance",
+    "date": "2026-10-06",
+    "tags": [
+      "event",
+      "appearance"
+    ],
+    "startDate": "2026-10-06",
+    "endDate": "2026-10-10",
+    "dateType": "event",
+    "source": {
+      "name": "瑞穂町観光情報サイト いってんべぇ東京みずほ",
+      "url": "https://www.ittenbee-tokyomizuho.jp/?cat=26018&p=we-page-entry&pageno=3&spot=584225&type=spot"
+    },
+    "researchSources": [
+      {
+        "title": "東京多摩観光フェアにみずほまるが登場します",
+        "url": "https://www.ittenbee-tokyomizuho.jp/?cat=26018&p=we-page-entry&pageno=3&spot=584225&type=spot"
+      }
+    ]
+  },
+  {
+    "id": "radar-b4e7e2d2bde8065a",
+    "discoveredAt": "2026-10-08T14:37:35.690+09:00",
+    "title": "むらやまゆるキャラまつりにみずほまるが登場",
+    "summary": "イオンモールむさし村山で開催される「むらやまゆるキャラまつり」に、みずほまるが登場します。10月10日は、ゆるキャラ紹介、館内練り歩きグリーティング、ふれあい広場、ゆるキャラグランプリなどが予定されています。",
+    "category": "appearance",
+    "date": "2026-10-10",
+    "tags": [
+      "event",
+      "appearance",
+      "campaign"
+    ],
+    "startDate": "2026-10-10",
+    "endDate": "2026-10-10",
+    "dateType": "event",
+    "source": {
+      "name": "瑞穂町観光情報サイト いってんべぇ東京みずほ",
+      "url": "https://www.ittenbee-tokyomizuho.jp/?cat=26018&p=we-page-entry&pageno=3&spot=584225&type=spot"
+    },
+    "researchSources": [
+      {
+        "title": "むらやまゆるキャラまつりにみずほまるが登場します",
+        "url": "https://www.ittenbee-tokyomizuho.jp/?cat=26018&p=we-page-entry&pageno=3&spot=584225&type=spot"
+      }
+    ]
+  }
+]
