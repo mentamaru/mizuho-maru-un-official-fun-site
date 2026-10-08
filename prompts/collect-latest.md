@@ -102,3 +102,11 @@ https://www.town.mizuho.tokyo.jp/bunka/006/p008104.html
 
 既に掲載済みの識別情報は以下です。内容が同じ候補を返さないでください。
 {{EXISTING_ITEMS}}
+
+分類と開催期間：
+- categoryは主分類1つ（event/appearance/goods/sale/collaboration/media/broadcast/campaign/recruitment/other）。
+- tagsは上記分類にfood（飲食・お菓子）、giveaway（配布・プレゼント）を加えた候補から1〜12個。categoryを必ず含め、重複させない。otherは単独で使用する。
+- 複数の側面が確認できれば複数タグを選ぶ（出演イベントはeventとappearance、菓子の販売はgoods/sale/foodなど）。元情報にないタグを付けない。
+- startDate/endDateはイベントの開催期間。YYYY-MM-DD形式とし、単日開催と確認できれば同じ日付、終了日不明ならendDateはnull。開催日不明・イベントでなければ両方null。日付を推測しない。
+- endDateは最終開催日を含み、startDateより前にしない。startDateがnullならendDateもnull。
+- dateTypeがeventならdateはstartDateと一致させる。公開日・更新日・販売開始日・放送日はdate/dateTypeで開催期間と区別する。

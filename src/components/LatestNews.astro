@@ -1,4 +1,5 @@
 ---
+import RadarMetadata from './RadarMetadata.astro';
 import { siteCopy } from '../lib/content';
 import { formatDate, getSourceTypeLabel } from '../lib/site-data';
 import { toAbsoluteHttpUrl } from '../lib/url';
@@ -30,12 +31,13 @@ const safeItems = items.map((item) => ({
           <div class="flex flex-wrap items-center gap-2">
             <span class="badge badge-outline border-primary/30 text-primary">{getSourceTypeLabel(item.sourceType)}</span>
             {item.isRadar && <span class="badge badge-outline border-primary/30 text-primary">レーダー</span>}
-            <span class="text-sm text-base-content/70">{formatDate(item.publishedAt, item.collectedAt)}</span>
+            {!item.isRadar && <span class="text-sm text-base-content/70">{formatDate(item.publishedAt, item.collectedAt)}</span>}
           </div>
           <div class="space-y-2">
             <h3 class="text-lg font-bold leading-7 text-base-content">{item.title}</h3>
-            <p class="text-sm text-base-content/70">{item.source} / {item.category}</p>
+            <p class="text-sm text-base-content/70">{item.source}{!item.isRadar && ` / ${item.category}`}</p>
           </div>
+          {item.radar && <RadarMetadata item={item.radar} />}
           <p class="leading-7 text-base-content/80">{item.summary}</p>
           <div class="news-actions">
             {item.safeOriginalUrl ? (

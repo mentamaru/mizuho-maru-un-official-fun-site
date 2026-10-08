@@ -549,7 +549,7 @@ OpenAI Responses APIのWeb Searchを用い、「みずほまる」の現在性�
 
 候補はStructured Outputsで取得するが、AIをSource of Truthにはしない。TypeScriptでstrict schema、HTTP(S) URL、実際のWeb Search sourceとの照合、fingerprintによる重複排除を通過した候補だけを掲載する。不明・不正・source照合不能ならfail-closedで掲載しない。
 
-データ単位は1回の実行ではなく、1つの独立ニュースにつき1要素とする。`data/radar/YYYY-MM.json` は `discoveredAt` のAsia/Tokyo年月で分割し、`id`、title、summary、category、date、dateType、discoveredAt、source、researchSourcesを保持する。主な情報元ページの `og:image` が、公開IPへ解決するHTTPS URLであり、リダイレクト先を含めて画像として取得できた場合のみ、任意の `thumbnailUrl` を保持する。第三者画像をRepositoryへ保存・転載せず、レーダーのトップ表示と一覧では `thumbnailUrl` があるカードに遅延読み込みのサムネイルを表示する。OGP未設定・取得失敗・壊れた画像URL・非公開宛先の場合はデータを変更せず、画像を表示しない。表示は必ず `discoveredAt DESC` とし、レーダー一覧では年月絞り込みを提供する。
+データ単位は1回の実行ではなく、1つの独立ニュースにつき1要素とする。`data/radar/YYYY-MM.json` は `discoveredAt` のAsia/Tokyo年月で分割し、`id`、title、summary、category、tags、date、dateType、startDate、endDate、discoveredAt、source、researchSourcesを保持する。主な情報元ページの `og:image` が、公開IPへ解決するHTTPS URLであり、リダイレクト先を含めて画像として取得できた場合のみ、任意の `thumbnailUrl` を保持する。第三者画像をRepositoryへ保存・転載せず、レーダーのトップ表示と一覧では `thumbnailUrl` があるカードに遅延読み込みのサムネイルを表示する。OGP未設定・取得失敗・壊れた画像URL・非公開宛先の場合はデータを変更せず、画像を表示しない。表示は必ず `discoveredAt DESC` とし、レーダー一覧では年月絞り込みを提供する。
 
 GitHub Actionsは毎週木曜日のJST 13:17頃の定期実行と `workflow_dispatch` を提供する。新情報が0件ならファイル変更・空commitをせず正常終了する。通常実行で書き込めるのは実行月の単一 `data/radar/YYYY-MM.json` のみとし、tracked・untrackedの両方を含むGit差分検査、lint、typecheck、test、buildがすべて成功した場合だけmainへ自動反映する。`OPENAI_API_KEY`以外のSecretやPATは不要とし、main保護導入時は最小権限のGitHub Actions botによるこの限定更新を許可する設定とする。
 
@@ -995,3 +995,16 @@ Production公開前には、
 * SPEC
 
 を確認する。
+
+
+## 34. レーダーのタグ・日付と紹介
+
+レーダーのタグは内部英語IDと日本語表示を分離し、event（イベント）、appearance（出演・登場）、goods（グッズ）、sale（販売情報）、collaboration（コラボ）、media（メディア掲載）、broadcast（放送）、campaign（キャンペーン）、recruitment（募集）、other（その他）、food（飲食・お菓子）、giveaway（配布・プレゼント）とする。1件に1〜12個の重複しないtagsを持つ。categoryは既存10種類の主分類として保持し、tagsに含める。otherは他タグと併用しない。最新情報・レーダータブ・一覧で共通の日本語タグを表示する。
+
+新規収集候補はtags/startDate/endDateを必須（不明日付はnull）とし、保存済みデータの未設定フィールドは互換表示する。旧categoryをタグとして表示し、旧dateType eventのdateを開始日として扱う。元データ・ID・元情報URLは維持する。タグ・主分類だけの変更で同一記事を再登録しない。
+
+startDate/endDateは開催期間の暦日（YYYY-MM-DD）で、終了日を含む。単日開催は同日、終了日不明はnull。開始日なしの終了日、存在しない日付、逆転期間を拒否する。公開日・更新日・販売開始日・放送日はdate/dateTypeで別に保持する。eventのdateはstartDateと一致させる。日付は一次情報で確認できるものだけを使用し、推測しない。月表示カレンダーは対象外。
+
+discoveredAtは「レーダー登録日」と表示し、開催日等と分ける。最新情報でも登録日を公開日と表示しない。レーダー一覧の絞り込みは「登録年月」とし、登録日降順を維持する。
+
+最新情報の記事群の下に「みずほまるとは？」を置き、東京都瑞穂町公式キャラクターであることと公式紹介ページへの導線を示す。メインタブは増やさない。Aboutはサイトの目的、掲載情報とAI要約、非公式・非営利、お問い合わせを短い見出しと本文で説明し、装飾枠・影を使わず読みやすい本文幅を確保する。

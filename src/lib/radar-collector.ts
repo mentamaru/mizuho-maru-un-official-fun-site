@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 import OpenAI from 'openai';
 import { parse } from 'yaml';
 
-import { buildPrompt, normalizeRadarUrl, radarCandidatesSchema, type RadarCandidate, type RadarItem, type ResearchSourcesConfig } from './radar';
+import { categories, radarTags, buildPrompt, normalizeRadarUrl, radarCandidatesSchema, type RadarCandidate, type RadarItem, type ResearchSourcesConfig } from './radar';
 import { getSources, type SocialConfig } from './site-data';
 
 export type RadarSearchClient = { collect(input: string): Promise<{ text: string; sourceUrls: string[] }> };
@@ -20,7 +20,7 @@ export function renderRadarPrompt(config: ResearchSourcesConfig, existing: Radar
     START_DATE: start,
     END_DATE: end,
     REQUIRED_SOURCES: getRequiredSources(config).map(source => `- ${source.name}: ${source.url}`).join('\n'),
-    EXISTING_ITEMS: JSON.stringify(existing.slice(0, 200).map(item => ({ id: item.id, title: item.title, date: item.date, dateType: item.dateType, sourceUrl: normalizeRadarUrl(item.source.url) })))
+    EXISTING_ITEMS: JSON.stringify(existing.slice(0, 200).map(item => ({ id: item.id, title: item.title, date: item.date, dateType: item.dateType, tags: item.tags ?? [item.category], startDate: item.startDate, endDate: item.endDate, sourceUrl: normalizeRadarUrl(item.source.url) })))
   });
 }
 
@@ -80,10 +80,13 @@ function collectSourceUrls(response: unknown): string[] {
   return [...found];
 }
 
-const radarJsonSchema = {
+export const radarJsonSchema = {
   type: 'object', additionalProperties: false, required: ['candidates'], properties: {
-    candidates: { type: 'array', maxItems: 20, items: { type: 'object', additionalProperties: false, required: ['title', 'summary', 'category', 'date', 'dateType', 'source', 'researchSources'], properties: {
-      title: { type: 'string' }, summary: { type: 'string' }, category: { type: 'string', enum: ['event', 'appearance', 'goods', 'sale', 'collaboration', 'media', 'broadcast', 'campaign', 'recruitment', 'other'] }, date: { type: ['string', 'null'], pattern: '^\\d{4}-\\d{2}-\\d{2}$' }, dateType: { type: 'string', enum: ['published', 'updated', 'event', 'sale', 'broadcast', 'other'] },
+    candidates: { type: 'array', maxItems: 20, items: { type: 'object', additionalProperties: false, required: ['title', 'summary', 'category', 'tags', 'startDate', 'endDate', 'date', 'dateType', 'source', 'researchSources'], properties: {
+      title: { type: 'string' }, summary: { type: 'string' }, category: { type: 'string', enum: categories }, date: { type: ['string', 'null'], pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' }, dateType: { type: 'string', enum: ['published', 'updated', 'event', 'sale', 'broadcast', 'other'] },
+      tags: { type: 'array', minItems: 1, maxItems: radarTags.length, items: { type: 'string', enum: radarTags } },
+      startDate: { type: ['string', 'null'], pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' },
+      endDate: { type: ['string', 'null'], pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' },
       source: { type: 'object', additionalProperties: false, required: ['name', 'url'], properties: { name: { type: 'string' }, url: { type: 'string' } } },
       researchSources: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['title', 'url'], properties: { title: { type: 'string' }, url: { type: 'string' } } } }
     } } }
