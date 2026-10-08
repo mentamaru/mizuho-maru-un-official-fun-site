@@ -5,7 +5,7 @@ import { parseVerifiedCandidates, radarModel, renderRadarPrompt } from '../../sr
 import { loadResearchSources } from '../../src/lib/radar';
 import { extractOgpImage, fetchOgpImage } from '../../src/lib/ogp';
 
-const candidate: RadarCandidate = { title: 'みずほまるがイベントに登場', summary: 'みずほまるがイベントに登場します。詳しくは元情報をご確認ください。', category: 'event', date: '2026-10-20', dateType: 'event', source: { name: '公式', url: 'https://example.com/event' }, researchSources: [{ title: 'お知らせ', url: 'https://example.com/event' }] };
+const candidate: RadarCandidate = { title: 'みずほまるがイベントに登場', summary: 'みずほまるがイベントに登場します。詳しくは元情報をご確認ください。', category: 'event', tags: ['event'], startDate: '2026-10-20', endDate: '2026-10-20', date: '2026-10-20', dateType: 'event', source: { name: '公式', url: 'https://example.com/event' }, researchSources: [{ title: 'お知らせ', url: 'https://example.com/event' }] };
 
 describe('radar data', () => {
   test('keeps independent news sharing a source URL', () => {

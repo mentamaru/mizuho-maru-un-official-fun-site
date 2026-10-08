@@ -1,0 +1,16 @@
+---
+import { radarTagLabels, type RadarItem } from '../lib/radar';
+interface Props { item: RadarItem; }
+const { item } = Astro.props;
+const tags = item.tags ?? [item.category];
+const start = item.startDate === undefined ? (item.dateType === 'event' ? item.date : null) : item.startDate;
+const end = item.endDate;
+const registration = new Intl.DateTimeFormat('ja-JP', { timeZone: 'Asia/Tokyo', year: 'numeric', month: 'numeric', day: 'numeric' }).format(new Date(item.discoveredAt));
+const labels = { published: '公開日', updated: '更新日', sale: '販売開始日', broadcast: '放送日', other: '関連日', event: '開催日' };
+---
+<div class="space-y-2" data-radar-metadata>
+  <div class="flex flex-wrap gap-2">{tags.map(tag => <span class="badge badge-outline border-primary/30 text-primary">{radarTagLabels[tag]}</span>)}</div>
+  {start && <p class="text-sm">開催日：<time datetime={start}>{start}</time>{end && end !== start && <> 〜 <time datetime={end}>{end}</time></>}{!end && '（終了日未確認）'}</p>}
+  {item.date && item.dateType !== 'event' && <p class="text-sm">{labels[item.dateType]}：<time datetime={item.date}>{item.date}</time></p>}
+  <p class="text-sm text-base-content/70">レーダー登録日：<time datetime={item.discoveredAt}>{registration}</time></p>
+</div>
