@@ -9,6 +9,7 @@ export default defineConfig({
       'astro:config:setup': ({ injectRoute }) => {
         injectRoute({ pattern: '/__test/radar-metadata', entrypoint: './tests/fixtures/radar-metadata.astro' });
         injectRoute({ pattern: '/__test/latest', entrypoint: './tests/fixtures/latest.astro' });
+        injectRoute({ pattern: '/__test/latest-empty', entrypoint: './tests/fixtures/latest-empty.astro' });
       }
     }
   }]
