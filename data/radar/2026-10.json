@@ -108,5 +108,34 @@
         "url": "https://www.ittenbee-tokyomizuho.jp/?cat=26018&p=we-page-entry&pageno=3&spot=584225&type=spot"
       }
     ]
+  },
+  {
+    "id": "radar-df9bc07b279c5041",
+    "discoveredAt": "2026-10-15T13:33:06.371+09:00",
+    "title": "ふれっしゅはうすでみずほまるぬいぐるみカプセルトイの販売情報を更新",
+    "summary": "瑞穂町観光情報サイトのふれっしゅはうす紹介ページで、2026年10月9日現在の販売品として「みずほまるぬいぐるみのカプセルトイ」が紹介されています。ページでは、ふれっしゅはうすの野菜や東京みずほブランド商品などとあわせて、同カプセルトイが好評であることを案内しています。",
+    "category": "sale",
+    "date": "2026-10-09",
+    "tags": [
+      "sale",
+      "goods"
+    ],
+    "startDate": null,
+    "endDate": null,
+    "dateType": "updated",
+    "source": {
+      "name": "いってんべぇ東京みずほ",
+      "url": "https://www.ittenbee-tokyomizuho.jp/?eventlist=2013&p=we-page-eventlist"
+    },
+    "researchSources": [
+      {
+        "title": "ふれっしゅはうす紹介（いってんべぇ東京みずほ）",
+        "url": "https://www.ittenbee-tokyomizuho.jp/?eventlist=2013&p=we-page-eventlist"
+      },
+      {
+        "title": "公式キャラクター「みずほまる」のぬいぐるみ販売について（瑞穂町公式サイト）",
+        "url": "https://www.town.mizuho.tokyo.jp/bunka/006/p009844.html"
+      }
+    ]
   }
 ]
