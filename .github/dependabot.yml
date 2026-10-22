@@ -5,6 +5,18 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      # 本番依存は実API動作の確認が必要なため、開発依存と別PRにする
+      dev-dependencies:
+        dependency-type: development
+        update-types:
+          - minor
+          - patch
+      runtime-dependencies:
+        dependency-type: production
+        update-types:
+          - minor
+          - patch
     ignore:
       # @astrojs/check は typescript ^5 || ^6 のみ対応のため、7系は対応後に解除する
       - dependency-name: typescript
