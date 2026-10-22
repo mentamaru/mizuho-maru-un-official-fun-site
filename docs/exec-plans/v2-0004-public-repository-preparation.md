@@ -1,5 +1,7 @@
 # ExecPlan v2-0004 — Repository公開前のPrivacy・License整備
 
+> **現在の方針（2026-10-22）**: ユーザーの明示指示でRepositoryを非公開へ戻した。GitHub APIで `private: true` / `visibility: private` を確認済み。ユーザーが改めて明示的に公開を指示するまで、公開へ変更しない。過去の公開承認を再公開の許可として使わない。本書内のpublic前提の計画・検証結果は当時の記録であり、現在の利用可能な保護機能を保証しない。専用App導入は進めず、次の指示を待つ。
+
 ## Goal / Status
 
 Repositoryの公開前に個人情報の露出を抑え、Source Codeの利用条件とSecretの誤投入防止を整える。2026-10-08開始、実施中。公開操作は本計画の準備完了後に判断する。
@@ -209,3 +211,25 @@ Owner Review設定案の検証: `git diff --check`、JSON読み込みと必須Ow
 - GitHub公式REST仕様でUser actor対応を確認: https://docs.github.com/en/rest/repos/rules 。SPECも本人だけの例外に更新する。
 - GitHub Actions Appの例外は既存案のまま。GitHub側への適用・PRのMerge・公開は未実施。
 - 検証: `npm run lint`、`npm run typecheck`（0 errors、既存4 hints）、`npm run test:unit`（132件）、`npm run build`（7ページ）が成功。JSONの本人ID・User型・PR経由限定・App例外と削除/force pushの例外なしを検証し、`git diff --check`も成功。追加依存なし。実環境のRuleset強制は未検証。
+
+### 2026-10-22: 公開・保護適用と実環境検証
+
+- ユーザーがPR #52のMerge・公開・設定適用・検証を明示承認。head `614597c`を指定してMergeし、mainのmerge commitは`fa4275c`。Repositoryをpublicへ変更。認証なしのGitHub REST GETでHTTP 200、`private: false`、`visibility: public`を確認した。
+- `main-protection`（ID 25617456）をactiveで適用。削除・force push禁止、bypassなしをGETで確認。
+- GitHub Actions App ID 15368を含むReviewルールはHTTP 422で拒否された（`Actor GitHub Actions integration must be part of the ruleset source or owner organization`）。公開直後の一時的なHTTP 403ロックとは別の制約であり、App例外は適用できていない。
+- mainを保護するため、Bot例外だけを除外した`main-owner-review`（ID 25617487）をactiveで適用。User ID 108460338のPR経由bypassだけを設定し、Code Owner承認1件・追加push時の承認取消・Review thread解決必須をGETで確認。`rules/branches/main`でも両Rulesetの有効なルールを確認した。
+- main上のCODEOWNERSは`* @mentamaru`で、GitHub CODEOWNERS errors APIは空。本人以外のアカウントによる未承認Merge拒否を実操作した検証ではなく、設定・適用先・構文の検証である。
+- Secret scanningとPush protectionをenabledに設定してGET確認。外部fork PRのActions承認は`all_external_contributors`、default workflow permissionsはread、ActionsによるPR review承認はfalseを確認。
+- 公開後のmain CI（39733498019）成功。lint・typecheck・unit・build・Playwrightを含む既存Workflowが完走した。main Security（39733497867）のCodeQL解析・アップロードも成功。
+- private時に失敗したPR Security（39732060113）を再実行し、Dependency ReviewとCodeQLの両方が成功。既存Advanced setupを使用し、Default setupは追加していない。
+- 確認時点の未解決Secret scanning / Code scanning / Dependabot alertsはそれぞれ0件。将来の検出なしを保証するものではない。
+- 未解決: 定期収集Workflowのmain直接pushは現状の承認ルールでは許可されない。ユーザーへ「収集結果をPRにして本人承認」または「専用GitHub Appで自動反映」の選択を依頼中。SPECの自動反映要件は未達であり、docs/githubのBotを含むJSONは実環境にそのまま適用できない。権限を広げて回避していない。
+- 旧PR参照に個人情報が残り得る点は、以前のユーザー判断どおり許容しSupport対応を見送ったまま。
+- 今回のRepository変更はこの検証記録のみ。SPEC・Runtime・Dependencyの変更なし。公開済みmainでの上記CI成功と、記録の`git diff --check`を検証根拠とする。記録更新用PRは別途作成し、承認なしにMergeしない。
+
+### 2026-10-22: ユーザー指示による非公開化
+
+- `gh repo edit mentamaru/mizuho-maru-un-official-fun-site --visibility private --accept-visibility-change-consequences` を実行し、APIで非公開状態を確認。
+- 公開・自動化設定の追加作業は停止。再公開は新たな明示指示がある場合のみ実施する。
+- 非公開化後のRuleset等の強制状態は再検証していない。公開時の成功記録と区別する。
+- この操作はGitHub Repositoryの可視性変更であり、Vercelサイトを非公開にする操作ではない。
