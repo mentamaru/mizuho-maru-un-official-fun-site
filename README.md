@@ -104,6 +104,7 @@ Static出力を前提にしており、`vercel.json` でSecurity Headersを設�
 
 ## License / Rights
 
-- Source Code License と第三者コンテンツの権利は別です。
+- 本Projectの自作Source Codeと付随する自作文書は [MIT License](./LICENSE) で提供します。著作権者表記は公開用ハンドル `mentamaru` とします。
+- MIT Licenseは第三者のコンテンツや権利には適用されません。`data/` 内の収集記事・要約・SNS情報、外部リンク先の記事・画像、キャラクターArtwork・名称・商標、Dependencyの利用条件について、このLicenseは利用許諾を付与しません。各権利者の条件を確認してください。
 - みずほまる公式 Artwork は利用条件・承認確認前に同梱しません。
 - 第三者記事画像や SNS 画像はリポジトリへ複製しません。

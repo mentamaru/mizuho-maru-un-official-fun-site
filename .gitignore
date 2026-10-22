@@ -5,7 +5,9 @@ playwright-report/
 test-results/
 coverage/
 .env
-.env.local
+.env.*
+!.env.example
+.DS_Store
 .vercel/
 .vscode/
 .npmrc
