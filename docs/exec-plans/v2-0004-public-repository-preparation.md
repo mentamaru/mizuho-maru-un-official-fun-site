@@ -1,5 +1,7 @@
 # ExecPlan v2-0004 — Repository公開前のPrivacy・License整備
 
+> **現在の方針（2026-10-22）**: ユーザーの明示指示でRepositoryを非公開へ戻した。GitHub APIで `private: true` / `visibility: private` を確認済み。ユーザーが改めて明示的に公開を指示するまで、公開へ変更しない。過去の公開承認を再公開の許可として使わない。本書内のpublic前提の計画・検証結果は当時の記録であり、現在の利用可能な保護機能を保証しない。専用App導入は進めず、次の指示を待つ。
+
 ## Goal / Status
 
 Repositoryの公開前に個人情報の露出を抑え、Source Codeの利用条件とSecretの誤投入防止を整える。2026-10-08開始、実施中。公開操作は本計画の準備完了後に判断する。
@@ -224,3 +226,10 @@ Owner Review設定案の検証: `git diff --check`、JSON読み込みと必須Ow
 - 未解決: 定期収集Workflowのmain直接pushは現状の承認ルールでは許可されない。ユーザーへ「収集結果をPRにして本人承認」または「専用GitHub Appで自動反映」の選択を依頼中。SPECの自動反映要件は未達であり、docs/githubのBotを含むJSONは実環境にそのまま適用できない。権限を広げて回避していない。
 - 旧PR参照に個人情報が残り得る点は、以前のユーザー判断どおり許容しSupport対応を見送ったまま。
 - 今回のRepository変更はこの検証記録のみ。SPEC・Runtime・Dependencyの変更なし。公開済みmainでの上記CI成功と、記録の`git diff --check`を検証根拠とする。記録更新用PRは別途作成し、承認なしにMergeしない。
+
+### 2026-10-22: ユーザー指示による非公開化
+
+- `gh repo edit mentamaru/mizuho-maru-un-official-fun-site --visibility private --accept-visibility-change-consequences` を実行し、APIで非公開状態を確認。
+- 公開・自動化設定の追加作業は停止。再公開は新たな明示指示がある場合のみ実施する。
+- 非公開化後のRuleset等の強制状態は再検証していない。公開時の成功記録と区別する。
+- この操作はGitHub Repositoryの可視性変更であり、Vercelサイトを非公開にする操作ではない。
