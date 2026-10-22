@@ -65,12 +65,12 @@ Repositoryの公開前に個人情報の露出を抑え、Source Codeの利用�
 - 過去Actions 326件中311件のログを取得・検査。15件は取得不可。取得ログ中3件に人名が残存。別途実行メタデータ332件を確認し、241件に対象の氏名またはメールが残存。該当241件の削除はユーザー承認を受け、完了・検証済み（末尾の実施記録参照）。
 - 取得したログ・メタデータと削除対象IDは非公開バックアップへ保存済み。
 - Issue/PR本文45件、Issueコメント51件、Reviewコメント60件、45 PRのReview情報に対象個人情報の一致なし。添付や外部URL先の内容は未検査。
-- GitHubプロフィール表示名はAPIで `mentamaru` を確認済み（ユーザー側で変更）。メールPrivacy設定は未確認。
+- GitHubプロフィール表示名はAPIで `mentamaru` を確認済み（ユーザー側で変更）。メールPrivacy設定2項目はユーザーが両方ONと回答済み。
 - GitHub Actions artifactsは0。cacheは4（内容は未検査）。forkは0。
 - Secret scanning・Push protection・main保護・外部PR承認の公開前後設定は残作業。前回APIではprivate契約制限があった。
 - 脆弱性修正はpackage-lock.jsonのみ更新。package.jsonの直接依存追加なし。互換範囲の推移的依存・Vitest等を更新し、npm audit fixの最終監査は全依存0 vulnerabilities。
 - SPEC変更なし。Human-managed Data・記事内容・元URLの変更なし。
-- 次のStepはメールPrivacy・保護設定確認。古いPR参照のSupport対応はユーザーの方針により対象外。Repositoryの公開切り替えは別途判断する。
+- 次のStepは公開切り替えの判断と公開後の保護設定適用・検証。古いPR参照のSupport対応はユーザーの方針により対象外。Repositoryの公開切り替えは別途判断する。
 
 ## References
 
@@ -139,3 +139,41 @@ Repositoryの公開前に個人情報の露出を抑え、Source Codeの利用�
 - 古いPR参照の残存はユーザーの判断で許容し、Support依頼は見送る。GitHubから個人情報を完全に除去したとは扱わない。
 - 今回のRepository変更は本ExecPlanのみ。SPEC・実装・Dependencyの変更なし。`git diff --check` はPASS。コード変更がないためlint・typecheck・unit・build・E2Eは再実行せず、直前の成功記録と区別する。
 - 残作業はメールPrivacy・Code scanning / Secret scanning / Push protection / main保護等の設定確認。公開切り替えは未実施。
+
+
+### 公開前に適用可能なGitHub保護設定（2026-10-22）
+
+- ユーザーが `Keep my email addresses private` と `Block command line pushes that expose my email` を両方ONにしたと回答。本人確認として記録し、APIで確認したとは扱わない。
+- Dependabot alertsはGETが404（disabled）だったため、`PUT /repos/{owner}/{repo}/vulnerability-alerts` で有効化し、GET成功を確認。
+- Dependabot security updatesはdisabledからenabledへ変更。GETで `enabled: true, paused: false` を確認。既存の定期version updatesと合わせて利用する。
+- Dependabotのopen alerts一覧は確認時点で0件。今後の解析完了や新規Advisoryによる検出を保証するものではない。
+- Actionsのdefault workflow permissionsはreadを維持。不要なPR承認をtrueからfalseへ変更し、GETで確認。既存Collectorの明示的なcontents: writeは維持。
+- Rulesets APIは403（Proまたはpublicが必要）、Code scanning APIは403（未有効）、Secret scanning alerts APIは404（disabled）。現在の個人所有・privateで利用できない機能は無理に有効化せず、課金・所有者移転・公開切り替えを行っていない。
+- 変更はGitHubの上記設定と本ExecPlanのみ。Runtime・Dependency・SPEC変更なし。確認は各設定のGET、alerts一覧、`git diff --check` を使用。lint・typecheck・unit・buildの再実行は行っていない。
+
+### 公開承認後に適用する設定（未実行）
+
+1. `mentamaru/mizuho-maru-un-official-fun-site` をpublicへ変更。ユーザーが許容した旧PR参照の残存も公開範囲に含まれる。
+2. Secret scanningとPush protectionを有効化し、APIで状態を確認。既存のAdvanced setup workflowでCodeQLを再実行し、結果アップロード成功とalertsを確認する。Default setupは重複導入しない。
+3. mainに以下のRulesetを適用し、force pushとbranch削除を禁止する。既存Collectorの通常pushは維持。これは破壊的更新の防止であり、通常pushへのPR・CI必須化は含まない。
+4. fork由来の外部貢献者によるActions実行を `all_external_contributors`（全外部貢献者の実行に承認が必要）へ設定する。
+5. visibility・各保護設定・最新CI/Security・alertsを確認し、結果を記録する。有効化失敗やalertは未解決として報告し、Security checkを回避しない。
+
+main Rulesetの適用予定payload:
+
+```json
+{
+  "name": "main-protection",
+  "target": "branch",
+  "enforcement": "active",
+  "conditions": { "ref_name": { "include": ["refs/heads/main"], "exclude": [] } },
+  "bypass_actors": [],
+  "rules": [{ "type": "deletion" }, { "type": "non_fast_forward" }]
+}
+```
+
+根拠:
+- https://docs.github.com/en/code-security/reference/code-scanning/troubleshoot-analysis-errors/private-repository-enablement
+- https://docs.github.com/en/code-security/how-tos/secure-your-secrets/detect-secret-leaks/enable-secret-scanning
+- https://docs.github.com/en/rest/repos/rules
+- https://docs.github.com/en/rest/actions/permissions
