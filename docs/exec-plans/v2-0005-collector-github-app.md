@@ -4,7 +4,7 @@
 
 ## 状態と目的
 
-2026-10-22作成。設計段階。App登録、秘密鍵作成、Workflow変更、Ruleset変更、実環境テストは未実施。
+2026-10-22作成。PR #57でWorkflow実装とローカル検証済み。App登録、秘密鍵設定、専用AppのRuleset例外適用、実環境テストは未実施。
 
 他の人のPRは運営者 `@mentamaru` の承認必須とし、公式情報・レーダーの検証済みGenerated Dataだけは毎週自動反映を継続する。GitHub Actionsで処理を実行し、収集専用GitHub AppのInstallation tokenでpushする。新しい常駐サーバー、Database、個人用PATは追加しない。
 
@@ -219,3 +219,9 @@ sequenceDiagram
 
 - Review 5610640084の指摘を受け、登録手順の「Pro等へ変更した場合だけ」を修正。一時公開時にも専用App例外の適用・GET確認をMerge条件に明記した。本人のPR経由例外と例外なしの削除/force push禁止を維持する。
 - 検証ブランチpush、Ruleset設定確認、本番main pushの検証を区別。文書のみ変更でSPEC・実装・依存変更なし。`git diff --check`成功。lint/typecheck/unit/buildは今回再実行せず、直前の実装検証結果と区別する。
+
+### 登録準備の確認（2026-10-22）
+
+- ユーザーはProへ移行せず、公開Repositoryとして利用する方針を再確認。運用手順のProへの言及を除去し、Freeで一時公開して検証する構成に統一した。
+- Browserスキルで登録画面への接続を試みたが、利用可能なブラウザーは0件で操作できなかった。App登録・インストールは本人操作が必要。Repositoryはprivateのままで、専用AppのVariable/Secretはまだ登録されていない（秘密値は取得せず名前だけ確認）。
+- 前回ネットワーク制限で再試行した `npm audit --ignore-scripts` は完了し、全依存0 vulnerabilities。今回の文書変更は `git diff --check` 成功。コードのテスト/buildは直前の成功結果を使用し再実行していない。

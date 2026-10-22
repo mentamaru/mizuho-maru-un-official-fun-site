@@ -35,9 +35,9 @@ AppとSecret未登録の状態で認証成功とは扱わない。登録後、�
 
 ## マージ条件と本番確認
 
-- 保存先を決定し、必要なEnvironment設定がある場合はYAMLへ反映する。
+- 一時公開中にmain限定の `collector-publish` EnvironmentとVariable/Secretを設定し、両WorkflowのEnvironment参照と一致することを確認する。
 - App認証・検証ブランチのpush成功、ローカル必須検証成功、未検証事項を示して対象PRのMerge許可を得る。
-- GitHub Free/privateのままではRulesetの強制・App例外は検証不能。今回の一時公開時（Freeでも利用可能）に、以下の設定・GET確認をMergeの必須条件として実施する。将来Pro等でprivateの保護を利用する場合も同様に確認する。
+- GitHub Free/privateのままではRulesetの強制・App例外は検証不能。今回の一時公開時（Freeでも利用可能）に、以下の設定・GET確認をMergeの必須条件として実施する。Proへの移行・課金は今回の対象外とし、Freeの公開Repositoryとして検証・正式運用する。
   - インストール済みの専用Appの数値App IDを取得し、`docs/github/main-owner-review.ruleset.json`へ `actor_type: Integration` / `bypass_mode: always` の例外を追加してGitHubへ適用する。現在のJSONは本人だけの例外であり、そのままでは専用Appのmain pushを許可しない。標準Actions App ID 15368は再利用しない。
   - 本人（User ID 108460338）の `User / pull_request` 例外を保持し、Owner承認1件・更新時の再承認を維持する。
   - `main-protection`の削除・force push禁止と空のbypass一覧を維持する。
