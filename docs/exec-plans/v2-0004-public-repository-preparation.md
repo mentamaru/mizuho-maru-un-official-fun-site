@@ -60,17 +60,17 @@ Repositoryの公開前に個人情報の露出を抑え、Source Codeの利用�
 
 - MIT採用と履歴修正はユーザー承認済み。LICENSE、READMEの権利分離、ignore補強を確定。
 - GitHubの通常31 branchesは匿名化済み。ローカルbranchと別worktreeの共有参照も移行済み。元履歴はRepository外の非公開バックアップに保存。
-- 到達可能なコミットの個人情報は修正したが、古いPR refs・Actionsメタデータ・プロフィール表示名は残存。Repositoryはprivateのまま維持する。
-- 45 PRに対応する50 PR refsは通常pushで削除できない。GitHub Supportへの依頼案とコミット対応表をRepository外に用意、未送信。削除可否はSupportの判断に依存する。
-- 過去Actions 326件中311件のログを取得・検査。15件は取得不可。取得ログ中3件に人名が残存。別途実行メタデータ332件を確認し、241件に対象の氏名またはメールが残存。該当241件の削除は影響を提示して承認待ち。
+- 到達可能なコミットの個人情報は修正したが、古いPR refsは残存。対象Actions履歴は削除済み、プロフィール表示名はmentamaruを確認済み。Repositoryはprivateのまま維持する。
+- 45 PRに対応する50 PR refsは通常pushで削除できない。ユーザーはSupportが必要な古いPR参照の除去を見送る方針を選択した。旧参照・キャッシュから個人情報を含む旧コミットへ到達し得る点を残存リスクとして記録し、Support依頼は送信しない。
+- 過去Actions 326件中311件のログを取得・検査。15件は取得不可。取得ログ中3件に人名が残存。別途実行メタデータ332件を確認し、241件に対象の氏名またはメールが残存。該当241件の削除はユーザー承認を受け、完了・検証済み（末尾の実施記録参照）。
 - 取得したログ・メタデータと削除対象IDは非公開バックアップへ保存済み。
 - Issue/PR本文45件、Issueコメント51件、Reviewコメント60件、45 PRのReview情報に対象個人情報の一致なし。添付や外部URL先の内容は未検査。
-- GitHubプロフィール表示名は人名のまま。アカウント全体の表示名・メールPrivacy設定の変更は未実施。
+- GitHubプロフィール表示名はAPIで `mentamaru` を確認済み（ユーザー側で変更）。メールPrivacy設定は未確認。
 - GitHub Actions artifactsは0。cacheは4（内容は未検査）。forkは0。
 - Secret scanning・Push protection・main保護・外部PR承認の公開前後設定は残作業。前回APIではprivate契約制限があった。
 - 脆弱性修正はpackage-lock.jsonのみ更新。package.jsonの直接依存追加なし。互換範囲の推移的依存・Vitest等を更新し、npm audit fixの最終監査は全依存0 vulnerabilities。
 - SPEC変更なし。Human-managed Data・記事内容・元URLの変更なし。
-- 次のStepはActions削除承認、SupportへのPR参照・キャッシュ対処相談、プロフィール・保護設定確認。その完了前に公開操作をしない。
+- 次のStepはメールPrivacy・保護設定確認。古いPR参照のSupport対応はユーザーの方針により対象外。Repositoryの公開切り替えは別途判断する。
 
 ## References
 
@@ -119,3 +119,23 @@ Repositoryの公開前に個人情報の露出を抑え、Source Codeの利用�
 - `npm ci --ignore-scripts` と `npm audit` を実行し全依存0 vulnerabilities。統合後にlint・typecheck・unit 132件・build・E2E 33件を再実行してPASS。
 - プロフィール表示名をmentamaruへ変更する件は、アカウント全体に影響するため別途承認待ち。過去Actions 241件の削除も承認待ち。監査後に発生した実行は、削除の実施時に再確認する。
 - 公開準備の変更は検証済みmainに反映する。旧PR参照・旧Actions・プロフィールの残作業があるため、公開準備全体は未完了とする。
+
+### Actions履歴削除と残存PR参照の扱い
+
+- 2026-10-22、ユーザーが個人情報を含むActions履歴の削除を明示承認。古いPR参照はSupportが必要なら除去を見送る方針を受領。
+- 削除直前に334実行を再検査し、対象241件を特定。全241件のメタデータに対象個人情報、うち3件の取得済みログに人名が一致した。
+- 最新一覧・対象ID・取得可能な追加ログをRepository外の非公開バックアップへ保存。再取得不可ログは8件あり、すべてのログ内容を検査できたとは扱わない。
+- 削除時は実行ID・完了状態・対象情報を再照合し、対象外の履歴は保持する。削除後のAPI一覧で対象IDとメタデータ中の対象個人情報の残存を検証する。
+- GitHub表示名は `mentamaru` を確認。プロフィール変更はこちらでは実施していない。
+- 先のmain CI（run 39726018076）は成功。Security（run 39726018180）はCode scanning未有効により結果アップロードが失敗。Security全体をPASSと扱わず、公開時の設定確認として残す。
+
+
+### Actions削除の完了記録（2026-10-22）
+
+- `gh api` 経由で対象241件の実行履歴を削除。全件成功。
+- 削除後に全実行を再取得し、対象IDの残存0件、残る実行メタデータの対象氏名・個人メール一致0件を確認。
+- 削除前334件 − 承認対象241件 = 残存93件。対象外93件のID集合が完全に一致することを検証し、対象外の履歴を保持した。
+- 操作結果・削除前後のメタデータ・取得可能なログはRepository外の非公開バックアップへ保存した。削除対象IDや個人情報の実値を公開用文書へ転記しない。
+- 古いPR参照の残存はユーザーの判断で許容し、Support依頼は見送る。GitHubから個人情報を完全に除去したとは扱わない。
+- 今回のRepository変更は本ExecPlanのみ。SPEC・実装・Dependencyの変更なし。`git diff --check` はPASS。コード変更がないためlint・typecheck・unit・build・E2Eは再実行せず、直前の成功記録と区別する。
+- 残作業はメールPrivacy・Code scanning / Secret scanning / Push protection / main保護等の設定確認。公開切り替えは未実施。
