@@ -202,3 +202,10 @@ main Rulesetの適用予定payload:
 - 本PRのApprove・Mergeはユーザーの許可待ち。mainへ直接Pushしない。
 
 Owner Review設定案の検証: `git diff --check`、JSON読み込みと必須Owner Review・承認取消・例外範囲・破壊的操作禁止ルールの分離確認がPASS。`npm run lint`、`npm run typecheck`（0 errors / 0 warnings、既存hint 4件）、`npm run test:unit`（132件）、`npm run build`（7ページ）もPASS。GitHubへの実適用・App bypass・外部PRによる実際の強制確認は未実施。Dependency追加なし。
+
+### 2026-10-22: Review例外を運営者本人に限定
+
+- ユーザーの指示により、PR #52のReview例外をRepositoryRole（管理者全体）からUserへ変更。`gh api users/mentamaru`で確認したID `108460338`を指定し、PR経由のみのbypassを維持する。上記の管理者Role案はこの変更で置き換える。
+- GitHub公式REST仕様でUser actor対応を確認: https://docs.github.com/en/rest/repos/rules 。SPECも本人だけの例外に更新する。
+- GitHub Actions Appの例外は既存案のまま。GitHub側への適用・PRのMerge・公開は未実施。
+- 検証: `npm run lint`、`npm run typecheck`（0 errors、既存4 hints）、`npm run test:unit`（132件）、`npm run build`（7ページ）が成功。JSONの本人ID・User型・PR経由限定・App例外と削除/force pushの例外なしを検証し、`git diff --check`も成功。追加依存なし。実環境のRuleset強制は未検証。

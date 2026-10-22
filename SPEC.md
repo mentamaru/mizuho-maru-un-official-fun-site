@@ -867,7 +867,7 @@ Untrusted PR / ForkからSecretへアクセスできる構成を避ける。
 
 対話AgentによるPRのApprove・Mergeには、対象PRについて運営者の明示的な許可を必要とする。実装・検証・PR作成の依頼だけではApprove・Mergeを許可したものと扱わず、mainへの直接Pushで承認を回避しない。公式情報・レーダーの定期収集Workflowによる検証済みの限定自動更新は継続する。
 
-Public Repositoryのmainへの変更はPRを経由し、CODEOWNERSで全ファイルのOwnerを `@mentamaru` として、OwnerのApproveを必須とする。承認後に変更が追加された場合は再承認を必要とする。本人作成PRの自己承認不可に対応するため、Repository管理者（運営者のみ）にはPR経由のReview bypassを認める。定期収集に使用するGitHub Actions Appには通常pushの例外を認めるが、Dependabot等の更新PRはOwnerの承認対象とする。mainの削除・force push禁止は別Rulesetとし、Reviewの例外では回避できない。GitHub Actions Appの例外はWorkflow単位・変更Path単位の制限ではないため、収集Workflowの差分検証と最小権限を維持し、Workflow変更もOwnerのレビュー対象とする。
+Public Repositoryのmainへの変更はPRを経由し、CODEOWNERSで全ファイルのOwnerを `@mentamaru` として、OwnerのApproveを必須とする。承認後に変更が追加された場合は再承認を必要とする。本人作成PRの自己承認不可に対応するため、運営者 `@mentamaru`（User ID: `108460338`）本人にのみPR経由のReview bypassを認める。管理者Role全体を例外にはしない。定期収集に使用するGitHub Actions Appには通常pushの例外を認めるが、Dependabot等の更新PRはOwnerの承認対象とする。mainの削除・force push禁止は別Rulesetとし、Reviewの例外では回避できない。GitHub Actions Appの例外はWorkflow単位・変更Path単位の制限ではないため、収集Workflowの差分検証と最小権限を維持し、Workflow変更もOwnerのレビュー対象とする。
 
 ---
 
