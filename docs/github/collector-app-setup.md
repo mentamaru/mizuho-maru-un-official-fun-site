@@ -37,6 +37,11 @@ AppとSecret未登録の状態で認証成功とは扱わない。登録後、�
 
 - 保存先を決定し、必要なEnvironment設定がある場合はYAMLへ反映する。
 - App認証・検証ブランチのpush成功、ローカル必須検証成功、未検証事項を示して対象PRのMerge許可を得る。
-- GitHub Free/privateのままではRulesetの強制・App例外は検証不能。Pro等へ変更した場合だけ、専用AppのIDで設定しGETで確認する。標準Actions App ID 15368は再利用しない。
+- GitHub Free/privateのままではRulesetの強制・App例外は検証不能。今回の一時公開時（Freeでも利用可能）に、以下の設定・GET確認をMergeの必須条件として実施する。将来Pro等でprivateの保護を利用する場合も同様に確認する。
+  - インストール済みの専用Appの数値App IDを取得し、`docs/github/main-owner-review.ruleset.json`へ `actor_type: Integration` / `bypass_mode: always` の例外を追加してGitHubへ適用する。現在のJSONは本人だけの例外であり、そのままでは専用Appのmain pushを許可しない。標準Actions App ID 15368は再利用しない。
+  - 本人（User ID 108460338）の `User / pull_request` 例外を保持し、Owner承認1件・更新時の再承認を維持する。
+  - `main-protection`の削除・force push禁止と空のbypass一覧を維持する。
+  - 各RulesetのGETと `rules/branches/main` で、active状態・mainへの適用・専用AppのIDと例外・本人の例外・削除/force push禁止を確認してExecPlanへ記録する。設定拒否やGET不一致ならMergeせず原因調査し、一時公開終了時はprivateへ戻す。
+- 検証ブランチのpush成功だけをmain保護の通過確認と扱わない。Merge前は上記の設定確認、Merge後は実収集のmain push確認として区別する。
 - mainへのMerge後、通常の収集を手動実行しGenerated Dataの限定更新とCI/Deployを確認する。新規0件ならpush経路は未検証のままとする。
 - Secret未設定でMergeすると、変更のある収集は認証段階で失敗する。設定未完了のままMergeしない。

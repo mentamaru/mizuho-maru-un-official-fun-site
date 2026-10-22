@@ -214,3 +214,8 @@ sequenceDiagram
 - YAML parseとmain条件・Environment・token発行順・scope・checkout認証設定の検証成功。`bash -n scripts/push-collector.sh`、`git diff --check` 成功。
 - Ruleset JSONから拒否された標準App IDを削除し、本人のPR例外だけにした。専用AppのID確定後、例外を追加する。上記「旧案のまま」の状態はこの変更で解消。
 - App登録・実認証・検証ブランチpush・Ruleset例外・収集本番実行は未実施。一時公開もまだ行っていない。
+
+### PR #57レビュー対応（2026-10-22）
+
+- Review 5610640084の指摘を受け、登録手順の「Pro等へ変更した場合だけ」を修正。一時公開時にも専用App例外の適用・GET確認をMerge条件に明記した。本人のPR経由例外と例外なしの削除/force push禁止を維持する。
+- 検証ブランチpush、Ruleset設定確認、本番main pushの検証を区別。文書のみ変更でSPEC・実装・依存変更なし。`git diff --check`成功。lint/typecheck/unit/buildは今回再実行せず、直前の実装検証結果と区別する。
