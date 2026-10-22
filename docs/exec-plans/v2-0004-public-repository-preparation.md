@@ -111,3 +111,11 @@ Repositoryの公開前に個人情報の露出を抑え、Source Codeの利用�
 | `git diff --check` | PASS |
 
 署名は履歴変更により無効になるため保持しない。旧PR・旧commitのGitHubキャッシュ、他のclone、非公開バックアップやreflogからの完全消去は、この検証のPASSに含まない。
+
+### 並行更新の統合
+
+- mainへの通常push時に他の更新を検出して停止。Dependabot PR #43 / #44 / #45のマージ（fast-xml-parser・zod・daisyUI）を取り込み、他の作業を保持した。
+- その3マージにGitHubプロフィールの人名が再混入していたため、3マージとその子コミットを追加匿名化。全4コミットのtree一致を確認した。
+- `npm ci --ignore-scripts` と `npm audit` を実行し全依存0 vulnerabilities。統合後にlint・typecheck・unit 132件・build・E2E 33件を再実行してPASS。
+- プロフィール表示名をmentamaruへ変更する件は、アカウント全体に影響するため別途承認待ち。過去Actions 241件の削除も承認待ち。監査後に発生した実行は、削除の実施時に再確認する。
+- 公開準備の変更は検証済みmainに反映する。旧PR参照・旧Actions・プロフィールの残作業があるため、公開準備全体は未完了とする。
