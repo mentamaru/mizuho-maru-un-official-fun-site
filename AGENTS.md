@@ -150,6 +150,16 @@ CSP等を安易に緩和してTestを通さない。
 
 Dependency追加時はSupply Chain Riskも考慮する。
 
+## Pull Request Approval
+
+AgentによるPRのApprove・Mergeは、対象PRについてユーザーの明示的な許可を得てから実行する。
+
+実装・検証・Commit・作業BranchへのPush・PR作成の依頼を、Approve・Mergeの許可と解釈しない。
+
+承認を回避するためにmainへ直接Pushしない。
+
+SPECで定義された定期収集Workflowの限定的な自動更新は、この対話AgentのPR承認ルールとは別に扱う。
+
 ## Completion Report
 
 作業完了時には以下を報告する。

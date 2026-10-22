@@ -177,3 +177,13 @@ main Rulesetの適用予定payload:
 - https://docs.github.com/en/code-security/how-tos/secure-your-secrets/detect-secret-leaks/enable-secret-scanning
 - https://docs.github.com/en/rest/repos/rules
 - https://docs.github.com/en/rest/actions/permissions
+
+### PRの承認方針（2026-10-22）
+
+- ユーザーはPR承認に本人の許可を必要とする条件を提示した。対話Agentが対象PRの明示的な許可なくApprove・MergeしないことをAGENTS.mdとSPECへ明記。mainへの直接Pushによる回避も禁止する。
+- 定期収集Workflowの検証済み限定更新は維持する。
+- GitHub上でもCODEOWNERSと必須Reviewで強制するか、対話Agentの運用ルールとするかは確認中。既存のmain-protection案は破壊的更新の禁止のみであり、本人の必須Reviewを保証する設定ではない。
+- GitHubのPR作成者は自身のPRをApproveできない。GitHub設定で強制する場合、本人作成PR・本人の管理者権限・定期収集Botの例外を区別し、許可されていない自動Merge経路を作らない。
+- 現在のRepository管理者はmentamaruのみ。GitHub Actions App IDは15368と確認したが、ルールのbypass対象として設定できるかは未検証。
+- 本変更は作業BranchとPRで提示し、Approve・Merge・mainへの直接Pushを行わない。公開・保護ルールの適用は、上記の意図が確定してから実施する。
+- 文書のみの変更。Dependency追加なし。`git diff --check` はPASS。lint・typecheck・unit・buildは再実行していない。

@@ -865,6 +865,8 @@ Write Permissionが必要なWorkflowだけ明示的に追加する。
 
 Untrusted PR / ForkからSecretへアクセスできる構成を避ける。
 
+対話AgentによるPRのApprove・Mergeには、対象PRについて運営者の明示的な許可を必要とする。実装・検証・PR作成の依頼だけではApprove・Mergeを許可したものと扱わず、mainへの直接Pushで承認を回避しない。公式情報・レーダーの定期収集Workflowによる検証済みの限定自動更新は継続する。
+
 ---
 
 ## 29. Secrets
