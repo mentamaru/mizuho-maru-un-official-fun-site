@@ -177,3 +177,35 @@ main Rulesetの適用予定payload:
 - https://docs.github.com/en/code-security/how-tos/secure-your-secrets/detect-secret-leaks/enable-secret-scanning
 - https://docs.github.com/en/rest/repos/rules
 - https://docs.github.com/en/rest/actions/permissions
+
+### PRの承認方針（2026-10-22）
+
+- ユーザーはPR承認に本人の許可を必要とする条件を提示した。対話Agentが対象PRの明示的な許可なくApprove・MergeしないことをAGENTS.mdとSPECへ明記。mainへの直接Pushによる回避も禁止する。
+- 定期収集Workflowの検証済み限定更新は維持する。
+- GitHub上でもCODEOWNERSと必須Reviewで強制することをユーザーが選択済み。既存のmain-protection案は破壊的更新の禁止のみであり、本人の必須Reviewを保証する設定ではない。
+- GitHubのPR作成者は自身のPRをApproveできない。GitHub設定で強制する場合、本人作成PR・本人の管理者権限・定期収集Botの例外を区別し、許可されていない自動Merge経路を作らない。
+- 現在のRepository管理者はmentamaruのみ。GitHub Actions App IDは15368と確認したが、ルールのbypass対象として設定できるかは未検証。
+- 本変更は作業BranchとPRで提示し、Approve・Merge・mainへの直接Pushを行わない。公開・保護ルールの適用は、CODEOWNERS等を含むこのPRのmain反映後に実施する。
+- 文書のみの変更。Dependency追加なし。`git diff --check` はPASS。lint・typecheck・unit・buildは再実行していない。
+
+
+### 確定したOwner Review設定案
+
+- ユーザーはGitHub上でも本人のApproveを必須とし、本人とBotを例外にする方針を確認した。
+- `.github/CODEOWNERS` は全ファイルを `@mentamaru` に割り当てる。CODEOWNERS自体とWorkflowの変更も対象。
+- `docs/github/main-owner-review.ruleset.json` はApprove 1件とCode Owner承認を必須化し、更新時に承認を取り消す。管理者にはPR経由だけのbypassを設定する。現在の管理者はmentamaruのみであり、将来管理者を追加する場合は例外の対象が広がることを確認する。
+- GitHub Actions App（15368）は既存の公式情報・レーダー収集の通常pushを維持するための例外。すべてのBotへの包括的な例外やDependabot PRの自動承認・自動Mergeは設定しない。
+- App例外は特定Workflow・JSONパスに技術的に限定されない。既存Workflowの差分検査・最小権限を維持し、Workflow変更もOwner Reviewで保護する。
+- `docs/github/main-protection.ruleset.json` は削除・force pushを例外なしで禁止する。Review用Rulesetを分離し、管理者やAppのReview例外で削除・force pushも許可される状態を避ける。
+- JSONは適用予定の設定であり、GitHubへの適用結果ではない。現在privateでRulesets APIが403のため、実環境のApp bypass受理は公開後に確認する。APIが拒否した場合にReview必須を黙って弱めたり、別の広い例外へ置換しない。
+- 同じユーザー資格情報で動く対話Agentと本人の操作はGitHubだけでは区別できない。AGENTS.mdの対象PRへの明示許可ルールも維持する。
+- 本PRのApprove・Mergeはユーザーの許可待ち。mainへ直接Pushしない。
+
+Owner Review設定案の検証: `git diff --check`、JSON読み込みと必須Owner Review・承認取消・例外範囲・破壊的操作禁止ルールの分離確認がPASS。`npm run lint`、`npm run typecheck`（0 errors / 0 warnings、既存hint 4件）、`npm run test:unit`（132件）、`npm run build`（7ページ）もPASS。GitHubへの実適用・App bypass・外部PRによる実際の強制確認は未実施。Dependency追加なし。
+
+### 2026-10-22: Review例外を運営者本人に限定
+
+- ユーザーの指示により、PR #52のReview例外をRepositoryRole（管理者全体）からUserへ変更。`gh api users/mentamaru`で確認したID `108460338`を指定し、PR経由のみのbypassを維持する。上記の管理者Role案はこの変更で置き換える。
+- GitHub公式REST仕様でUser actor対応を確認: https://docs.github.com/en/rest/repos/rules 。SPECも本人だけの例外に更新する。
+- GitHub Actions Appの例外は既存案のまま。GitHub側への適用・PRのMerge・公開は未実施。
+- 検証: `npm run lint`、`npm run typecheck`（0 errors、既存4 hints）、`npm run test:unit`（132件）、`npm run build`（7ページ）が成功。JSONの本人ID・User型・PR経由限定・App例外と削除/force pushの例外なしを検証し、`git diff --check`も成功。追加依存なし。実環境のRuleset強制は未検証。
