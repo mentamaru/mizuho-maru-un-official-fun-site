@@ -30,7 +30,7 @@
   "license": "MIT",
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
-    "astro": "^7.3.2",
+    "astro": "^7.3.3",
     "fast-xml-parser": "^5.11.2",
     "openai": "^7.39.0",
     "yaml": "^2.9.1",
