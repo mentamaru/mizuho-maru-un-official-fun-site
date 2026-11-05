@@ -1,0 +1,81 @@
+[
+  {
+    "id": "radar-d337aa59acad011d",
+    "discoveredAt": "2026-11-05T13:25:05.624+09:00",
+    "title": "第53回瑞穂町産業まつりで「みずほまる」なりきりバイザーづくり",
+    "summary": "瑞穂町産業まつりの会場で、みずほまるの「なりきりバイザーづくり」ワークショップが行われます。両日とも午前10時から、テントNo.8・9で実施される予定です。",
+    "category": "event",
+    "date": "2026-10-30",
+    "tags": [
+      "event"
+    ],
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-15",
+    "dateType": "updated",
+    "source": {
+      "name": "瑞穂町公式サイト",
+      "url": "https://www.town.mizuho.tokyo.jp/event/e011/p006470.html"
+    },
+    "researchSources": [
+      {
+        "title": "第53回瑞穂町産業まつり",
+        "url": "https://www.town.mizuho.tokyo.jp/event/e011/p006470.html"
+      }
+    ],
+    "thumbnailUrl": "https://www.town.mizuho.tokyo.jp/share/imgs/image-cover.jpg"
+  },
+  {
+    "id": "radar-a97f2039b356e696",
+    "discoveredAt": "2026-11-05T13:25:05.624+09:00",
+    "title": "産業まつりで「みずほまる」スタンプラリーを実施",
+    "summary": "第53回瑞穂町産業まつりで、みずほまるのスタンプを集める企画が行われます。スタンプを集めた参加者には、ベビーカステラまたは綿菓子がプレゼントされますが、数量には限りがあります。",
+    "category": "campaign",
+    "date": "2026-10-30",
+    "tags": [
+      "campaign",
+      "event",
+      "giveaway",
+      "food"
+    ],
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-15",
+    "dateType": "updated",
+    "source": {
+      "name": "瑞穂町公式サイト",
+      "url": "https://www.town.mizuho.tokyo.jp/event/e011/p006470.html"
+    },
+    "researchSources": [
+      {
+        "title": "第53回瑞穂町産業まつり",
+        "url": "https://www.town.mizuho.tokyo.jp/event/e011/p006470.html"
+      }
+    ],
+    "thumbnailUrl": "https://www.town.mizuho.tokyo.jp/share/imgs/image-cover.jpg"
+  },
+  {
+    "id": "radar-105d6f72bad7409f",
+    "discoveredAt": "2026-11-05T13:25:05.624+09:00",
+    "title": "第53回瑞穂町産業まつりで「みずほまる」ぬいぐるみを販売",
+    "summary": "産業まつり会場のテントNo.7で、みずほまるのぬいぐるみがカプセルトイ方式で販売されます。価格は1回500円で、11月14日・15日の両日とも午前10時から販売予定です。",
+    "category": "sale",
+    "date": "2026-10-30",
+    "tags": [
+      "sale",
+      "goods"
+    ],
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-15",
+    "dateType": "updated",
+    "source": {
+      "name": "瑞穂町公式サイト",
+      "url": "https://www.town.mizuho.tokyo.jp/event/e011/p006470.html"
+    },
+    "researchSources": [
+      {
+        "title": "第53回瑞穂町産業まつり",
+        "url": "https://www.town.mizuho.tokyo.jp/event/e011/p006470.html"
+      }
+    ],
+    "thumbnailUrl": "https://www.town.mizuho.tokyo.jp/share/imgs/image-cover.jpg"
+  }
+]
