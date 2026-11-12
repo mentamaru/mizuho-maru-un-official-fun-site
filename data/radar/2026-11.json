@@ -77,5 +77,59 @@
       }
     ],
     "thumbnailUrl": "https://www.town.mizuho.tokyo.jp/share/imgs/image-cover.jpg"
+  },
+  {
+    "id": "radar-0a02edbfe83c8f1c",
+    "discoveredAt": "2026-11-12T13:25:07.813+09:00",
+    "title": "第53回瑞穂町産業まつりにみずほまるが登場",
+    "summary": "2026年11月14日・15日に開催される第53回瑞穂町産業まつりに、瑞穂町公式キャラクター「みずほまる」が登場します。公式チラシでは、町営第2グランドで開催されるイベントの案内とともに「みずほまるも来るよ」と告知されています。",
+    "category": "appearance",
+    "date": "2026-11-14",
+    "tags": [
+      "event",
+      "appearance"
+    ],
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-15",
+    "dateType": "event",
+    "source": {
+      "name": "瑞穂町公式サイト・第53回瑞穂町産業まつり",
+      "url": "https://www.town.mizuho.tokyo.jp/event/e011/p006470.html"
+    },
+    "researchSources": [
+      {
+        "title": "第53回瑞穂町産業まつり",
+        "url": "https://www.town.mizuho.tokyo.jp/event/e011/p006470.html"
+      },
+      {
+        "title": "2026産業まつりチラシ（PDF）",
+        "url": "https://www.town.mizuho.tokyo.jp/event/e011/p006470_d/fil/R8tirashi.pdf"
+      }
+    ],
+    "thumbnailUrl": "https://www.town.mizuho.tokyo.jp/share/imgs/image-cover.jpg"
+  },
+  {
+    "id": "radar-1865c389d38b8edc",
+    "discoveredAt": "2026-11-12T13:25:07.813+09:00",
+    "title": "広報みずほ11月号で「みずほまるを探せ」企画を実施",
+    "summary": "『広報みずほ』令和8年11月号では、紙面の中に隠された「みずほまる」のイラスト2か所を探す企画が掲載されています。正解は次号で知らせる予定と案内されており、広報紙を使った新しい参加型の話題です。",
+    "category": "campaign",
+    "date": null,
+    "tags": [
+      "campaign"
+    ],
+    "startDate": null,
+    "endDate": null,
+    "dateType": "other",
+    "source": {
+      "name": "瑞穂町公式サイト・広報みずほ令和8年11月号",
+      "url": "https://www.town.mizuho.tokyo.jp/tyosei/015/001/p011556_d/fil/R8-11.pdf"
+    },
+    "researchSources": [
+      {
+        "title": "広報みずほ 令和8年11月号 16ページ",
+        "url": "https://www.town.mizuho.tokyo.jp/tyosei/015/001/p011556_d/fil/R8-11.pdf"
+      }
+    ]
   }
 ]
