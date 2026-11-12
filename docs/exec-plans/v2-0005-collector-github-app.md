@@ -4,7 +4,7 @@
 
 ## 状態と目的
 
-2026-10-22作成。PR #57でWorkflow実装とローカル検証済み。App登録、秘密鍵設定、専用AppのRuleset例外適用、実環境テストは未実施。
+2026-10-22作成。PR #57でWorkflow実装とローカル検証済み。App登録は2026-11-12に本人申告あり。秘密鍵設定、専用AppのRuleset例外適用、実環境テストは未実施。
 
 他の人のPRは運営者 `@mentamaru` の承認必須とし、公式情報・レーダーの検証済みGenerated Dataだけは毎週自動反映を継続する。GitHub Actionsで処理を実行し、収集専用GitHub AppのInstallation tokenでpushする。新しい常駐サーバー、Database、個人用PATは追加しない。
 
@@ -225,3 +225,10 @@ sequenceDiagram
 - ユーザーはProへ移行せず、公開Repositoryとして利用する方針を再確認。運用手順のProへの言及を除去し、Freeで一時公開して検証する構成に統一した。
 - Browserスキルで登録画面への接続を試みたが、利用可能なブラウザーは0件で操作できなかった。App登録・インストールは本人操作が必要。Repositoryはprivateのままで、専用AppのVariable/Secretはまだ登録されていない（秘密値は取得せず名前だけ確認）。
 - 前回ネットワーク制限で再試行した `npm audit --ignore-scripts` は完了し、全依存0 vulnerabilities。今回の文書変更は `git diff --check` 成功。コードのテスト/buildは直前の成功結果を使用し再実行していない。
+
+### 2026-11-12: 専用App識別情報を受領
+
+- 本人からOwner `mentamaru`、App ID `5724378`、Client ID `Iv23liYUGq8OjI8G1fhk`を受領。Ruleset JSONへ専用AppのIntegration/always例外を追加し、本人のUser/pull_request例外と削除・force push禁止を維持した。
+- 通常のCLI認証によるApp取得は404、user/installationsは対応するApp認証が必要として403。未登録と断定せず、秘密鍵によるApp認証でID・Owner・権限・対象Installationを検証する。
+- インストール状況と秘密鍵のローカル保存先を確認中。秘密値はチャットやRepositoryへ保存しない。実環境の設定変更・公開変更はまだ行っていない。
+- 今回の検証: lint・typecheck（既存4 hints）・unit 138件・build 7ページ成功。Ruleset payloadの本人/App例外と破壊的更新禁止の例外なしを確認、git diff --check成功。npm依存追加・SPEC変更なし。実環境の権限・認証の検証は未完了。

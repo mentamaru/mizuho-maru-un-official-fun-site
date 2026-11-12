@@ -2,6 +2,14 @@
 
 実装はPRでレビューする。準備中はprivateを維持する。ユーザー承認により実検証中だけ一時公開し、検証後は非公開へ戻す。プラン完了後に正式公開する。明示許可なしにMergeしない。
 
+## 登録済みApp（2026-11-12、本人提供）
+
+- Owner: `mentamaru`
+- Name: `mizuho-maru-collector`
+- App ID: `5724378`（Ruleset用）
+- Client ID: `Iv23liYUGq8OjI8G1fhk`（Environment Variable用）
+- 権限・Installation・秘密鍵との一致はApp認証後に検証する。IDの受領だけでは検証済みとしない。
+
 ## 登録する内容
 
 1. https://github.com/settings/apps/new を開く。
