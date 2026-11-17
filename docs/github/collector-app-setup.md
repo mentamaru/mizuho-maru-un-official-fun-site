@@ -1,0 +1,55 @@
+# 収集専用Appの登録と検証
+
+実装はPRでレビューする。準備中はprivateを維持する。ユーザー承認により実検証中だけ一時公開し、検証後は非公開へ戻す。プラン完了後に正式公開する。明示許可なしにMergeしない。
+
+## 登録済みApp（2026-11-12、本人提供）
+
+- Owner: `mentamaru`
+- Name: `mizuho-maru-collector`
+- App ID: `5724378`（Ruleset用）
+- Client ID: `Iv23liYUGq8OjI8G1fhk`（Environment Variable用）
+- 権限・Installation・秘密鍵との一致はApp認証後に検証する。IDの受領だけでは検証済みとしない。
+
+## 登録する内容
+
+1. https://github.com/settings/apps/new を開く。
+2. GitHub App name: `mizuho-maru-collector`（使用済みなら一意な接尾辞を付ける）。
+3. Homepage URL: このRepositoryのGitHub URL。
+4. WebhookのActiveをOFF。OAuth callback、ユーザー代理認証は不要。
+5. Repository permissions: ContentsをRead and write。MetadataのReadは必須。その他の追加権限はなし。
+6. インストール先はOnly on this account。作成後Install AppからOnly select repositoriesでこのRepositoryだけを選ぶ。
+7. Client IDとApp IDを記録する。Ruleset用はApp IDで、Client IDとは異なる。
+8. Generate a private keyで鍵を取得する。秘密鍵はチャットやGitへ貼らない。
+
+## Secret保存先（一時公開時に設定）
+
+`collector-publish` Environmentを作成し、selected deployment branchesのbranch `main`だけを許可する。両collect jobはこのEnvironmentを参照する。Required reviewersは設定しない。
+
+Environment Variable `COLLECTOR_APP_CLIENT_ID` とSecret `COLLECTOR_APP_PRIVATE_KEY`を登録する。秘密鍵は安全なローカルファイルから `gh secret set COLLECTOR_APP_PRIVATE_KEY --env collector-publish --repo mentamaru/mizuho-maru-un-official-fun-site` の標準入力へ渡す。値を引数やチャットへ貼らない。Repository Secret方式には切り替えない。
+
+検証後にprivateへ戻した期間は、現プランではこのEnvironmentを使用できない可能性がある。正式公開までの収集成功を保証しない。
+
+## マージ前の実動作検証
+
+AppとSecret未登録の状態で認証成功とは扱わない。登録後、実装ブランチの確認済みコードと専用Appで以下を実施し、結果をExecPlanへ記録する。
+
+- Installation tokenの発行と対象Repository限定・Contents writeを確認する。
+- 本番mainへの直接pushを試さず、最新mainと同じcommitを指す一時ブランチ `verification/collector-app-<一意な番号>` をApp認証で作成する。
+- 同ブランチの参照を読み戻してSHA一致を確認し、作成した検証ブランチだけを削除する。mainや既存の他ブランチを操作しない。後続CI/Vercelが起動した場合は確認する。
+- tokenを失効し、ログ・Git remote・Git configへ秘密値を残さない。
+- これはAppの書き込み権限の検証であって、収集からmainへの反映やRuleset bypassの検証ではない。
+
+一時ブランチの検証専用Workflowを恒久追加する必要はない。ローカルで安全にtokenを管理して実施するか、レビュー済みの一時Workflowを使う。Environment方式ではmain以外から本番Secretを取り出して制限を回避しない。
+
+## マージ条件と本番確認
+
+- 一時公開中にmain限定の `collector-publish` EnvironmentとVariable/Secretを設定し、両WorkflowのEnvironment参照と一致することを確認する。
+- App認証・検証ブランチのpush成功、ローカル必須検証成功、未検証事項を示して対象PRのMerge許可を得る。
+- GitHub Free/privateのままではRulesetの強制・App例外は検証不能。今回の一時公開時（Freeでも利用可能）に、以下の設定・GET確認をMergeの必須条件として実施する。Proへの移行・課金は今回の対象外とし、Freeの公開Repositoryとして検証・正式運用する。
+  - インストール済みの専用Appの数値App IDを取得し、`docs/github/main-owner-review.ruleset.json`へ `actor_type: Integration` / `bypass_mode: always` の例外を追加してGitHubへ適用する。現在のJSONは本人だけの例外であり、そのままでは専用Appのmain pushを許可しない。標準Actions App ID 15368は再利用しない。
+  - 本人（User ID 108460338）の `User / pull_request` 例外を保持し、Owner承認1件・更新時の再承認を維持する。
+  - `main-protection`の削除・force push禁止と空のbypass一覧を維持する。
+  - 各RulesetのGETと `rules/branches/main` で、active状態・mainへの適用・専用AppのIDと例外・本人の例外・削除/force push禁止を確認してExecPlanへ記録する。設定拒否やGET不一致ならMergeせず原因調査し、一時公開終了時はprivateへ戻す。
+- 検証ブランチのpush成功だけをmain保護の通過確認と扱わない。Merge前は上記の設定確認、Merge後は実収集のmain push確認として区別する。
+- mainへのMerge後、通常の収集を手動実行しGenerated Dataの限定更新とCI/Deployを確認する。新規0件ならpush経路は未検証のままとする。
+- Secret未設定でMergeすると、変更のある収集は認証段階で失敗する。設定未完了のままMergeしない。

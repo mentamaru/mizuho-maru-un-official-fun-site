@@ -1,0 +1,25 @@
+{
+  "name": "main-required-checks",
+  "target": "branch",
+  "enforcement": "active",
+  "conditions": {
+    "ref_name": { "include": ["refs/heads/main"], "exclude": [] }
+  },
+  "bypass_actors": [
+    { "actor_id": 5724378, "actor_type": "Integration", "bypass_mode": "always" }
+  ],
+  "rules": [
+    {
+      "type": "required_status_checks",
+      "parameters": {
+        "strict_required_status_checks_policy": true,
+        "do_not_enforce_on_create": false,
+        "required_status_checks": [
+          { "context": "verify", "integration_id": 15368 },
+          { "context": "dependency-review", "integration_id": 15368 },
+          { "context": "codeql", "integration_id": 15368 }
+        ]
+      }
+    }
+  ]
+}
