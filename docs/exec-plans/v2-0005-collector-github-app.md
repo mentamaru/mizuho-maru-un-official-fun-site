@@ -1,10 +1,10 @@
 # v2-0005: 収集専用GitHub Appによる自動反映
 
-> **現在の方針（2026-10-22）**: ユーザーの明示指示でRepositoryを非公開へ戻した。GitHub APIで `private: true` / `visibility: private` を確認済み。ユーザーが改めて明示的に公開を指示するまで、公開へ変更しない。過去の公開承認を再公開の許可として使わない。本書内のpublic前提の計画・検証結果は当時の記録であり、現在の利用可能な保護機能を保証しない。専用App導入は進めず、次の指示を待つ。
+> **現在の方針（2026-10-22、最新指示）**: ユーザーは非公開での実装再開と、App実動作検証中だけの一時公開を明示承認した。App登録・実装準備後に一時公開し、検証成功・失敗を問わず検証後はいったん非公開へ戻す。その後プラン完了時に正式公開する。対象PRのMergeは個別許可を得る。以下の非公開維持・作業停止記録は以前の判断として保持する。
 
 ## 状態と目的
 
-2026-10-22作成。設計段階。App登録、秘密鍵作成、Workflow変更、Ruleset変更、実環境テストは未実施。
+2026-10-22作成。PR #57でWorkflow実装とローカル検証済み。App登録は2026-11-12に本人申告あり。秘密鍵設定、専用AppのRuleset例外適用、実環境テストは未実施。
 
 他の人のPRは運営者 `@mentamaru` の承認必須とし、公式情報・レーダーの検証済みGenerated Dataだけは毎週自動反映を継続する。GitHub Actionsで処理を実行し、収集専用GitHub AppのInstallation tokenでpushする。新しい常駐サーバー、Database、個人用PATは追加しない。
 
@@ -196,3 +196,39 @@ sequenceDiagram
 - 公開・自動化設定の追加作業は停止。再公開は新たな明示指示がある場合のみ実施する。
 - 非公開化後のRuleset等の強制状態は再検証していない。公開時の成功記録と区別する。
 - この操作はGitHub Repositoryの可視性変更であり、Vercelサイトを非公開にする操作ではない。
+
+## 2026-10-22: 実装再開と一時公開による検証
+
+- ユーザーが実装・動作検証を承認。private/freeではRuleset APIが403、mainはprotected falseで、Environment制限も使えない。Repository Secretへの変更を検討したが、ユーザーは一時公開での検証を選択した。Repository Secret方式は採用しない。
+- App登録とローカル検証を先に済ませる。検証直前に一時公開し、main保護・専用App例外の受理を確認してからmain限定Environmentを設定する。公開中の検証が失敗した場合もprivateへ戻し、その状態をGETで確認する。実装PRのMergeは個別承認を必要とする。
+- マージ前のApp認証・検証ブランチpushは本番Environmentのmain制限を回避して行わない。安全なローカル認証で一時検証ブランチを作成・SHA確認・削除する。秘密鍵はGit/ログ/チャットへ出さない。mainでの実収集検証は対象PRのMerge許可後に行う。
+- 一時検証終了後は非公開へ戻す。private/freeではEnvironmentを使用する収集は利用できない可能性があるため、その期間の自動収集成功を保証しない。正式公開はプラン完了後とし、未検証や未解決を残して完了扱いしない。
+- 公式token発行Action v3のSHA `64ab729a6294000f5aa4a4bc0b73d1f32bc45510`を確認して固定。npm依存追加なし。
+- 両Workflowにmain限定・Environment・Contents read・checkout認証非永続化・検証後App token発行・App Bot author・共通push helperを追加。
+- TDD: push helper未実装時のテスト失敗を確認。main以外・別repo・tokenなしの拒否とpush失敗伝播、tokenがargvへ出ないことをstubで検証する。GitHub実pushとは区別する。
+- App登録手順は `docs/github/collector-app-setup.md`。App登録と秘密鍵設定は未実施。Ruleset JSONの旧App IDは専用App ID確定後に置換し、それまでは適用しない。
+
+### 実装ドラフトのローカル検証
+
+- `npm run lint` / `npm run typecheck` 成功（既存4 hints）。`npm run test:unit` は15ファイル138件成功。`npm run build` は7ページ成功。
+- YAML parseとmain条件・Environment・token発行順・scope・checkout認証設定の検証成功。`bash -n scripts/push-collector.sh`、`git diff --check` 成功。
+- Ruleset JSONから拒否された標準App IDを削除し、本人のPR例外だけにした。専用AppのID確定後、例外を追加する。上記「旧案のまま」の状態はこの変更で解消。
+- App登録・実認証・検証ブランチpush・Ruleset例外・収集本番実行は未実施。一時公開もまだ行っていない。
+
+### PR #57レビュー対応（2026-10-22）
+
+- Review 5610640084の指摘を受け、登録手順の「Pro等へ変更した場合だけ」を修正。一時公開時にも専用App例外の適用・GET確認をMerge条件に明記した。本人のPR経由例外と例外なしの削除/force push禁止を維持する。
+- 検証ブランチpush、Ruleset設定確認、本番main pushの検証を区別。文書のみ変更でSPEC・実装・依存変更なし。`git diff --check`成功。lint/typecheck/unit/buildは今回再実行せず、直前の実装検証結果と区別する。
+
+### 登録準備の確認（2026-10-22）
+
+- ユーザーはProへ移行せず、公開Repositoryとして利用する方針を再確認。運用手順のProへの言及を除去し、Freeで一時公開して検証する構成に統一した。
+- Browserスキルで登録画面への接続を試みたが、利用可能なブラウザーは0件で操作できなかった。App登録・インストールは本人操作が必要。Repositoryはprivateのままで、専用AppのVariable/Secretはまだ登録されていない（秘密値は取得せず名前だけ確認）。
+- 前回ネットワーク制限で再試行した `npm audit --ignore-scripts` は完了し、全依存0 vulnerabilities。今回の文書変更は `git diff --check` 成功。コードのテスト/buildは直前の成功結果を使用し再実行していない。
+
+### 2026-11-12: 専用App識別情報を受領
+
+- 本人からOwner `mentamaru`、App ID `5724378`、Client ID `Iv23liYUGq8OjI8G1fhk`を受領。Ruleset JSONへ専用AppのIntegration/always例外を追加し、本人のUser/pull_request例外と削除・force push禁止を維持した。
+- 通常のCLI認証によるApp取得は404、user/installationsは対応するApp認証が必要として403。未登録と断定せず、秘密鍵によるApp認証でID・Owner・権限・対象Installationを検証する。
+- インストール状況と秘密鍵のローカル保存先を確認中。秘密値はチャットやRepositoryへ保存しない。実環境の設定変更・公開変更はまだ行っていない。
+- 今回の検証: lint・typecheck（既存4 hints）・unit 138件・build 7ページ成功。Ruleset payloadの本人/App例外と破壊的更新禁止の例外なしを確認、git diff --check成功。npm依存追加・SPEC変更なし。実環境の権限・認証の検証は未完了。

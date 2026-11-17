@@ -490,7 +490,7 @@ Web Page取得が必要な場合は低頻度とする。
 
 「瑞穂丸」は無関係な同名対象が存在するため、安易なKeywordとして使用しない。
 
-公式情報は `https://www.town.mizuho.tokyo.jp/bunka/news.xml` だけを毎週木曜日に取得する。タイトルに「みずほまる」を含む記事、またはRSS categoryが「みずほまる情報」の記事だけを対象とする。AIは使用しない。RSS以外のSourceは自動収集せず、公式リンク集として案内する。既存の収集済みデータは引き継がない。Generated Dataは `data/official/YYYY-MM.json` に収集時点のAsia/Tokyo年月で分割し、URLで重複排除する。主な情報元ページの `og:image` が、公開IPへ解決するHTTPS URLであり、リダイレクト先を含めて画像として取得できた場合のみ、任意の `thumbnailUrl` を保持して公式情報のトップ表示と一覧で遅延読み込みサムネイルを表示する。既存データは保持し、既存URLをOGP取得の対象にしない。OGP未設定・取得失敗・非公開宛先の記事に画像情報は追加せず、画像なしで表示する。新規0件ではファイル変更・空commitを作らない。Actionsはレーダーと同じく、実行月の単一JSONのみを変更可能とする差分検証、lint、typecheck、unit test、build、E2E testの成功後にのみmainへ反映する。SecretやPATは使用しない。
+公式情報は `https://www.town.mizuho.tokyo.jp/bunka/news.xml` だけを毎週木曜日に取得する。タイトルに「みずほまる」を含む記事、またはRSS categoryが「みずほまる情報」の記事だけを対象とする。AIは使用しない。RSS以外のSourceは自動収集せず、公式リンク集として案内する。既存の収集済みデータは引き継がない。Generated Dataは `data/official/YYYY-MM.json` に収集時点のAsia/Tokyo年月で分割し、URLで重複排除する。主な情報元ページの `og:image` が、公開IPへ解決するHTTPS URLであり、リダイレクト先を含めて画像として取得できた場合のみ、任意の `thumbnailUrl` を保持して公式情報のトップ表示と一覧で遅延読み込みサムネイルを表示する。既存データは保持し、既存URLをOGP取得の対象にしない。OGP未設定・取得失敗・非公開宛先の記事に画像情報は追加せず、画像なしで表示する。新規0件ではファイル変更・空commitを作らない。Actionsはレーダーと同じく、実行月の単一JSONのみを変更可能とする差分検証、lint、typecheck、unit test、build、E2E testの成功後にのみmainへ反映する。pushには収集専用GitHub AppのInstallation tokenを使用し、App秘密鍵をGitHub Actions Secretで管理する。個人用PATは使用しない。
 
 ### 16.2 AI Summary
 
@@ -551,7 +551,7 @@ OpenAI Responses APIのWeb Searchを用い、「みずほまる」の現在性�
 
 データ単位は1回の実行ではなく、1つの独立ニュースにつき1要素とする。`data/radar/YYYY-MM.json` は `discoveredAt` のAsia/Tokyo年月で分割し、`id`、title、summary、category、tags、date、dateType、startDate、endDate、discoveredAt、source、researchSourcesを保持する。主な情報元ページの `og:image` が、公開IPへ解決するHTTPS URLであり、リダイレクト先を含めて画像として取得できた場合のみ、任意の `thumbnailUrl` を保持する。第三者画像をRepositoryへ保存・転載せず、レーダーのトップ表示と一覧では `thumbnailUrl` があるカードに遅延読み込みのサムネイルを表示する。OGP未設定・取得失敗・壊れた画像URL・非公開宛先の場合はデータを変更せず、画像を表示しない。表示は必ず `discoveredAt DESC` とし、レーダー一覧では年月絞り込みを提供する。
 
-GitHub Actionsは毎週木曜日のJST 13:17頃の定期実行と `workflow_dispatch` を提供する。新情報が0件ならファイル変更・空commitをせず正常終了する。通常実行で書き込めるのは実行月の単一 `data/radar/YYYY-MM.json` のみとし、tracked・untrackedの両方を含むGit差分検査、lint、typecheck、test、buildがすべて成功した場合だけmainへ自動反映する。`OPENAI_API_KEY`以外のSecretやPATは不要とし、main保護導入時は最小権限のGitHub Actions botによるこの限定更新を許可する設定とする。
+GitHub Actionsは毎週木曜日のJST 13:17頃の定期実行と `workflow_dispatch` を提供する。新情報が0件ならファイル変更・空commitをせず正常終了する。通常実行で書き込めるのは実行月の単一 `data/radar/YYYY-MM.json` のみとし、tracked・untrackedの両方を含むGit差分検査、lint、typecheck、test、buildがすべて成功した場合だけmainへ自動反映する。収集用の `OPENAI_API_KEY` とpush用の専用GitHub App秘密鍵をGitHub Actions Secretで管理する。個人用PATは使用しない。標準GITHUB_TOKENはContents readとし、全検証成功後に対象RepositoryのContents writeに絞ったInstallation tokenを発行する。main保護を利用できる場合は専用Appによる限定更新を許可する設定とする。
 
 ---
 
@@ -867,7 +867,7 @@ Untrusted PR / ForkからSecretへアクセスできる構成を避ける。
 
 対話AgentによるPRのApprove・Mergeには、対象PRについて運営者の明示的な許可を必要とする。実装・検証・PR作成の依頼だけではApprove・Mergeを許可したものと扱わず、mainへの直接Pushで承認を回避しない。公式情報・レーダーの定期収集Workflowによる検証済みの限定自動更新は継続する。
 
-Public Repositoryのmainへの変更はPRを経由し、CODEOWNERSで全ファイルのOwnerを `@mentamaru` として、OwnerのApproveを必須とする。承認後に変更が追加された場合は再承認を必要とする。本人作成PRの自己承認不可に対応するため、運営者 `@mentamaru`（User ID: `108460338`）本人にのみPR経由のReview bypassを認める。管理者Role全体を例外にはしない。定期収集に使用するGitHub Actions Appには通常pushの例外を認めるが、Dependabot等の更新PRはOwnerの承認対象とする。mainの削除・force push禁止は別Rulesetとし、Reviewの例外では回避できない。GitHub Actions Appの例外はWorkflow単位・変更Path単位の制限ではないため、収集Workflowの差分検証と最小権限を維持し、Workflow変更もOwnerのレビュー対象とする。
+Public Repositoryのmainへの変更はPRを経由し、CODEOWNERSで全ファイルのOwnerを `@mentamaru` として、OwnerのApproveを必須とする。承認後に変更が追加された場合は再承認を必要とする。本人作成PRの自己承認不可に対応するため、運営者 `@mentamaru`（User ID: `108460338`）本人にのみPR経由のReview bypassを認める。管理者Role全体を例外にはしない。定期収集に使用する専用GitHub Appには通常pushの例外を認めるが、Dependabot等の更新PRはOwnerの承認対象とする。mainの削除・force push禁止は別Rulesetとし、Reviewの例外では回避できない。専用GitHub Appの例外はWorkflow単位・変更Path単位の制限ではないため、収集Workflowの差分検証と最小権限を維持し、Workflow変更もOwnerのレビュー対象とする。
 
 ---
 
