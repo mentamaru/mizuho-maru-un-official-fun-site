@@ -6,7 +6,7 @@ on:
     - cron: '17 4 * * 4'
 
 permissions:
-  contents: write
+  contents: read
   id-token: write
 
 concurrency:
@@ -15,9 +15,13 @@ concurrency:
 
 jobs:
   collect:
+    if: github.ref == 'refs/heads/main'
+    environment: collector-publish
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: flatt-security/setup-takumi-guard-npm@v1
         with:
           bot-id: ${{ vars.TAKUMI_GUARD_BOT_ID }}
@@ -44,11 +48,28 @@ jobs:
         run: npx playwright install --with-deps chromium
       - if: steps.changed.outputs.has_changes == 'true'
         run: npm run test:e2e
+      - name: Create scoped collector App token
+        if: steps.changed.outputs.has_changes == 'true'
+        id: collector-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3
+        with:
+          client-id: ${{ vars.COLLECTOR_APP_CLIENT_ID }}
+          private-key: ${{ secrets.COLLECTOR_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: write
       - if: steps.changed.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ steps.collector-token.outputs.token }}
+          COLLECTOR_TOKEN: ${{ steps.collector-token.outputs.token }}
+          COLLECTOR_APP_SLUG: ${{ steps.collector-token.outputs.app-slug }}
         run: |
+          bot_login="${COLLECTOR_APP_SLUG}[bot]"
+          bot_id=$(gh api "users/$bot_login" --jq .id)
+          [[ "$bot_id" =~ ^[0-9]+$ ]]
+          git config user.name "$bot_login"
+          git config user.email "${bot_id}+${bot_login}@users.noreply.github.com"
           npm run verify:official-changes
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add "data/official/$OFFICIAL_MONTH.json"
           git commit -m '公式情報を更新'
-          git push origin HEAD:main
+          bash scripts/push-collector.sh

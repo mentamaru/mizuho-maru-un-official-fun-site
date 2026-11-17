@@ -3,11 +3,24 @@
   "target": "branch",
   "enforcement": "active",
   "conditions": {
-    "ref_name": { "include": ["refs/heads/main"], "exclude": [] }
+    "ref_name": {
+      "include": [
+        "refs/heads/main"
+      ],
+      "exclude": []
+    }
   },
   "bypass_actors": [
-    { "actor_id": 108460338, "actor_type": "User", "bypass_mode": "pull_request" },
-    { "actor_id": 15368, "actor_type": "Integration", "bypass_mode": "always" }
+    {
+      "actor_id": 108460338,
+      "actor_type": "User",
+      "bypass_mode": "pull_request"
+    },
+    {
+      "actor_id": 5724378,
+      "actor_type": "Integration",
+      "bypass_mode": "always"
+    }
   ],
   "rules": [
     {
