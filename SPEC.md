@@ -847,6 +847,8 @@ CSP設定後、必要なSNS Embedが正常動作することも確認する。
 * Dependabot
 * Takumi Guard by GMO
 * Dependency Review
+* Semgrep（簡易SAST。公開Registryルール `p/default` / `p/security-audit` / `p/owasp-top-ten` / `p/javascript` / `p/typescript`、Metrics無効、検出時は失敗。Secret・アカウント連携不要）
+* Trivy（`fs` スキャンで依存脆弱性・Secret・設定ミスを検査。HIGH以上かつ修正版ありで失敗。第三者Actionは使わず、公式imageをdigest固定で実行する）
 * CodeQL
 * GitHub Secret Scanning
 * Push Protection（利用可能な範囲）
@@ -854,7 +856,7 @@ CSP設定後、必要なSNS Embedが正常動作することも確認する。
 
 Public化前にもSecret漏洩を確認する。
 
-GitHub ActionsはLeast Privilegeとする。
+GitHub ActionsはLeast Privilegeとする。第三者Actionはタグ書き換え対策としてcommit SHAで固定し（バージョンはコメントで併記）、Dependabotの `cooldown`（7日）で新規公開直後のバージョン取り込みを避ける。Dependabotが更新しないSecurityツールのDocker image（Trivy・Semgrep）は、月次Workflow（`tool-versions.yml`、`issues: write` のみ追加）が新しい版をIssueで通知し、更新は手動で行う。
 
 基本Permission:
 
@@ -863,7 +865,7 @@ permissions:
   contents: read
 ```
 
-Write Permissionが必要なWorkflowだけ明示的に追加する。
+Write Permissionが必要なWorkflowだけ明示的に追加する。Takumi Guardの監査ログ連携（`TAKUMI_GUARD_BOT_ID`）を使うWorkflowは、OIDC認証のため `id-token: write` のみ追加する。OIDC tokenが発行されないFork / Dependabot起点のPRではBot IDを渡さず、匿名モード（ブロックのみ）で実行する。
 
 Untrusted PR / ForkからSecretへアクセスできる構成を避ける。
 

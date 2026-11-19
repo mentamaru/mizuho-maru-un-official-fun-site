@@ -55,7 +55,7 @@ async function main() {
 
       collected.push(...parsedItems);
     } catch (error) {
-      console.warn(`collect skipped for ${source.name}:`, error);
+      console.warn('collect skipped for %s:', source.name, error);
     }
   }
 
