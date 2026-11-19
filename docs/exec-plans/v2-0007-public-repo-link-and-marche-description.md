@@ -8,7 +8,8 @@ GitHubリポジトリ `https://github.com/mentamaru/mizuho-maru-un-official-fun-
 
 1. 公開リポジトリへのリンクを掲載する。
    - `/github` ページの文言を公開済みの案内に更新し、リポジトリへのリンクを置く。
-   - フッターの「GitHub」リンクは公開リポジトリへ直接遷移させ、外部リンクとして新しいタブで開く。
+   - フッターの「GitHub」リンクは説明ページ `/github` を経由させる（直接リポジトリへ遷移させない）。リポジトリへのリンクは `/github` ページ内に置き、新しいタブで開く。
+   - 説明文は、サイトを一緒に盛り上げてくださる方がいれば嬉しいという軽い呼びかけと、気になる点があればPull Requestを送ってほしい旨の一文（開発者募集のような重い表現にはしない）を含める。
    - URLは `siteCopy` に1か所だけ定義する。
 2. `data/social.yml` の `marumaru-mizuho-instagram` の `description` を、軽い説明文へ修正する。
    - 同じ運営の `marumaru-mizuho-x` の文言「マルシェイベントみずほまるごとマルシェのアカウントです」も不自然なため、同じ調子に揃える。
@@ -25,7 +26,7 @@ GitHubリポジトリ `https://github.com/mentamaru/mizuho-maru-un-official-fun-
 ## 実施手順
 
 1. 本ExecPlanを作成する。
-2. Red: E2Eテストを「公開済み文言・リポジトリへのリンク・フッター直リンク・Instagram/Xの新説明文」へ更新し、失敗を確認する。
+2. Red: E2Eテストを「公開済み文言・リポジトリへのリンク・フッター→`/github`・Instagram/Xの新説明文」へ更新し、失敗を確認する。
 3. Green: `siteCopy.repositoryUrl`、`/github` ページ、フッター、`data/social.yml` を更新する。
 4. SPECの該当記述（公開リポジトリ・関連SNS）を現在形に更新する。
 5. lint / typecheck / unit / build / E2E を実行する。
@@ -33,7 +34,7 @@ GitHubリポジトリ `https://github.com/mentamaru/mizuho-maru-un-official-fun-
 
 ## 完了条件
 
-- `/github` ページとフッターから公開リポジトリへ移動できる。
+- フッターから `/github` 説明ページを経由して公開リポジトリへ移動できる。
 - マルシェのInstagram / Xの説明文が、何のアカウントかを短く伝える。
 - 既存のテスト・ビルドが成功する。
 
@@ -47,4 +48,4 @@ GitHubリポジトリ `https://github.com/mentamaru/mizuho-maru-un-official-fun-
 - `npm run lint` PASS、`npm run typecheck` 0 errors / 0 warnings / 既存4 hints、`npm run test:unit` 138件PASS、`npm run build` 7ページPASS、`PLAYWRIGHT_PORT=4399 npm run test:e2e` 33件PASS。`git diff --check` PASS。
 - Security: 依存追加・CSP・Workflow権限の変更なし。外部リンクは `rel="noopener noreferrer"`。
 - 変更File: `SPEC.md`、本ExecPlan、`data/social.yml`、`src/lib/content.ts`、`src/components/Footer.astro`、`src/pages/github.astro`、`tests/e2e/site.spec.ts`。
-- 未実施: 実機・ブラウザーでの目視確認、deploy。`/github` ページはフッター直リンク化により導線から外れるが、既存URL保持のため残した。
+- 未実施: 実機・ブラウザーでの目視確認、deploy。初回実装でフッターをリポジトリへの直リンクにしたが、説明ページを経由しないとの指摘を受け、フッターを `/github` へ戻した。説明文には、盛り上げてくれる方がいれば嬉しいという軽い呼びかけとPull Request依頼の一文を追加した（2026-11-19）。

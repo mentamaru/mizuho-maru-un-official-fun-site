@@ -754,7 +754,7 @@ Footerに以下への導線を置く。
 * このサイトについて
 * 運営者について
 * お問い合わせ
-* GitHub（公開リポジトリ `https://github.com/mentamaru/mizuho-maru-un-official-fun-site` へ新しいタブで直接遷移する。`/github` ページにも同じリポジトリへのリンクを置く）
+* GitHub（説明ページ `/github` へ遷移する。説明ページは公開リポジトリ `https://github.com/mentamaru/mizuho-maru-un-official-fun-site` を案内し、このサイトを一緒に盛り上げてくださる方がいれば嬉しいという軽い呼びかけと、気になる点があればPull Requestを送ってほしい旨を述べ、リポジトリへ新しいタブで遷移するリンクを置く。Footerから直接リポジトリへは遷移させない）
 
 ContactはGoogle Form等のExternal Formを利用可能。
 

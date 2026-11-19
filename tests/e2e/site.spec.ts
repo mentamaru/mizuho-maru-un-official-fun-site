@@ -155,6 +155,8 @@ test('contact form and GitHub guidance are available', async ({ page }) => {
   await page.goto('/github');
   await expect(page.getByRole('heading', { name: 'GitHubについて' })).toBeVisible();
   await expect(page.getByText('GitHubリポジトリはパブリックリポジトリとして公開しています。')).toBeVisible();
+  await expect(page.getByText('このサイトを一緒に盛り上げてくださる方がいらっしゃれば嬉しいです。', {exact:false})).toBeVisible();
+  await expect(page.getByText('プルリクエストをお送りください。', {exact:false})).toBeVisible();
   await expect(page.getByText('非公開')).toHaveCount(0);
   const repositoryUrl = 'https://github.com/mentamaru/mizuho-maru-un-official-fun-site';
   const repositoryLink = page.getByRole('main').getByRole('link', { name: 'GitHubリポジトリを開く' });
@@ -162,9 +164,8 @@ test('contact form and GitHub guidance are available', async ({ page }) => {
   await expect(repositoryLink).toHaveAttribute('target', '_blank');
   await expect(repositoryLink).toHaveAttribute('rel', 'noopener noreferrer');
   const footerLink = page.getByRole('contentinfo').getByRole('link', { name: 'GitHub' });
-  await expect(footerLink).toHaveAttribute('href', repositoryUrl);
-  await expect(footerLink).toHaveAttribute('target', '_blank');
-  await expect(footerLink).toHaveAttribute('rel', 'noopener noreferrer');
+  await expect(footerLink).toHaveAttribute('href', '/github');
+  await expect(footerLink).not.toHaveAttribute('target', '_blank');
 });
 
 for (const width of [375, 1280]) {
