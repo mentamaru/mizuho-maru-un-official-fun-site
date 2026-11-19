@@ -100,6 +100,13 @@ export function pickInitialDate(range: { start: string; end: string } | null, to
 const tokyoDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit' });
 export function todayInTokyo(now: number): string { return tokyoDate.format(new Date(now)); }
 
+/** イベント選択時に一覧を出す月。表示月に重ならない隣月のバーは、開始月の一覧を使う。 */
+export function monthForEvent(event: CalendarEvent, visibleMonth: string): string {
+  const startMonth = event.start.slice(0, 7);
+  const endMonth = addDays(event.endExclusive, -1).slice(0, 7);
+  return startMonth <= visibleMonth && visibleMonth <= endMonth ? visibleMonth : startMonth;
+}
+
 export function eventsOnDate(events: CalendarEvent[], date: string): CalendarEvent[] {
   return events.filter(event => event.start <= date && date < event.endExclusive);
 }

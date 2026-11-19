@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { calendarRange, eventsOnDate, monthsInRange, pickInitialDate, todayInTokyo, toCalendarEvents } from '../../src/lib/calendar';
+import { calendarRange, eventsOnDate, monthForEvent, monthsInRange, pickInitialDate, todayInTokyo, toCalendarEvents } from '../../src/lib/calendar';
 import { radarItemSchema, type RadarItem } from '../../src/lib/radar';
 
 let sequence = 0;
@@ -133,6 +133,18 @@ describe('todayInTokyo', () => {
     ['2026-12-31T15:00:00Z', '2027-01-01']
   ])('%s -> %s', (iso, expected) => {
     expect(todayInTokyo(Date.parse(iso))).toBe(expected);
+  });
+});
+
+describe('monthForEvent', () => {
+  const [crossing] = toCalendarEvents([item({ startDate: '2026-10-30', endDate: '2026-11-02', date: '2026-10-30' })]);
+  test('keeps the visible month when the event overlaps it', () => {
+    expect(monthForEvent(crossing, '2026-10')).toBe('2026-10');
+    expect(monthForEvent(crossing, '2026-11')).toBe('2026-11');
+  });
+  test('uses the start month when the event is shown only on adjacent-month days', () => {
+    expect(monthForEvent(crossing, '2026-09')).toBe('2026-10');
+    expect(monthForEvent(crossing, '2026-12')).toBe('2026-10');
   });
 });
 

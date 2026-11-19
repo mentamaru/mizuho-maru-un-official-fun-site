@@ -77,6 +77,20 @@ test('selecting a bar shows only that event', async ({ page }) => {
   await expect(page.locator('[data-calendar-list] li:visible')).toHaveCount(1);
 });
 
+test('selecting a bar drawn on an adjacent-month day shows that event details', async ({ page }) => {
+  await open(page);
+  await page.locator('.fc-prev-button').click();
+  await page.locator('.fc-prev-button').click();
+  await expect(page.locator('.fc-toolbar-title')).toHaveText('2026年9月');
+  await page.locator('.fc-event', { hasText: '観光フェア' }).first().click();
+  await expect(page.locator('[data-calendar-status]')).toContainText('観光フェア');
+  const visible = page.locator('[data-calendar-list] li:visible');
+  await expect(visible).toHaveCount(1);
+  await expect(visible).toContainText('観光フェア');
+  await expect(visible).toContainText('概要説明');
+  await expect(visible.locator('a')).toHaveAttribute('href', 'https://example.com/b');
+});
+
 for (const width of [375, 1280]) {
   test(`shows event titles inside the calendar at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });

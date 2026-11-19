@@ -59,7 +59,7 @@ const months = monthsInRange(range).map(month => {
 <script>
   import type { Calendar } from '@fullcalendar/core';
   import { calendarCopy } from '../lib/content';
-  import { calendarRange, calendarTagGlyphs, calendarTagLabels, pickInitialDate, todayInTokyo, type CalendarEvent } from '../lib/calendar';
+  import { calendarRange, calendarTagGlyphs, calendarTagLabels, monthForEvent, pickInitialDate, todayInTokyo, type CalendarEvent } from '../lib/calendar';
 
   type Selection = { kind: 'date'; date: string } | { kind: 'event'; id: string } | null;
 
@@ -84,8 +84,14 @@ const months = monthsInRange(range).map(month => {
 
     const monthOf = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 
+    function monthFor(current: Selection): string {
+      if (current?.kind === 'date') return current.date.slice(0, 7);
+      const event = current?.kind === 'event' ? events.find(candidate => candidate.id === current.id) : undefined;
+      return event ? monthForEvent(event, visibleMonth) : visibleMonth;
+    }
+
     function update() {
-      const month = selection?.kind === 'date' ? selection.date.slice(0, 7) : visibleMonth;
+      const month = monthFor(selection);
       let count = 0;
       sections.forEach(block => {
         const active = block.dataset.calendarMonth === month;
