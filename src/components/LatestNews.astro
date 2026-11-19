@@ -1,5 +1,6 @@
 ---
 import RadarMetadata from './RadarMetadata.astro';
+import NewsThumbnail from './NewsThumbnail.astro';
 import { siteCopy } from '../lib/content';
 import { formatDate, getSourceTypeLabel } from '../lib/site-data';
 import { toAbsoluteHttpUrl } from '../lib/url';
@@ -26,7 +27,7 @@ const safeItems = items.map((item) => ({
   {safeItems.length > 0 ? <div class="news-grid">
     {safeItems.map((item) => (
       <article class="news-article">
-        {item.thumbnailUrl && <img data-latest-thumbnail src={item.thumbnailUrl} alt="" loading="lazy" referrerpolicy="no-referrer" class="aspect-[1.91/1] w-full object-cover" />}
+        <NewsThumbnail marker="latest" src={item.thumbnailUrl} />
         <div class="news-body">
           <div class="flex flex-wrap items-center gap-2">
             <span class="badge badge-outline border-primary/30 text-primary">{getSourceTypeLabel(item.sourceType)}</span>
@@ -51,10 +52,3 @@ const safeItems = items.map((item) => ({
     ))}
   </div> : <p class="text-base-content/70">現在、掲載できる最新情報はありません。</p>}
 </section>
-
-<script>
-  document.querySelectorAll<HTMLImageElement>('[data-latest-thumbnail]').forEach(image => {
-    image.addEventListener('error', () => image.remove(), { once: true });
-    if (image.complete && image.naturalWidth === 0) image.remove();
-  });
-</script>
