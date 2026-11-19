@@ -1,11 +1,16 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { siteCopy } from '../lib/content';
 ---
 
-<Layout title="GitHubについて | 非公式みずほまる情報ポータル" description="GitHubリポジトリの公開予定についての案内です。">
+<Layout title="GitHubについて | 非公式みずほまる情報ポータル" description="このサイトのGitHubリポジトリの案内です。">
   <article class="prose max-w-3xl rounded-3xl border border-secondary/40 bg-base-100 p-8 shadow-sm">
     <h1>GitHubについて</h1>
-    <p>現在、GitHubリポジトリは非公開です。</p>
-    <p>皆さんと一緒に開発できるよう、ある程度安定した段階でパブリックリポジトリとして公開する予定です。</p>
+    <p>GitHubリポジトリはパブリックリポジトリとして公開しています。</p>
+    <p>サイトのソースコードや更新履歴を確認できます。このサイトを一緒に盛り上げてくださる方がいらっしゃれば嬉しいです。</p>
+    <p>気になる点があれば、お気軽にプルリクエストをお送りください。</p>
+    <p>
+      <a class="btn btn-primary no-underline" href={siteCopy.repositoryUrl} target="_blank" rel="noopener noreferrer">GitHubリポジトリを開く</a>
+    </p>
   </article>
 </Layout>

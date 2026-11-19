@@ -98,7 +98,11 @@ test('tab switching and SNS lazy loading work', async ({ page }) => {
   await expect(page.getByText('瑞穂町公式アカウントとは限りません。')).toBeVisible();
   await expect(page.getByRole('tab', { name: 'Instagram', exact: true })).toHaveAttribute('aria-selected', 'true');
   await expect(page.locator('iframe[title="marumaru_mizuho のInstagramプロフィール"]')).toBeVisible();
+  await expect(page.getByText('マルシェイベント「みずほまるごとマルシェ」のInstagramアカウントです。')).toBeVisible();
+  await expect(page.getByText('イベント情報はこちらのアカウントからご確認ください。')).toHaveCount(0);
+  await expect(page.getByText('「えきにしふりま」のInstagramアカウントです。')).toBeVisible();
   await page.getByRole('tab', { name: 'X', exact: true }).click();
+  await expect(page.getByText('マルシェイベント「みずほまるごとマルシェ」のXアカウントです。')).toBeVisible();
   await expect(page.locator('#mizuho-koho-x-embed')).toBeVisible();
   await page.getByRole('tab', {name:'最新情報', exact:true}).click();
   await page.getByRole('tab', {name:'関連SNS', exact:true}).click();
@@ -150,9 +154,18 @@ test('contact form and GitHub guidance are available', async ({ page }) => {
 
   await page.goto('/github');
   await expect(page.getByRole('heading', { name: 'GitHubについて' })).toBeVisible();
-  await expect(page.getByText('現在、GitHubリポジトリは非公開です。')).toBeVisible();
-  await expect(page.getByText('パブリックリポジトリとして公開する予定です。')).toBeVisible();
-  await expect(page.getByRole('contentinfo').getByRole('link', { name: 'GitHub' })).toHaveAttribute('href', '/github');
+  await expect(page.getByText('GitHubリポジトリはパブリックリポジトリとして公開しています。')).toBeVisible();
+  await expect(page.getByText('このサイトを一緒に盛り上げてくださる方がいらっしゃれば嬉しいです。', {exact:false})).toBeVisible();
+  await expect(page.getByText('プルリクエストをお送りください。', {exact:false})).toBeVisible();
+  await expect(page.getByText('非公開')).toHaveCount(0);
+  const repositoryUrl = 'https://github.com/mentamaru/mizuho-maru-un-official-fun-site';
+  const repositoryLink = page.getByRole('main').getByRole('link', { name: 'GitHubリポジトリを開く' });
+  await expect(repositoryLink).toHaveAttribute('href', repositoryUrl);
+  await expect(repositoryLink).toHaveAttribute('target', '_blank');
+  await expect(repositoryLink).toHaveAttribute('rel', 'noopener noreferrer');
+  const footerLink = page.getByRole('contentinfo').getByRole('link', { name: 'GitHub' });
+  await expect(footerLink).toHaveAttribute('href', '/github');
+  await expect(footerLink).not.toHaveAttribute('target', '_blank');
 });
 
 for (const width of [375, 1280]) {
@@ -184,7 +197,7 @@ test('Instagram profile embeds only when its tab opens', async ({page}) => {
   await expect(frame).toBeVisible();
   expect(await frame.evaluate(element => { const parent = element.parentElement!; return parent.clientHeight >= element.clientHeight; })).toBe(true);
   await expect(frame).toHaveAttribute('src', 'https://www.instagram.com/marumaru_mizuho/embed/');
-  await expect(page.getByText('イベント情報はこちらのアカウントからご確認ください。', {exact:true})).toBeVisible();
+  await expect(page.getByText('マルシェイベント「みずほまるごとマルシェ」のInstagramアカウントです。', {exact:true})).toBeVisible();
   await expect(page.getByRole('link', {name:'Instagramで見る'})).toHaveCount(0);
   await expect.poll(() => requests).toBe(1);
   await expect(page.getByRole('link', {name:'marumaru_mizuho', exact:true})).toHaveAttribute('href', 'https://www.instagram.com/marumaru_mizuho/');

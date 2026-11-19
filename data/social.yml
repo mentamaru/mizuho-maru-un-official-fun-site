@@ -11,7 +11,7 @@
   platform: instagram
   accountId: marumaru_mizuho
   displayName: marumaru_mizuho
-  description: イベント情報はこちらのアカウントからご確認ください。
+  description: マルシェイベント「みずほまるごとマルシェ」のInstagramアカウントです。
   profileUrl: https://www.instagram.com/marumaru_mizuho/
   category: イベント情報
   enabled: true
@@ -20,7 +20,7 @@
   platform: x
   accountId: marumaru_mizuho
   displayName: みずほまるごとマルシェ
-  description: マルシェイベントみずほまるごとマルシェのアカウントです
+  description: マルシェイベント「みずほまるごとマルシェ」のXアカウントです。
   profileUrl: https://x.com/marumaru_mizuho
   category: イベント情報
   enabled: true
@@ -29,7 +29,7 @@
   platform: instagram
   accountId: ekinishifurima
   displayName: ekinishifurima
-  description: 瑞穂町の箱根ケ崎駅西口公有地でのイベント情報を発信しているアカウントです。
+  description: 箱根ケ崎駅西公有地で定期的に開催されているフリーマーケット「えきにしふりま」のInstagramアカウントです。
   profileUrl: https://www.instagram.com/ekinishifurima/
   category: イベント情報
   enabled: true

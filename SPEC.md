@@ -191,6 +191,8 @@ AI要約は原則2〜3文程度。
 
 Instagram / XはTop-levelで別画面にせず、関連SNS内でFilter / Switch等によって切り替える。
 
+各Accountの `description` は、何のAccountかを1文で伝える軽い説明とする。「みずほまるごとマルシェ」のInstagram / Xは「マルシェイベント「みずほまるごとマルシェ」の{Platform}アカウントです。」、「えきにしふりま」のInstagramは「箱根ケ崎駅西公有地で定期的に開催されているフリーマーケット「えきにしふりま」のInstagramアカウントです。」とする。
+
 対象には、
 
 * 企業
@@ -752,7 +754,7 @@ Footerに以下への導線を置く。
 * このサイトについて
 * 運営者について
 * お問い合わせ
-* GitHub
+* GitHub（説明ページ `/github` へ遷移する。説明ページは公開リポジトリ `https://github.com/mentamaru/mizuho-maru-un-official-fun-site` を案内し、このサイトを一緒に盛り上げてくださる方がいれば嬉しいという軽い呼びかけと、気になる点があればPull Requestを送ってほしい旨を述べ、リポジトリへ新しいタブで遷移するリンクを置く。Footerから直接リポジトリへは遷移させない）
 
 ContactはGoogle Form等のExternal Formを利用可能。
 
