@@ -1,0 +1,47 @@
+name: Check Security Tool Versions
+
+on:
+  schedule:
+    - cron: '23 1 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      # Dependabotはworkflow内のDocker imageを更新しないため、固定中のimageに新しい版があればIssueで知らせる。
+      # 公開から7日未満の版は、Dependabotのcooldownと同様に対象外とする。
+      - name: Check pinned tool versions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          check() {
+            name="$1"; repo="$2"; pinned="$3"
+            read -r tag published < <(gh api "repos/${repo}/releases/latest" --jq '[.tag_name, .published_at] | @tsv')
+            latest="${tag#v}"
+            age_days=$(( ( $(date +%s) - $(date -d "$published" +%s) ) / 86400 ))
+            echo "${name}: pinned=${pinned} latest=${latest} (${age_days} days old)"
+            if [ "$pinned" = "$latest" ] || [ "$age_days" -lt 7 ]; then
+              return
+            fi
+            title="${name} を ${latest} へ更新する"
+            existing=$(gh issue list --state open --search "\"${title}\" in:title" --json number --jq length)
+            if [ "$existing" -gt 0 ]; then
+              return
+            fi
+            gh issue create --title "$title" --body "\`.github/workflows/security.yml\` で固定している ${name} が ${pinned} です。新しい版 ${latest}（公開から ${age_days} 日経過）があります。
+
+更新手順は README の「セキュリティツールの更新手順」を参照してください。更新前に、公式のSecurity Advisoryで侵害・取り下げがないことを確認します。"
+          }
+          trivy=$(grep -oE 'aquasecurity/trivy:[0-9.]+' .github/workflows/security.yml | head -1 | cut -d: -f2)
+          semgrep=$(grep -oE 'semgrep/semgrep:[0-9.]+' .github/workflows/security.yml | head -1 | cut -d: -f2)
+          check "Trivy" "aquasecurity/trivy" "$trivy"
+          check "Semgrep" "semgrep/semgrep" "$semgrep"

@@ -75,6 +75,16 @@ npm run preview
 - `security.yml` — Dependency Review / Semgrep（簡易SAST、公開Registryルール・ログイン不要） / Trivy（依存脆弱性・Secret・設定ミスのfsスキャン） / CodeQL
 - `official.yml` — 毎週木曜日の公式RSS収集、検証、mainへの限定反映
 - `radar.yml` — 毎週木曜日のレーダー収集、検証、mainへの限定反映
+- `tool-versions.yml` — 毎月1日にTrivy / Semgrepの固定バージョンを確認し、公開から7日以上経った新しい版があればIssueで通知（`issues: write` のみ追加）
+
+### セキュリティツールの更新手順
+
+Actionの更新（commit SHA固定）はDependabotが週次でPRにします。Dependabotが更新しない次の2つは、`tool-versions.yml` のIssueを受けて手動で更新します。
+
+1. 公式のSecurity Advisory・リリースノートで、侵害や取り下げがないことを確認する。
+2. `.github/workflows/security.yml` の `semgrep/semgrep:<版>` を更新する。
+3. Trivyは `ghcr.io/aquasecurity/trivy:<版>@sha256:<digest>` の版とdigestを同時に更新する（digestは `docker buildx imagetools inspect ghcr.io/aquasecurity/trivy:<版>` 等で取得し、公式Releaseと一致することを確認する）。
+4. ローカルまたはPRのCIで `semgrep` / `trivy` ジョブが成功することを確認する。
 
 ### GitHub Actions Secrets / Variables
 

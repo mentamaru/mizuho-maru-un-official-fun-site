@@ -856,7 +856,7 @@ CSP設定後、必要なSNS Embedが正常動作することも確認する。
 
 Public化前にもSecret漏洩を確認する。
 
-GitHub ActionsはLeast Privilegeとする。第三者Actionはタグ書き換え対策としてcommit SHAで固定し（バージョンはコメントで併記）、Dependabotの `cooldown`（7日）で新規公開直後のバージョン取り込みを避ける。
+GitHub ActionsはLeast Privilegeとする。第三者Actionはタグ書き換え対策としてcommit SHAで固定し（バージョンはコメントで併記）、Dependabotの `cooldown`（7日）で新規公開直後のバージョン取り込みを避ける。Dependabotが更新しないSecurityツールのDocker image（Trivy・Semgrep）は、月次Workflow（`tool-versions.yml`、`issues: write` のみ追加）が新しい版をIssueで通知し、更新は手動で行う。
 
 基本Permission:
 

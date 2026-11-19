@@ -20,6 +20,7 @@ Takumi Guardの動作確認で、CI（`ci.yml`）のログに `No bot-id provide
 - Trivyを `security.yml` に `trivy` jobとして追加する。`trivy fs` で `vuln,secret,misconfig` を検査し、`HIGH,CRITICAL`・`--ignore-unfixed`・dev依存を含めて検出時は失敗させる。
 - 2026-03にtrivy-action / setup-trivyのタグ書き換えとTrivy v0.69.4の侵害があった（CVE-2026-33634）ため、第三者Actionは使わず、`ghcr.io/aquasecurity/trivy:0.76.2` をdigest（`sha256:8f6bb947…`）固定で `docker run` する。0.76.2は侵害対象外のバージョン。更新は手動でバージョンとdigestを同時に変更する。
 - Trivyの脆弱性DB取得は実行時にネットワークへ依存する（一時的な取得失敗でjobが失敗する可能性）。
+- Dependabotは `security.yml` 内のDocker image（Trivy・Semgrep）を更新しないため、`tool-versions.yml`（毎月1日・`workflow_dispatch`）を追加する。固定中の版より新しい版が公開から7日以上経っていればIssueを作成する（同名のopen Issueがあれば作らない）。権限は `contents: read` と `issues: write`、第三者Actionは使わず `gh` CLIのみ。更新手順はREADMEに記載し、更新自体は手動とする。
 - npm依存追加なし。Actionは同一メジャー（v7等）のまま、commit SHA固定へ変更。
 
 ## 検証・実施結果
@@ -29,4 +30,5 @@ Takumi Guardの動作確認で、CI（`ci.yml`）のログに `No bot-id provide
 - ローカル: lint 成功、typecheck 0 errors / 0 warnings / 既存4 hints、unit 138件成功、build 7ページ成功。E2EはPRのCIで実行する（ローカル未実行）。
 - PRのCI: `verify`（E2E 33件含む）・`semgrep`・`trivy`・`codeql`・`dependency-review` 成功。Takumi Guardは `Authenticated as bot … (Tier C)` で認証され、匿名モードの通知は出なくなった。
 - Ruleset `main-required-checks`（GitHub Actions発行元・最新main追従）のRequired Checkへ `semgrep` と `trivy` を追加した（運営者の指示により2026-11-19にAPIで更新。既存の `verify` / `dependency-review` / `codeql` と収集用Appの例外は変更なし）。
+- 未検証: `tool-versions.yml` はmainに入るまで `workflow_dispatch` で実行できない。ローカルで `gh` / `date` をスタブにした疑似実行では、判定（固定版と最新版の比較・7日未満の除外）とIssue作成コマンドの組み立てを確認済み。実Issue作成は未実行。Semgrepは固定1.136.0に対し最新1.186.0（公開1日）で、7日経過後に初回Issueが作成される想定。
 - 未検証: Dependabot / Fork起点PRでの匿名モードへのフォールバック（実際のPRが発生するまで確認不可）。Shisho Cloud Dashboardでの表示は運営者が確認する。
