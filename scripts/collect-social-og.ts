@@ -17,7 +17,7 @@ for (const source of sources.filter((entry) => entry.enabled && entry.platform =
     if (!imageUrl) throw new Error('og:image が見つかりません');
     existing[source.id] = imageUrl;
   } catch (error) {
-    console.warn(`${source.id}: OGPを更新せず既存キャッシュを維持します`, error);
+    console.warn('%s: OGPを更新せず既存キャッシュを維持します', source.id, error);
   }
 }
 

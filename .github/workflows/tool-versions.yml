@@ -1,0 +1,46 @@
+name: Check Security Tool Versions
+
+on:
+  schedule:
+    - cron: '23 1 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      # Dependabotはworkflow内のDocker imageを更新しないため、固定中のimageに新しい版があればIssueで知らせる。
+      # 公開から7日未満の版は、Dependabotのcooldownと同様に対象外とし、7日以上経った安定版の最新を候補にする。
+      - name: Check pinned tool versions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          check() {
+            name="$1"; repo="$2"; pinned="$3"
+            candidate=$(gh api "repos/${repo}/releases?per_page=30" --jq '[.[] | select(.prerelease == false and .draft == false and ((now - (.published_at | fromdateiso8601)) / 86400 >= 7)) | .tag_name | ltrimstr("v") | select(test("^[0-9]+(\\.[0-9]+)*$"))] | .[]' | sort -V | tail -1)
+            echo "${name}: pinned=${pinned} newest eligible=${candidate:-none}"
+            if [ -z "$candidate" ] || [ "$(printf '%s\n%s\n' "$pinned" "$candidate" | sort -V | tail -1)" = "$pinned" ]; then
+              return
+            fi
+            title="${name} を ${candidate} へ更新する"
+            existing=$(gh issue list --state open --search "\"${title}\" in:title" --json number --jq length)
+            if [ "$existing" -gt 0 ]; then
+              return
+            fi
+            body=$(printf '%s\n\n%s\n' \
+              "\`.github/workflows/security.yml\` で固定している ${name} が ${pinned} です。公開から7日以上経った新しい版 ${candidate} があります。" \
+              "更新手順は README の「セキュリティツールの更新手順」を参照してください。更新前に、公式のSecurity Advisoryで侵害・取り下げがないことを確認します。")
+            gh issue create --title "$title" --body "$body"
+          }
+          trivy=$(grep -oE 'aquasecurity/trivy:[0-9.]+' .github/workflows/security.yml | head -1 | cut -d: -f2)
+          semgrep=$(grep -oE 'semgrep/semgrep:[0-9.]+' .github/workflows/security.yml | head -1 | cut -d: -f2)
+          check "Trivy" "aquasecurity/trivy" "$trivy"
+          check "Semgrep" "semgrep/semgrep" "$semgrep"
