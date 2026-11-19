@@ -72,9 +72,19 @@ npm run preview
 ## GitHub Actions
 
 - `ci.yml` — lint / typecheck / unit test / build / Playwright
-- `security.yml` — Dependency Review / CodeQL
+- `security.yml` — Dependency Review / Semgrep（簡易SAST、公開Registryルール・ログイン不要） / Trivy（依存脆弱性・Secret・設定ミスのfsスキャン） / CodeQL
 - `official.yml` — 毎週木曜日の公式RSS収集、検証、mainへの限定反映
 - `radar.yml` — 毎週木曜日のレーダー収集、検証、mainへの限定反映
+- `tool-versions.yml` — 毎月1日にTrivy / Semgrepの固定バージョンを確認し、公開から7日以上経った新しい版があればIssueで通知（`issues: write` のみ追加）
+
+### セキュリティツールの更新手順
+
+Actionの更新（commit SHA固定）はDependabotが週次でPRにします。Dependabotが更新しない次の2つは、`tool-versions.yml` のIssueを受けて手動で更新します。
+
+1. 公式のSecurity Advisory・リリースノートで、侵害や取り下げがないことを確認する。
+2. `.github/workflows/security.yml` の `semgrep/semgrep:<版>` を更新する。
+3. Trivyは `ghcr.io/aquasecurity/trivy:<版>@sha256:<digest>` の版とdigestを同時に更新する（digestは `docker buildx imagetools inspect ghcr.io/aquasecurity/trivy:<版>` 等で取得し、公式Releaseと一致することを確認する）。
+4. ローカルまたはPRのCIで `semgrep` / `trivy` ジョブが成功することを確認する。
 
 ### GitHub Actions Secrets / Variables
 
@@ -83,7 +93,8 @@ npm run preview
 - `TAKUMI_GUARD_BOT_ID`（**Secretではなく Variable**）: 全Workflowで [Takumi Guard by GMO](https://github.com/flatt-security/setup-takumi-guard-npm) の監査ログ・Dashboard機能を有効にするための任意のBot ID。
   - 取得先: [Shisho Cloud by GMO](https://cloud.shisho.dev)
   - 登録場所: リポジトリの Settings → Secrets and variables → Actions → **Variables** タブ → New repository variable → Name `TAKUMI_GUARD_BOT_ID`
-  - 未設定でもnpm installのBlocking自体は有効なままCIは継続します（認証失敗時はログ機能のみ縮退し、警告が出る程度）。
+  - 未設定でもnpm installのBlocking自体は有効なまま（匿名モード）CIは継続します。設定済みの場合、OIDC認証のため該当Workflowに `id-token: write` が必要で、認証に失敗するとActionはエラー終了します。
+  - `ci.yml` はOIDC tokenが発行されないFork / Dependabot起点のPRではBot IDを渡さず、匿名モードで実行します。
 - Vercel PreviewはGitHub Actions経由ではなくVercelのGitHub連携によりDeployされるため、Vercel用のSecretをGitHubリポジトリ側へ登録する必要はありません（VercelのProject Settings側でEnvironment Variablesを設定します）。
 - `OPENAI_API_KEY`（**Repository Secret**）: `radar.yml` がOpenAI Responses API + Web Searchを呼び出すためのキー。登録場所は Settings → Secrets and variables → Actions → **Secrets** → New repository secret。Environment SecretではなくRepository Secretとして登録する。
 - 将来外部AI Providerへ接続する場合は、`.env.example` に列挙した `AI_API_KEY` 等をLocalでは `.env`（Gitignore対象）、GitHub Actionsでは Settings → Secrets and variables → Actions → **Secrets** タブへ登録する想定です（v1では未使用のため登録不要）。
