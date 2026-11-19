@@ -869,8 +869,6 @@ Untrusted PR / ForkからSecretへアクセスできる構成を避ける。
 
 Public Repositoryのmainへの変更はPRを経由し、CODEOWNERSで全ファイルのOwnerを `@mentamaru` として、OwnerのApproveを必須とする。承認後に変更が追加された場合は再承認を必要とする。本人作成PRの自己承認不可に対応するため、運営者 `@mentamaru`（User ID: `108460338`）本人にのみPR経由のReview bypassを認める。管理者Role全体を例外にはしない。定期収集に使用する専用GitHub Appには通常pushの例外を認めるが、Dependabot等の更新PRはOwnerの承認対象とする。mainの削除・force push禁止は別Rulesetとし、Reviewの例外では回避できない。専用GitHub Appの例外はWorkflow単位・変更Path単位の制限ではないため、収集Workflowの差分検証と最小権限を維持し、Workflow変更もOwnerのレビュー対象とする。
 
-Dependabotを含むmain宛てのPRは、GitHub Actionsが発行する `verify`（lint・typecheck・unit test・build・Playwright）、`dependency-review`、`codeql` の成功を必須とし、最新mainに追従した検証を要求する。このチェック用RulesetはOwner Reviewと分離し、運営者のReview bypassではチェックを回避できない。例外は既存の収集専用GitHub Appのみとし、収集Workflow内の検証を維持する。
-
 ---
 
 ## 29. Secrets
