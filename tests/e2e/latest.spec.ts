@@ -14,9 +14,15 @@ test('latest saved thumbnails are lazy, invalid/missing/failed images keep usabl
   await expect(image).toHaveAttribute('loading', 'lazy');
   await expect(image).toHaveAttribute('referrerpolicy', 'no-referrer');
   await expect.poll(() => image.evaluate((node: HTMLImageElement) => node.naturalWidth)).toBeGreaterThan(0);
+  await expect(image).not.toHaveAttribute('data-thumbnail-placeholder', /.*/);
   for (const index of [1, 2, 3]) {
     await cards.nth(index).scrollIntoViewIfNeeded();
-    await expect(cards.nth(index).locator('img')).toHaveCount(0);
+    const placeholder = cards.nth(index).locator('img');
+    await expect(placeholder).toHaveCount(1);
+    await expect(placeholder).toHaveAttribute('src', '/images/news-placeholder.svg');
+    await expect(placeholder).toHaveAttribute('alt', '');
+    await expect(placeholder).toHaveAttribute('data-thumbnail-placeholder', '');
+    await expect.poll(() => placeholder.evaluate((node: HTMLImageElement) => node.naturalWidth)).toBeGreaterThan(0);
     await expect(cards.nth(index).getByRole('link', { name: '元情報を見る' })).toBeVisible();
   }
   expect(requested.sort()).toEqual(['https://images.example.com/broken.png', 'https://images.example.com/good.svg']);
