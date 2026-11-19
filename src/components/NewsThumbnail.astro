@@ -1,0 +1,32 @@
+---
+import { savedThumbnailUrl } from '../lib/ogp';
+
+interface Props {
+  src?: string;
+  /** Existing per-list marker used by tests and scripts. */
+  marker: 'latest' | 'official' | 'radar';
+}
+
+const placeholderSrc = '/images/news-placeholder.svg';
+const { src, marker } = Astro.props;
+const thumbnailUrl = savedThumbnailUrl(src);
+const attrs = { [`data-${marker}-thumbnail`]: '' };
+---
+
+{thumbnailUrl
+  ? <img {...attrs} data-news-thumbnail data-placeholder-src={placeholderSrc} src={thumbnailUrl} alt="" loading="lazy" referrerpolicy="no-referrer" class="aspect-[1.91/1] w-full object-cover" />
+  : <img data-thumbnail-placeholder src={placeholderSrc} alt="" loading="lazy" class="aspect-[1.91/1] w-full object-cover" />}
+
+<script>
+  // Swap a failed remote thumbnail for the bundled placeholder once.
+  const fallback = (image: HTMLImageElement) => {
+    image.removeAttribute('referrerpolicy');
+    image.src = image.dataset.placeholderSrc ?? '';
+    image.setAttribute('data-thumbnail-placeholder', '');
+    image.removeAttribute('data-news-thumbnail');
+  };
+  document.querySelectorAll<HTMLImageElement>('img[data-news-thumbnail]').forEach(image => {
+    image.addEventListener('error', () => fallback(image), { once: true });
+    if (image.complete && image.naturalWidth === 0) fallback(image);
+  });
+</script>

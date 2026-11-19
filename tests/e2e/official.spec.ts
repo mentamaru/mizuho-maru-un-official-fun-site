@@ -7,6 +7,7 @@ test('official list and top tab provide official cards', async ({ page }) => {
   await expect(page.getByText('現在、掲載できる公式情報はありません。').or(page.locator('[data-official-list] article').first())).toBeVisible();
   const thumbnails = page.locator('[data-official-thumbnail]');
   if (await thumbnails.count() > 0) await expect(thumbnails.first()).toHaveAttribute('loading', 'lazy');
+  for (const article of await page.locator('[data-official-list] article').all()) await expect(article.locator(':scope > img')).toHaveCount(1);
   await page.goto('/');
   await page.getByRole('tab', { name: '公式情報' }).click();
   await expect(page.getByRole('heading', { name: '公式情報' })).toBeVisible();
