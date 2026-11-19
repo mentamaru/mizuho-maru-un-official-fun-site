@@ -5,15 +5,10 @@ import { parse } from 'yaml';
 import { z } from 'zod';
 
 import { savedThumbnailUrl } from './ogp';
+import { categories, radarTags } from './radar-tags';
 import { toAbsoluteHttpUrl } from './url';
 
-export const categories = ['event', 'appearance', 'goods', 'sale', 'collaboration', 'media', 'broadcast', 'campaign', 'recruitment', 'other'] as const;
-export const radarTags = [...categories, 'food', 'giveaway'] as const;
-export const radarTagLabels: Record<typeof radarTags[number], string> = {
-  event: 'イベント', appearance: '出演・登場', goods: 'グッズ', sale: '販売情報', collaboration: 'コラボ',
-  media: 'メディア掲載', broadcast: '放送', campaign: 'キャンペーン', recruitment: '募集', other: 'その他',
-  food: '飲食・お菓子', giveaway: '配布・プレゼント'
-};
+export { categories, radarTagLabels, radarTags } from './radar-tags';
 const calendarDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(value => {
   const date = new Date(`${value}T00:00:00Z`);
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;

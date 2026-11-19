@@ -1,0 +1,261 @@
+---
+import { calendarCopy, siteCopy } from '../lib/content';
+import { calendarRange, calendarTagGlyphs, calendarTagLabels, calendarTags, monthsInRange, type CalendarEvent } from '../lib/calendar';
+import { toAbsoluteHttpUrl } from '../lib/url';
+
+interface Props { events: CalendarEvent[]; }
+
+const events = Astro.props.events
+  .map(event => ({ ...event, sourceUrl: toAbsoluteHttpUrl(event.sourceUrl) }))
+  .filter((event): event is CalendarEvent => event.sourceUrl !== null);
+const range = calendarRange(events);
+const months = monthsInRange(range).map(month => {
+  const [year, number] = month.split('-').map(Number);
+  const start = `${month}-01`;
+  const end = new Date(Date.UTC(year, number, 1)).toISOString().slice(0, 10);
+  return { month, label: `${year}年${number}月`, events: events.filter(event => event.start < end && event.endExclusive > start) };
+});
+---
+
+{range && (
+  <section id="event-calendar" data-event-calendar data-calendar-events={JSON.stringify(events)} class="space-y-4 border-t border-base-300 pt-8" aria-labelledby="calendar-heading">
+    <h2 id="calendar-heading" class="text-2xl font-bold">{calendarCopy.heading}</h2>
+    <p class="leading-7 text-base-content/80">{calendarCopy.description}</p>
+    <ul data-calendar-legend class="flex flex-wrap gap-x-6 gap-y-1 text-sm">
+      {calendarTags.map(tag => <li><span class="calendar-glyph" data-tag={tag} aria-hidden="true">{calendarTagGlyphs[tag]}</span> {calendarTagLabels[tag]}</li>)}
+    </ul>
+    <div data-calendar-root hidden></div>
+    <div class="flex flex-wrap items-center gap-3">
+      <p data-calendar-status role="status" aria-live="polite" class="font-bold" hidden></p>
+      <button type="button" data-calendar-reset class="btn btn-sm btn-outline border-primary text-primary" hidden>{calendarCopy.reset}</button>
+    </div>
+    <div data-calendar-list class="space-y-6">
+      {months.map(({ month, label, events: monthEvents }) => (
+        <section data-calendar-month={month} class="space-y-3" aria-label={`${label}の予定`}>
+          <h3 class="font-bold">{label}</h3>
+          {monthEvents.length === 0
+            ? <p class="text-sm text-base-content/70">{calendarCopy.emptyMonth}</p>
+            : (
+              <ul class="divide-y divide-base-300">
+                {monthEvents.map(event => (
+                  <li data-event-id={event.id} data-event-start={event.start} data-event-end-exclusive={event.endExclusive} class="space-y-2 py-3">
+                    <div class="flex flex-wrap gap-2">
+                      {event.tags.map(tag => <span class="badge badge-outline calendar-badge" data-tag={tag}><span aria-hidden="true">{calendarTagGlyphs[tag]}</span>{calendarTagLabels[tag]}</span>)}
+                    </div>
+                    <p class="font-bold leading-7">{event.title}</p>
+                    <p class="leading-7 text-base-content/80">{event.summary}</p>
+                    <p class="text-sm">開催日：<time datetime={event.start}>{event.start}</time>{event.end && event.end !== event.start && <> 〜 <time datetime={event.end}>{event.end}</time></>}{!event.end && '（終了日未確認）'}</p>
+                    <a class="news-source-link" href={event.sourceUrl} target="_blank" rel="noopener noreferrer">{siteCopy.sourceLinkLabel}</a>
+                  </li>
+                ))}
+              </ul>
+            )}
+        </section>
+      ))}
+    </div>
+  </section>
+)}
+
+<script>
+  import type { Calendar } from '@fullcalendar/core';
+  import { calendarCopy } from '../lib/content';
+  import { calendarRange, calendarTagGlyphs, calendarTagLabels, monthForEvent, pickInitialDate, todayInTokyo, type CalendarEvent } from '../lib/calendar';
+
+  type Selection = { kind: 'date'; date: string } | { kind: 'event'; id: string } | null;
+
+  const section = document.querySelector<HTMLElement>('[data-event-calendar]');
+  if (section) setup(section);
+
+  function setup(section: HTMLElement) {
+    const events: CalendarEvent[] = JSON.parse(section.dataset.calendarEvents ?? '[]');
+    const range = calendarRange(events);
+    const maybeRoot = section.querySelector<HTMLElement>('[data-calendar-root]');
+    const maybeStatus = section.querySelector<HTMLElement>('[data-calendar-status]');
+    const maybeReset = section.querySelector<HTMLButtonElement>('[data-calendar-reset]');
+    const sections = Array.from(section.querySelectorAll<HTMLElement>('[data-calendar-month]'));
+    if (!range || !maybeRoot || !maybeStatus || !maybeReset) return;
+    const root: HTMLElement = maybeRoot;
+    const status: HTMLElement = maybeStatus;
+    const reset: HTMLButtonElement = maybeReset;
+
+    let calendar: Calendar | undefined;
+    let selection: Selection = null;
+    let visibleMonth = '';
+
+    const monthOf = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+
+    function monthFor(current: Selection): string {
+      if (current?.kind === 'date') return current.date.slice(0, 7);
+      const event = current?.kind === 'event' ? events.find(candidate => candidate.id === current.id) : undefined;
+      return event ? monthForEvent(event, visibleMonth) : visibleMonth;
+    }
+
+    function update() {
+      const month = monthFor(selection);
+      let count = 0;
+      sections.forEach(block => {
+        const active = block.dataset.calendarMonth === month;
+        block.hidden = !active;
+        block.querySelectorAll<HTMLElement>('[data-event-id]').forEach(item => {
+          const matches = !selection
+            || (selection.kind === 'event' ? item.dataset.eventId === selection.id
+              : (item.dataset.eventStart ?? '') <= selection.date && selection.date < (item.dataset.eventEndExclusive ?? ''));
+          item.hidden = !matches;
+          if (active && matches) count += 1;
+        });
+      });
+      const [year, number] = month.split('-').map(Number);
+      status.hidden = false;
+      reset.hidden = !selection;
+      if (selection?.kind === 'date') status.textContent = calendarCopy.dayStatus(Number(selection.date.slice(5, 7)), Number(selection.date.slice(8, 10)), count);
+      else if (selection) status.textContent = calendarCopy.eventStatus(events.find(event => event.id === (selection as { id: string }).id)?.title ?? '');
+      else status.textContent = calendarCopy.monthStatus(year, number, count);
+      root.querySelectorAll('.calendar-selected').forEach(cell => cell.classList.remove('calendar-selected'));
+      if (selection?.kind === 'date') root.querySelector(`.fc-daygrid-day[data-date="${selection.date}"]`)?.classList.add('calendar-selected');
+    }
+
+    reset.addEventListener('click', () => { selection = null; update(); });
+
+    const createContent = (event: CalendarEvent) => {
+      const wrapper = document.createElement('span');
+      wrapper.className = 'calendar-event';
+      const glyph = document.createElement('span');
+      glyph.className = 'calendar-event-glyph';
+      glyph.setAttribute('aria-hidden', 'true');
+      glyph.textContent = event.tags.map(tag => calendarTagGlyphs[tag]).join('');
+      const hidden = document.createElement('span');
+      hidden.className = 'sr-only';
+      hidden.textContent = `${event.tags.map(tag => calendarTagLabels[tag]).join('・')}：`;
+      const title = document.createElement('span');
+      title.className = 'calendar-event-title';
+      title.textContent = event.title;
+      wrapper.append(glyph, hidden, title);
+      return wrapper;
+    };
+
+    async function load() {
+      try {
+        const [{ Calendar }, { default: dayGridPlugin }, { default: locale }] = await Promise.all([
+          import('@fullcalendar/core'),
+          import('@fullcalendar/daygrid'),
+          import('@fullcalendar/core/locales/ja')
+        ]);
+        const today = todayInTokyo(Date.now());
+        const byId = new Map(events.map(event => [event.id, event]));
+        root!.hidden = false;
+        calendar = new Calendar(root!, {
+          plugins: [dayGridPlugin],
+          locale,
+          initialView: 'dayGridMonth',
+          initialDate: pickInitialDate(range, today),
+          now: today,
+          validRange: range!,
+          firstDay: 0,
+          height: 'auto',
+          fixedWeekCount: true,
+          stickyHeaderDates: false,
+          headerToolbar: { left: 'title', right: 'prev,today,next' },
+          buttonText: { today: calendarCopy.today },
+          dayCellContent: arg => arg.dayNumberText.replace('日', ''),
+          dayMaxEvents: 3,
+          eventInteractive: true,
+          eventDisplay: 'block',
+          displayEventTime: false,
+          events: events.map(event => ({ id: event.id, title: event.title, start: event.start, end: event.endExclusive, allDay: true, classNames: [`fc-tag-${event.colorTag}`] })),
+          eventContent: arg => {
+            const event = byId.get(arg.event.id);
+            return event ? { domNodes: [createContent(event)] } : true;
+          },
+          eventDidMount: info => { info.el.title = info.event.title; },
+          eventClick: info => { info.jsEvent.preventDefault(); selection = { kind: 'event', id: info.event.id }; update(); },
+          dayCellDidMount: arg => {
+            // 日セルのクリックは追加プラグインなしで標準のDOMイベントとして扱う。
+            const date = `${arg.date.getFullYear()}-${String(arg.date.getMonth() + 1).padStart(2, '0')}-${String(arg.date.getDate()).padStart(2, '0')}`;
+            arg.el.addEventListener('click', () => { selection = { kind: 'date', date }; update(); });
+          },
+          datesSet: info => {
+            const current = calendar?.getDate() ?? info.start;
+            visibleMonth = monthOf(current);
+            selection = null;
+            update();
+          }
+        });
+        window.addEventListener('site-tabchange', () => calendar?.updateSize());
+        calendar.render();
+        section.dataset.calendarReady = 'true';
+      } catch {
+        // 読み込みに失敗しても、静的な月別一覧をそのまま使える。
+        root!.hidden = true;
+      }
+    }
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(entries => {
+        if (entries.some(entry => entry.isIntersecting)) { observer.disconnect(); void load(); }
+      }, { rootMargin: '300px' });
+      observer.observe(section);
+    } else {
+      void load();
+    }
+  }
+</script>
+
+<style is:global>
+  [data-event-calendar] { --calendar-event: var(--color-primary); --calendar-appearance: var(--color-accent); }
+  [data-event-calendar] [data-tag='event'] { color: var(--calendar-event); }
+  [data-event-calendar] [data-tag='appearance'] { color: var(--calendar-appearance); }
+  [data-event-calendar] .calendar-badge { border-color: currentColor; font-weight: 600; }
+  [data-event-calendar] .calendar-badge > span { margin-inline-end: .25rem; }
+
+  [data-event-calendar] .fc {
+    --fc-border-color: var(--color-base-300);
+    --fc-today-bg-color: color-mix(in srgb, var(--color-primary) 8%, var(--color-base-100));
+    --fc-page-bg-color: var(--color-base-100);
+    --fc-neutral-bg-color: var(--color-base-200);
+    --fc-button-text-color: var(--color-primary-content);
+    --fc-button-bg-color: var(--color-primary);
+    --fc-button-border-color: var(--color-primary);
+    --fc-button-hover-bg-color: color-mix(in srgb, var(--color-primary) 85%, black);
+    --fc-button-hover-border-color: color-mix(in srgb, var(--color-primary) 85%, black);
+    --fc-button-active-bg-color: color-mix(in srgb, var(--color-primary) 75%, black);
+    --fc-button-active-border-color: color-mix(in srgb, var(--color-primary) 75%, black);
+    --fc-event-text-color: #ffffff;
+    color: var(--color-base-content);
+    font-size: .875rem;
+  }
+  [data-event-calendar] .fc .fc-toolbar { flex-wrap: wrap; gap: .5rem; margin-bottom: .75rem; }
+  [data-event-calendar] .fc .fc-toolbar-title { font-size: 1.125rem; font-weight: 700; }
+  [data-event-calendar] .fc .fc-button { min-width: 44px; min-height: 44px; padding-inline: .75rem; }
+  [data-event-calendar] .fc .fc-button:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 2px; box-shadow: none; }
+  [data-event-calendar] .fc .fc-col-header-cell-cushion,
+  [data-event-calendar] .fc .fc-daygrid-day-number { color: var(--color-base-content); text-decoration: none; }
+  [data-event-calendar] .fc .fc-day-sun .fc-col-header-cell-cushion { color: var(--color-error); }
+  [data-event-calendar] .fc .fc-daygrid-day-frame { min-height: 3.5rem; cursor: pointer; }
+  [data-event-calendar] .fc .fc-day-today .fc-daygrid-day-number { font-weight: 700; color: var(--color-primary); }
+  [data-event-calendar] .fc .fc-day-today { outline: 2px solid var(--color-primary); outline-offset: -2px; }
+  [data-event-calendar] .fc .calendar-selected { background: var(--color-base-300); }
+  [data-event-calendar] .fc .fc-event { cursor: pointer; border: 0; }
+  [data-event-calendar] .fc .fc-event:not(.fc-event-start)::before,
+  [data-event-calendar] .fc .fc-event:not(.fc-event-end)::after { font-size: .625em; color: #ffffff; position: absolute; top: 50%; transform: translateY(-50%); }
+  [data-event-calendar] .fc .fc-event:not(.fc-event-start)::before { content: '◀'; left: .125rem; }
+  [data-event-calendar] .fc .fc-event:not(.fc-event-end)::after { content: '▶'; right: .125rem; }
+  [data-event-calendar] .fc .fc-event:not(.fc-event-start) .calendar-event { padding-inline-start: .75rem; }
+  [data-event-calendar] .fc .fc-event:not(.fc-event-end) .calendar-event { padding-inline-end: .75rem; }
+  [data-event-calendar] .fc .fc-event:focus-visible { outline: 3px solid var(--color-base-content); outline-offset: 1px; }
+  [data-event-calendar] .fc .fc-tag-event { background: var(--calendar-event); border-color: var(--calendar-event); }
+  [data-event-calendar] .fc .fc-tag-appearance { background: var(--calendar-appearance); border-color: var(--calendar-appearance); }
+  [data-event-calendar] .fc .fc-daygrid-more-link { color: var(--color-primary); font-weight: 600; }
+  [data-event-calendar] .calendar-event { display: block; min-width: 0; overflow: hidden; padding-inline: .25rem; text-overflow: ellipsis; white-space: nowrap; color: #ffffff; line-height: 1.5; }
+  [data-event-calendar] .calendar-event-glyph { margin-inline-end: .25rem; }
+
+  @media (max-width: 639px) {
+    [data-event-calendar] .fc { font-size: .75rem; }
+    [data-event-calendar] .fc .fc-daygrid-day-frame { min-height: 4.5rem; }
+    [data-event-calendar] .fc .fc-daygrid-event { margin-inline: 1px; font-size: .625rem; white-space: normal; }
+    [data-event-calendar] .calendar-event { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; white-space: normal; padding-inline: .125rem; line-height: 1.3; overflow-wrap: anywhere; }
+    [data-event-calendar] .calendar-event-glyph { margin-inline-end: .125rem; }
+    [data-event-calendar] .fc .fc-event:not(.fc-event-start) .calendar-event { padding-inline-start: .5rem; }
+    [data-event-calendar] .fc .fc-event:not(.fc-event-end) .calendar-event { padding-inline-end: .5rem; }
+  }
+  [data-calendar-ready='true'] [data-calendar-month] > h3 { display: none; }
+</style>

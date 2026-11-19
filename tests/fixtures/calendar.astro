@@ -1,0 +1,15 @@
+---
+import EventCalendar from '../../src/components/EventCalendar.astro';
+import Layout from '../../src/layouts/Layout.astro';
+import type { CalendarEvent } from '../../src/lib/calendar';
+
+const base = { summary: 'みずほまるが登場するイベントについての概要説明です。', sourceName: '情報元' };
+const events: CalendarEvent[] = [
+  { ...base, id: 'a', title: 'カーニバルに出演', start: '2026-09-26', end: '2026-09-27', endExclusive: '2026-09-28', tags: ['event', 'appearance'], colorTag: 'appearance', sourceUrl: 'https://example.com/a' },
+  { ...base, id: 'b', title: '観光フェア', start: '2026-10-06', end: '2026-10-10', endExclusive: '2026-10-11', tags: ['event'], colorTag: 'event', sourceUrl: 'https://example.com/b' },
+  { ...base, id: 'e', title: '月またぎイベント', summary: '10月末から11月初めまで続くイベントの概要です。', start: '2026-10-30', end: '2026-11-02', endExclusive: '2026-11-03', tags: ['event'], colorTag: 'event', sourceUrl: 'https://example.com/e' },
+  { ...base, id: 'c', title: '産業まつりに登場', start: '2026-11-14', end: '2026-11-15', endExclusive: '2026-11-16', tags: ['appearance'], colorTag: 'appearance', sourceUrl: 'https://example.com/c' },
+  { ...base, id: 'd', title: 'スタンプラリー <img src=x onerror=alert(1)>', start: '2026-11-14', end: null, endExclusive: '2026-11-15', tags: ['event'], colorTag: 'event', sourceUrl: 'https://example.com/d' }
+];
+---
+<Layout title="Test" description="Test"><EventCalendar events={events} /></Layout>
