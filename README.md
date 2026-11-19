@@ -72,7 +72,7 @@ npm run preview
 ## GitHub Actions
 
 - `ci.yml` — lint / typecheck / unit test / build / Playwright
-- `security.yml` — Dependency Review / Semgrep（簡易SAST、公開Registryルール・ログイン不要） / CodeQL
+- `security.yml` — Dependency Review / Semgrep（簡易SAST、公開Registryルール・ログイン不要） / Trivy（依存脆弱性・Secret・設定ミスのfsスキャン） / CodeQL
 - `official.yml` — 毎週木曜日の公式RSS収集、検証、mainへの限定反映
 - `radar.yml` — 毎週木曜日のレーダー収集、検証、mainへの限定反映
 

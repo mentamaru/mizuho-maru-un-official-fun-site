@@ -848,6 +848,7 @@ CSP設定後、必要なSNS Embedが正常動作することも確認する。
 * Takumi Guard by GMO
 * Dependency Review
 * Semgrep（簡易SAST。公開Registryルール `p/javascript` / `p/typescript` / `p/security-audit`、Metrics無効、検出時は失敗。Secret・アカウント連携不要）
+* Trivy（`fs` スキャンで依存脆弱性・Secret・設定ミスを検査。HIGH以上かつ修正版ありで失敗。第三者Actionは使わず、公式imageをdigest固定で実行する）
 * CodeQL
 * GitHub Secret Scanning
 * Push Protection（利用可能な範囲）

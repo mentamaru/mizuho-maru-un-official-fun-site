@@ -37,6 +37,20 @@ jobs:
           --config p/javascript --config p/typescript --config p/security-audit
           --exclude node_modules --exclude dist --exclude .astro .
 
+  trivy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      # 2026-03のtrivy-action / setup-trivyタグ書き換え事故を踏まえ、第三者Actionを使わずimageをdigest固定で実行する
+      - run: >-
+          docker run --rm -v "$PWD:/src:ro"
+          ghcr.io/aquasecurity/trivy:0.76.2@sha256:8f6bb947dbc528902e11f2f5be52f7b519f6a39d5d148f41166f2040499768fb
+          fs --scanners vuln,secret,misconfig --severity HIGH,CRITICAL
+          --ignore-unfixed --include-dev-deps --exit-code 1
+          --skip-dirs node_modules,dist,.astro /src
+
   codeql:
     runs-on: ubuntu-latest
     steps:
