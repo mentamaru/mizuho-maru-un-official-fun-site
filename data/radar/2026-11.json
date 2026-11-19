@@ -131,5 +131,29 @@
         "url": "https://www.town.mizuho.tokyo.jp/tyosei/015/001/p011556_d/fil/R8-11.pdf"
       }
     ]
+  },
+  {
+    "id": "radar-eea4498e938cf123",
+    "discoveredAt": "2026-11-19T13:29:33.511+09:00",
+    "title": "多摩地域の魅力開発会議で「みずほまる」を活用した情報発信案を提案",
+    "summary": "多摩地域の学生と行政・企業が地域の魅力を考えるイベントの開催報告で、瑞穂町の観光プランの一案として「みずほまるを活用した情報発信」が取り上げられました。記事上では学生チームによる提案として紹介されており、実施決定済みの事業や正式なコラボレーションとは確認できません。",
+    "category": "other",
+    "date": "2026-11-16",
+    "tags": [
+      "other"
+    ],
+    "startDate": null,
+    "endDate": null,
+    "dateType": "published",
+    "source": {
+      "name": "多摩イノベーションエコシステム促進事業",
+      "url": "https://tama-innovation-ecosystem.jp/report/event-holding/6303/"
+    },
+    "researchSources": [
+      {
+        "title": "「TAMA INNOVATION IDEA CAMPUS」開催報告",
+        "url": "https://tama-innovation-ecosystem.jp/report/event-holding/6303/"
+      }
+    ]
   }
 ]
