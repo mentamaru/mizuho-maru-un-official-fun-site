@@ -25,5 +25,6 @@ Takumi Guardの動作確認で、CI（`ci.yml`）のログに `No bot-id provide
 - Semgrep 1.136.0 をローカル（一時venv）で上記ルールにて実行: 115ファイル・97ルール・検出0件。`p/github-actions` を加えると可変タグ検出が出ることを確認（上記のとおり対象外）。
 - Trivy 0.76.2（GitHub Releaseのchecksum検証済みバイナリ）をローカルで同条件実行: package-lock.json の脆弱性0件、Secret / 設定ミス検出なし。CI用のdocker image実行はローカルにDockerデーモンがなく未実行（PRのCIで確認）。
 - ローカル: lint 成功、typecheck 0 errors / 0 warnings / 既存4 hints、unit 138件成功、build 7ページ成功。E2EはPRのCIで実行する（ローカル未実行）。
-- PRのCIログで `No bot-id provided` が出なくなり、Takumi Guardが認証されることを確認する。
+- PRのCI: `verify`（E2E 33件含む）・`semgrep`・`trivy`・`codeql`・`dependency-review` 成功。Takumi Guardは `Authenticated as bot … (Tier C)` で認証され、匿名モードの通知は出なくなった。
+- Ruleset `main-required-checks`（GitHub Actions発行元・最新main追従）のRequired Checkへ `semgrep` と `trivy` を追加した（運営者の指示により2026-11-19にAPIで更新。既存の `verify` / `dependency-review` / `codeql` と収集用Appの例外は変更なし）。
 - 未検証: Dependabot / Fork起点PRでの匿名モードへのフォールバック（実際のPRが発生するまで確認不可）。Shisho Cloud Dashboardでの表示は運営者が確認する。
