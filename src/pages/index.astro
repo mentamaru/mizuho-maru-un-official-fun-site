@@ -1,5 +1,6 @@
 ---
 import CharacterIntro from '../components/CharacterIntro.astro';
+import EventCalendar from '../components/EventCalendar.astro';
 import LatestNews from '../components/LatestNews.astro';
 import LinkList from '../components/LinkList.astro';
 import OfficialNews from '../components/OfficialNews.astro';
@@ -8,12 +9,14 @@ import RadarNews from '../components/RadarNews.astro';
 import MapList from '../components/MapList.astro';
 import Layout from '../layouts/Layout.astro';
 import { siteCopy } from '../lib/content';
+import { toCalendarEvents } from '../lib/calendar';
 import { buildLatestItems } from '../lib/latest';
 import { getLinkGroups, getSocialGroups, getManualLatestItems } from '../lib/site-data';
 import { loadOfficialItems } from '../lib/official';
 import { loadRadarItems } from '../lib/radar';
 
 const radarItems = loadRadarItems();
+const calendarEvents = toCalendarEvents(radarItems);
 const latestRadarItems = radarItems.slice(0, 3);
 const officialItems = loadOfficialItems();
 const latestOfficialItems = officialItems.slice(0, 3);
@@ -26,6 +29,7 @@ const linkGroups = getLinkGroups();
   <section class="space-y-8">
     <section id="latest-panel" data-tab-panel tabindex="0" role="tabpanel" aria-labelledby="latest-tab" class="space-y-8">
       <LatestNews items={latestItems} />
+      <EventCalendar events={calendarEvents} />
       <CharacterIntro />
     </section>
 

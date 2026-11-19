@@ -10,6 +10,8 @@ export default defineConfig({
         injectRoute({ pattern: '/__test/radar-metadata', entrypoint: './tests/fixtures/radar-metadata.astro' });
         injectRoute({ pattern: '/__test/latest', entrypoint: './tests/fixtures/latest.astro' });
         injectRoute({ pattern: '/__test/latest-empty', entrypoint: './tests/fixtures/latest-empty.astro' });
+        injectRoute({ pattern: '/__test/calendar', entrypoint: './tests/fixtures/calendar.astro' });
+        injectRoute({ pattern: '/__test/calendar-empty', entrypoint: './tests/fixtures/calendar-empty.astro' });
       }
     }
   }]

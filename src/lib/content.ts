@@ -12,6 +12,17 @@ export const siteCopy = {
     'https://docs.google.com/forms/d/e/1FAIpQLSd4rG59lzW9_UMBxX1u85l2FMBHQUiaaP9NvqEHHqfL9THLMw/viewform?usp=dialog'
 } as const;
 
+export const calendarCopy = {
+  heading: 'みずほまるイベントカレンダー',
+  description: 'みずほまるレーダーに登録された、イベントと出演・登場の予定です。日付やイベントを選ぶと概要と元情報へのリンクを表示します。概要はAIによる要約で、開催日は変更される場合があるため、詳しくは各元情報をご確認ください。',
+  today: '今月',
+  reset: '月の一覧に戻す',
+  emptyMonth: 'この月に掲載できる予定はありません。',
+  monthStatus: (year: number, month: number, count: number) => `${year}年${month}月の予定（${count}件）`,
+  dayStatus: (month: number, day: number, count: number) => count === 0 ? `${month}月${day}日の予定はありません。` : `${month}月${day}日の予定（${count}件）`,
+  eventStatus: (title: string) => `「${title}」の詳細`
+} as const;
+
 export const navigationTabs = [
   { id: 'latest', label: '最新情報' },
   { id: 'radar', label: 'みずほまるレーダー' },
