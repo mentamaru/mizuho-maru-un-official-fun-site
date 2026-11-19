@@ -162,7 +162,7 @@ AI要約は原則2〜3文程度。
 
 最新情報はSNS等のExternal Serviceの読み込み完了を待たず表示できること。
 
-公式・レーダー・手動情報の保存済み `thumbnailUrl` が安全なHTTPS URLの場合のみ、既存カードと同じ比率のOGPサムネイルを `loading="lazy"` で表示する。未設定・不正URL・画像読み込み失敗では画像なしで本文と元情報リンクを維持する。静的ビルド時の保存URL検証ではサーバー側のDNS照会・HTTP通信・OGP再取得を行わず、第三者画像をRepositoryへ保存しない。遅延読み込みが始まると、利用者のブラウザーは外部画像配信元へ必要に応じてDNS照会と画像リクエストを行い、リダイレクトを追跡する場合がある。画像リクエストには `referrerpolicy="no-referrer"` を付けるが、外部配信元への通信自体をなくすものではない。公式・レーダーの新規収集は既存のSSRF対策済みOGP処理を利用し、手動情報では保存済み任意URLのみを扱う。手動情報はGenerated Dataの `publishMethod: manual` の記事と保存済み要約を集約し、公式・レーダーとURL重複排除・日付降順・最大3件の表示を行う。
+公式・レーダー・手動情報の保存済み `thumbnailUrl` が安全なHTTPS URLの場合のみ、既存カードと同じ比率のOGPサムネイルを `loading="lazy"` で表示する。未設定・不正URL・画像読み込み失敗では、同一オリジンの仮画像 `/images/news-placeholder.svg`（装飾画像のため `alt=""`）を同じ比率で表示し、本文と元情報リンクを維持する。仮画像は本Repositoryで作成した中立的なSVG（Soft Background・Soft Pink・Light Purple・Leaf Greenのみ使用）であり、みずほまるキャラクター画像や第三者画像を含まず、外部通信を発生させない。静的ビルド時の保存URL検証ではサーバー側のDNS照会・HTTP通信・OGP再取得を行わず、第三者画像をRepositoryへ保存しない。遅延読み込みが始まると、利用者のブラウザーは外部画像配信元へ必要に応じてDNS照会と画像リクエストを行い、リダイレクトを追跡する場合がある。画像リクエストには `referrerpolicy="no-referrer"` を付けるが、外部配信元への通信自体をなくすものではない。公式・レーダーの新規収集は既存のSSRF対策済みOGP処理を利用し、手動情報では保存済み任意URLのみを扱う。手動情報はGenerated Dataの `publishMethod: manual` の記事と保存済み要約を集約し、公式・レーダーとURL重複排除・日付降順・最大3件の表示を行う。
 
 ---
 
@@ -294,7 +294,7 @@ Designとする。
 
 最新情報・みずほまるレーダー・公式情報の記事は、トップの各タブと一覧ページで装飾的な外枠・角丸・影を使用しない。タイトル・説明（一覧ページでは年月フィルターを含む）と記事群の間に薄い区切り線と余白を置く。記事の区別にも余白を用い、縦並びでは表示中の記事間に薄い区切り線を置く。トップはMobileで1列、PCで3列とする。記事内部のカード用余白を設けず、本文の横幅を確保する。
 
-元情報への導線はアクセント色と下線付きのリンクで示し、44px以上の操作領域と明確なキーボードフォーカスを保つ。画像の遅延読み込み、メタデータ、要約、元情報URL、年月絞り込み、調査情報源の開閉は維持する。一覧の画像はPCで幅を抑えて本文の横に配置し、画像なしの記事は本文に全幅を使う。
+元情報への導線はアクセント色と下線付きのリンクで示し、44px以上の操作領域と明確なキーボードフォーカスを保つ。画像の遅延読み込み、メタデータ、要約、元情報URL、年月絞り込み、調査情報源の開閉は維持する。一覧の画像（仮画像を含む）はPCで幅を抑えて本文の横に配置する。
 
 ### Color Palette
 
@@ -492,7 +492,7 @@ Web Page取得が必要な場合は低頻度とする。
 
 「瑞穂丸」は無関係な同名対象が存在するため、安易なKeywordとして使用しない。
 
-公式情報は `https://www.town.mizuho.tokyo.jp/bunka/news.xml` だけを毎週木曜日に取得する。タイトルに「みずほまる」を含む記事、またはRSS categoryが「みずほまる情報」の記事だけを対象とする。AIは使用しない。RSS以外のSourceは自動収集せず、公式リンク集として案内する。既存の収集済みデータは引き継がない。Generated Dataは `data/official/YYYY-MM.json` に収集時点のAsia/Tokyo年月で分割し、URLで重複排除する。主な情報元ページの `og:image` が、公開IPへ解決するHTTPS URLであり、リダイレクト先を含めて画像として取得できた場合のみ、任意の `thumbnailUrl` を保持して公式情報のトップ表示と一覧で遅延読み込みサムネイルを表示する。既存データは保持し、既存URLをOGP取得の対象にしない。OGP未設定・取得失敗・非公開宛先の記事に画像情報は追加せず、画像なしで表示する。新規0件ではファイル変更・空commitを作らない。Actionsはレーダーと同じく、実行月の単一JSONのみを変更可能とする差分検証、lint、typecheck、unit test、build、E2E testの成功後にのみmainへ反映する。pushには収集専用GitHub AppのInstallation tokenを使用し、App秘密鍵をGitHub Actions Secretで管理する。個人用PATは使用しない。
+公式情報は `https://www.town.mizuho.tokyo.jp/bunka/news.xml` だけを毎週木曜日に取得する。タイトルに「みずほまる」を含む記事、またはRSS categoryが「みずほまる情報」の記事だけを対象とする。AIは使用しない。RSS以外のSourceは自動収集せず、公式リンク集として案内する。既存の収集済みデータは引き継がない。Generated Dataは `data/official/YYYY-MM.json` に収集時点のAsia/Tokyo年月で分割し、URLで重複排除する。主な情報元ページの `og:image` が、公開IPへ解決するHTTPS URLであり、リダイレクト先を含めて画像として取得できた場合のみ、任意の `thumbnailUrl` を保持して公式情報のトップ表示と一覧で遅延読み込みサムネイルを表示する。既存データは保持し、既存URLをOGP取得の対象にしない。OGP未設定・取得失敗・非公開宛先の記事に画像情報は追加せず、表示時は仮画像を使う。新規0件ではファイル変更・空commitを作らない。Actionsはレーダーと同じく、実行月の単一JSONのみを変更可能とする差分検証、lint、typecheck、unit test、build、E2E testの成功後にのみmainへ反映する。pushには収集専用GitHub AppのInstallation tokenを使用し、App秘密鍵をGitHub Actions Secretで管理する。個人用PATは使用しない。
 
 ### 16.2 AI Summary
 
@@ -551,7 +551,7 @@ OpenAI Responses APIのWeb Searchを用い、「みずほまる」の現在性�
 
 候補はStructured Outputsで取得するが、AIをSource of Truthにはしない。TypeScriptでstrict schema、HTTP(S) URL、実際のWeb Search sourceとの照合、fingerprintによる重複排除を通過した候補だけを掲載する。不明・不正・source照合不能ならfail-closedで掲載しない。
 
-データ単位は1回の実行ではなく、1つの独立ニュースにつき1要素とする。`data/radar/YYYY-MM.json` は `discoveredAt` のAsia/Tokyo年月で分割し、`id`、title、summary、category、tags、date、dateType、startDate、endDate、discoveredAt、source、researchSourcesを保持する。主な情報元ページの `og:image` が、公開IPへ解決するHTTPS URLであり、リダイレクト先を含めて画像として取得できた場合のみ、任意の `thumbnailUrl` を保持する。第三者画像をRepositoryへ保存・転載せず、レーダーのトップ表示と一覧では `thumbnailUrl` があるカードに遅延読み込みのサムネイルを表示する。OGP未設定・取得失敗・壊れた画像URL・非公開宛先の場合はデータを変更せず、画像を表示しない。表示は必ず `discoveredAt DESC` とし、レーダー一覧では年月絞り込みを提供する。
+データ単位は1回の実行ではなく、1つの独立ニュースにつき1要素とする。`data/radar/YYYY-MM.json` は `discoveredAt` のAsia/Tokyo年月で分割し、`id`、title、summary、category、tags、date、dateType、startDate、endDate、discoveredAt、source、researchSourcesを保持する。主な情報元ページの `og:image` が、公開IPへ解決するHTTPS URLであり、リダイレクト先を含めて画像として取得できた場合のみ、任意の `thumbnailUrl` を保持する。第三者画像をRepositoryへ保存・転載せず、レーダーのトップ表示と一覧では `thumbnailUrl` があるカードに遅延読み込みのサムネイルを表示する。OGP未設定・取得失敗・壊れた画像URL・非公開宛先の場合はデータを変更せず、表示時は仮画像を使う。表示は必ず `discoveredAt DESC` とし、レーダー一覧では年月絞り込みを提供する。
 
 GitHub Actionsは毎週木曜日のJST 13:17頃の定期実行と `workflow_dispatch` を提供する。新情報が0件ならファイル変更・空commitをせず正常終了する。通常実行で書き込めるのは実行月の単一 `data/radar/YYYY-MM.json` のみとし、tracked・untrackedの両方を含むGit差分検査、lint、typecheck、test、buildがすべて成功した場合だけmainへ自動反映する。収集用の `OPENAI_API_KEY` とpush用の専用GitHub App秘密鍵をGitHub Actions Secretで管理する。個人用PATは使用しない。標準GITHUB_TOKENはContents readとし、全検証成功後に対象RepositoryのContents writeに絞ったInstallation tokenを発行する。main保護を利用できる場合は専用Appによる限定更新を許可する設定とする。
 
