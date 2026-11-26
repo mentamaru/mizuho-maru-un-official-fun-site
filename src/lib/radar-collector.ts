@@ -76,7 +76,13 @@ const candidateEnvelopeSchema = z.object({ candidates: z.array(z.unknown()).max(
 
 export function parseVerifiedCandidates(text: string, sourceUrls: string[], onReject: (rejection: CandidateRejection) => void = () => {}): RadarCandidate[] {
   if (Buffer.byteLength(text, 'utf8') > 256_000) throw new Error('Radar output size limit exceeded.');
-  const parsed = candidateEnvelopeSchema.parse(JSON.parse(text));
+  let parsed: z.infer<typeof candidateEnvelopeSchema>;
+  try {
+    parsed = candidateEnvelopeSchema.parse(JSON.parse(text));
+  } catch {
+    // Native JSON/Zod errors can contain generated text or attacker-controlled keys.
+    throw new Error('レーダー応答のJSONまたは全体構造が不正なため、収集を中止しました。');
+  }
   const sources = new Set(sourceUrls.map(normalizeRadarUrl));
   return parsed.candidates.flatMap((raw, index) => {
     const result = radarCandidateSchema.safeParse(raw);

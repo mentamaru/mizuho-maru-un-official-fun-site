@@ -74,3 +74,18 @@ test('all rejected articles are logged and never fetched or written', async () =
   expect(state.fetchOgpImage).not.toHaveBeenCalled();
   expect(state.writeFile).not.toHaveBeenCalled();
 });
+
+test.each([
+  'ATTACK_MARKER is not JSON',
+  '{"candidates":[],"ATTACK_MARKER":true}'
+])('whole-response failures expose no generated content and never write: %s', async text => {
+  vi.resetModules();
+  state.text = text;
+  const error = await import('../../scripts/collect-radar').then(() => null, (failure: unknown) => failure);
+  expect(error).toBeInstanceOf(Error);
+  expect((error as Error).message).toBe('レーダー応答のJSONまたは全体構造が不正なため、収集を中止しました。');
+  expect((error as Error).cause).toBeUndefined();
+  expect((error as Error).stack).not.toContain('ATTACK_MARKER');
+  expect(state.fetchOgpImage).not.toHaveBeenCalled();
+  expect(state.writeFile).not.toHaveBeenCalled();
+});
