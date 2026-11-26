@@ -40,6 +40,7 @@ const safeItems = items.map((item) => ({
           </div>
           {item.radar && <RadarMetadata item={item.radar} />}
           <p class="leading-7 text-base-content/80">{item.summary}</p>
+          {item.isRadar && <p class="text-sm text-base-content/70">AIによる要約です。正確な内容は元情報をご確認ください。</p>}
           <div class="news-actions">
             {item.safeOriginalUrl ? (
               <a class="news-source-link" href={item.safeOriginalUrl} rel="noreferrer" target="_blank">{siteCopy.sourceLinkLabel}</a>

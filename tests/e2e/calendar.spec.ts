@@ -189,6 +189,8 @@ test('is shown in the latest panel of the top page', async ({ page }) => {
   await page.goto('/');
   const section = page.locator('#latest-panel [data-event-calendar]');
   await expect(section).toBeVisible();
+  // The AI disclosure can move this lazy-loaded section below the initial viewport.
+  await section.scrollIntoViewIfNeeded();
   await expect(page.locator('#latest-panel [data-calendar-root].fc')).toBeVisible();
   await expect(page.locator('.fc-day-today')).toHaveAttribute('data-date', '2026-11-19');
   const [calendarBox, characterBox] = await Promise.all([section.boundingBox(), page.locator('#latest-panel #character-heading').boundingBox()]);
