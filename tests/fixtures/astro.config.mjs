@@ -8,6 +8,7 @@ export default defineConfig({
     hooks: {
       'astro:config:setup': ({ injectRoute }) => {
         injectRoute({ pattern: '/__test/radar-metadata', entrypoint: './tests/fixtures/radar-metadata.astro' });
+        injectRoute({ pattern: '/__test/llm-output', entrypoint: './tests/fixtures/llm-output.astro' });
         injectRoute({ pattern: '/__test/latest', entrypoint: './tests/fixtures/latest.astro' });
         injectRoute({ pattern: '/__test/latest-empty', entrypoint: './tests/fixtures/latest-empty.astro' });
         injectRoute({ pattern: '/__test/calendar', entrypoint: './tests/fixtures/calendar.astro' });

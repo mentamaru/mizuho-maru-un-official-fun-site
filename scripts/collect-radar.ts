@@ -14,7 +14,19 @@ const output = new URL(`../data/radar/${month}.json`, import.meta.url);
 const existing = loadRadarItems();
 const client = new OpenAiRadarSearchClient();
 const result = await client.collect(renderRadarPrompt(loadResearchSources(), existing, now));
-const candidates = dedupeRadarCandidates(parseVerifiedCandidates(result.text, result.sourceUrls), existing);
+const rejectionReasons = {
+  invalid_text: 'HTML・制御文字を含むため',
+  unsafe_url: '出典URLが安全なhttp(s) URLの条件を満たさないため',
+  invalid_candidate: '必須項目・文字数・日付などの記事形式が不正なため',
+  unverified_source: '出典URLを検索結果で確認できないため'
+};
+let rejectedCount = 0;
+const verified = parseVerifiedCandidates(result.text, result.sourceUrls, ({ index, reason }) => {
+  rejectedCount++;
+  console.warn(`レーダー候補${index + 1}件目を除外: ${rejectionReasons[reason]}`);
+});
+console.info(`レーダー検証結果: 採用${verified.length}件・除外${rejectedCount}件（既存記事との重複排除前）`);
+const candidates = dedupeRadarCandidates(verified, existing);
 if (candidates.length === 0) { console.info('No new radar items.'); process.exit(0); }
 let monthItems: RadarItem[] = [];
 try { monthItems = radarItemsSchema.parse(JSON.parse(await readFile(output, 'utf8'))); } catch (error) { if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT')) throw error; }

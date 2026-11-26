@@ -16,8 +16,9 @@ const calendarDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(value => {
 const tagsSchema = z.array(z.enum(radarTags)).min(1).max(radarTags.length).refine(tags => new Set(tags).size === tags.length, 'タグが重複しています');
 const eventFields = { tags: tagsSchema, startDate: calendarDate.nullable(), endDate: calendarDate.nullable() };
 const dateTypes = ['published', 'updated', 'event', 'sale', 'broadcast', 'other'] as const;
-const nonEmpty = z.string().trim().min(1);
-const webUrl = z.string().trim().max(2048).url().refine(value => toAbsoluteHttpUrl(value) !== null, 'http(s) URLが必要です');
+const nonEmpty = z.string().refine(value => !/[<>\p{Cc}\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069]/u.test(value), 'HTML・制御文字を含まない平文が必要です').trim().min(1);
+// Validate raw input before Zod URL normalization can remove control characters.
+const webUrl = z.string().max(2048).refine(value => toAbsoluteHttpUrl(value) !== null, '安全なhttp(s) URLが必要です').pipe(z.string().trim().url());
 
 export const researchSourcesSchema = z.object({
   required: z.array(z.object({ name: nonEmpty.max(100), url: webUrl }).strict()).min(1).max(30),
@@ -48,7 +49,8 @@ const validateRadarDates = (item: { category: string; tags?: string[]; startDate
   if (item.tags && (!item.tags.includes(item.category) || (item.tags.includes('other') && item.tags.length > 1))) context.addIssue({ code: 'custom', message: '主分類を含め、その他は単独で指定してください', path: ['tags'] });
   if (item.endDate && (!item.startDate || item.endDate < item.startDate)) context.addIssue({ code: 'custom', message: '開催期間が不正です', path: ['endDate'] });
   if (item.startDate !== undefined && item.dateType === 'event' && item.startDate !== item.date) context.addIssue({ code: 'custom', message: '開催日と開始日が一致しません', path: ['startDate'] });
-  const urls = item.researchSources.map(source => normalizeRadarUrl(source.url));
+  // Invalid URLs already have schema issues; refinements must not throw.
+  const urls = item.researchSources.filter(source => toAbsoluteHttpUrl(source.url) !== null).map(source => normalizeRadarUrl(source.url));
   if (new Set(urls).size !== urls.length) context.addIssue({ code: 'custom', message: 'researchSources URLが重複しています' });
 };
 export const radarItemSchema = z.object({ id: z.string().regex(/^radar-[a-f0-9]{16}$/), discoveredAt: z.string().datetime({ offset: true }), ...radarFields }).strict().superRefine(validateRadarDates);
@@ -89,6 +91,9 @@ export function dedupeRadarCandidates(candidates: RadarCandidate[], existing: Ra
   return candidates.filter(candidate => { const fingerprint = identity(candidate); if (seen.has(fingerprint)) return false; seen.add(fingerprint); return true; });
 }
 export function buildPrompt(template: string, values: Record<'START_DATE' | 'END_DATE' | 'REQUIRED_SOURCES' | 'EXISTING_ITEMS', string>): string {
-  const rendered = template.replace(/\{\{(START_DATE|END_DATE|REQUIRED_SOURCES|EXISTING_ITEMS)\}\}/gu, (_, key: keyof typeof values) => values[key]);
-  if (/\{\{[^}]+\}\}/u.test(rendered)) throw new Error('未置換のプロンプト変数があります'); return rendered;
+  const variable = /\{\{(START_DATE|END_DATE|REQUIRED_SOURCES|EXISTING_ITEMS)\}\}/gu;
+  // Check the trusted template before inserting untrusted article text.
+  // Replacement data is never interpreted as another template.
+  if (/\{\{[^}]+\}\}/u.test(template.replace(variable, ''))) throw new Error('未置換のプロンプト変数があります');
+  return template.replace(variable, (_, key: keyof typeof values) => values[key]);
 }
