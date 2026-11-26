@@ -188,3 +188,9 @@ AIが生成した記事をそのままウェブサイトへ掲載するため、
 - [2026年版「不適切な出力処理」](https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM10_ImproperOutputHandling.md)
 - [2026年版「非公開コンテキストの露出」](https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM08_HiddenContextExposure.md)
 - [API制限の公式資料](https://developers.openai.com/api/reference/resources/responses/methods/create)と導入済みSDKの型
+
+## PR準備・追加検証（2026-11-26）
+
+- mainの `d707d3e`（プライバシー掲載方針等）を取り込み、競合なし。既存ExecPlanとの番号重複を避け、本書をv2-0012へ変更した。
+- `npm run lint`、`npm run typecheck`、`npm run test:unit`（18ファイル・190件）、`npm run build`（7ページ）、`npm run test:e2e`（53件）が成功。型検査はエラー・警告0件、既存の非推奨APIに関する参考情報4件。
+- 依存追加なし。実API呼び出しは未実施。PRでCIのセキュリティ検査を確認する。
