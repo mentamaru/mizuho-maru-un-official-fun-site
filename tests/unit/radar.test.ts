@@ -2,7 +2,7 @@ import { describe, expect, test, vi } from 'vitest';
 
 import { dedupeRadarCandidates, radarFingerprint, radarMonth, sortRadarNewestFirst, type RadarCandidate, type RadarItem } from '../../src/lib/radar';
 import { parseVerifiedCandidates, radarModel, renderRadarPrompt } from '../../src/lib/radar-collector';
-import { loadResearchSources } from '../../src/lib/radar';
+import { loadRadarItems, loadResearchSources } from '../../src/lib/radar';
 import { extractOgpImage, fetchOgpImage } from '../../src/lib/ogp';
 
 const candidate: RadarCandidate = { title: 'みずほまるがイベントに登場', summary: 'みずほまるがイベントに登場します。詳しくは元情報をご確認ください。', category: 'event', tags: ['event'], startDate: '2026-10-20', endDate: '2026-10-20', date: '2026-10-20', dateType: 'event', source: { name: '公式', url: 'https://example.com/event' }, researchSources: [{ title: 'お知らせ', url: 'https://example.com/event' }] };
@@ -38,6 +38,21 @@ describe('radar data', () => {
     expect(prompt).toContain('mizuhokyodo.jp/information');
     expect(prompt).toContain('mizuho_koho');
     expect(prompt).toContain('公式キャラクター決定ページ');
+  });
+  test('instructs collection to protect private identities while allowing public activity names', () => {
+    const prompt = renderRadarPrompt(loadResearchSources(), [], new Date('2026-11-26T00:00:00+09:00'));
+    expect(prompt).toContain('一般の参加者・応募者や児童・生徒の実名を掲載しない');
+    expect(prompt).toContain('ハンドルネーム・クリエイター名・芸名');
+    expect(prompt).toContain('紹介に必要な範囲で掲載してよい');
+    expect(prompt).toContain('本名の調査や別アカウントとの結び付けをしない');
+    for (const field of ['title', 'summary', 'source.name', 'researchSources[].title']) expect(prompt).toContain(field);
+    expect(prompt).toContain('役割・立場');
+    expect(prompt).toContain('候補から除外');
+  });
+  test('introduces the gourmet selection without identifying the students', () => {
+    const item = loadRadarItems().find(item => item.id === 'radar-381336463a976e51');
+    expect(item?.summary).toBe('瑞穂町教育委員会が、児童・生徒が瑞穂町をイメージして考える弁当企画「みずほまるグルメ」の選考結果を発表しました。小学生と中学生の作品が選ばれ、選出された弁当は3学期の学校公開日などに販売される予定です。');
+    expect(item?.source.url).toBe('https://www.town.mizuho.tokyo.jp/kyoikuiinkai/education/011/002/p012095.html');
   });
   test('uses the project-approved Luna model', () => {
     expect(radarModel).toBe('gpt-5.6-luna');
