@@ -155,5 +155,33 @@
         "url": "https://tama-innovation-ecosystem.jp/report/event-holding/6303/"
       }
     ]
+  },
+  {
+    "id": "radar-381336463a976e51",
+    "discoveredAt": "2026-11-26T13:25:20.384+09:00",
+    "title": "令和8年度「みずほまるグルメ」の選考結果を発表",
+    "summary": "瑞穂町教育委員会が、児童・生徒が瑞穂町をイメージして考える弁当企画「みずほまるグルメ」の選考結果を発表しました。瑞穂第二小学校の佐分咲月さんと、瑞穂中学校の吉岡茉央さんの2名が選ばれ、選出された弁当は3学期の学校公開日などに販売される予定です。",
+    "category": "other",
+    "date": "2026-11-18",
+    "tags": [
+      "other"
+    ],
+    "startDate": null,
+    "endDate": null,
+    "dateType": "updated",
+    "source": {
+      "name": "瑞穂町教育委員会",
+      "url": "https://www.town.mizuho.tokyo.jp/kyoikuiinkai/education/011/002/p012095.html"
+    },
+    "researchSources": [
+      {
+        "title": "令和8年度みずほまるグルメ事業",
+        "url": "https://www.town.mizuho.tokyo.jp/kyoikuiinkai/education/011/002/p012095.html"
+      },
+      {
+        "title": "瑞穂町ホームページの新着情報一覧（2026年11月）",
+        "url": "https://www.town.mizuho.tokyo.jp/news202611.html"
+      }
+    ]
   }
 ]
