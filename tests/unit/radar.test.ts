@@ -30,7 +30,7 @@ describe('radar data', () => {
   });
   test('rejects non-ISO dates rather than publishing them', () => {
     const invalid = { ...candidate, date: '2026年10月20日' };
-    expect(() => parseVerifiedCandidates(JSON.stringify({ candidates: [invalid] }), ['https://example.com/event'])).toThrow();
+    expect(parseVerifiedCandidates(JSON.stringify({ candidates: [invalid] }), ['https://example.com/event'])).toEqual([]);
   });
   test('includes configured, source, and social references in the research prompt', () => {
     const prompt = renderRadarPrompt(loadResearchSources(), [], new Date('2026-09-12T00:00:00+09:00'));

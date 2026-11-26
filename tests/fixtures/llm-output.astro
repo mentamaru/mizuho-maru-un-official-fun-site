@@ -1,0 +1,21 @@
+---
+import Layout from '../../src/layouts/Layout.astro';
+import LatestNews from '../../src/components/LatestNews.astro';
+import RadarNews from '../../src/components/RadarNews.astro';
+import EventCalendar from '../../src/components/EventCalendar.astro';
+import { buildLatestItems } from '../../src/lib/latest';
+import { toCalendarEvents } from '../../src/lib/calendar';
+import type { RadarItem } from '../../src/lib/radar';
+
+// Intentionally bypass ingestion validation to test the independent rendering boundary.
+const payload = '<img src="https://attack.invalid/leak" onerror="window.__injected=1"><svg onload="window.__injected=1"></svg></script><script>window.__injected=1</script>';
+const code = "'; DROP TABLE news; -- $(touch /tmp/llm-injection) `id` {{7*7}} ![image](https://attack.invalid/pixel)";
+const item: RadarItem = {
+  id: 'radar-1234567890abcdef', title: payload, summary: code, category: 'event', tags: ['event'],
+  startDate: '2026-11-20', endDate: '2026-11-20', date: '2026-11-20', dateType: 'event', discoveredAt: '2026-11-20T00:00:00Z',
+  source: { name: payload, url: 'https://example.com/news' }, researchSources: [{ title: payload, url: 'https://example.com/news' }]
+};
+const unsafe = ['javascript:window.__injected=1', 'data:text/html,hello', 'https://trusted.example@attack.invalid/', 'file:///etc/passwd'];
+const items = [item, ...unsafe.map((url, index) => ({ ...item, id: `radar-${String(index).padStart(16, '0')}`, source: { name: '不正URL', url } }))];
+---
+<Layout title="Security test"><div data-security-content><LatestNews items={buildLatestItems([], items, 10)} /><RadarNews items={items} /><EventCalendar events={toCalendarEvents([item])} /></div></Layout>
