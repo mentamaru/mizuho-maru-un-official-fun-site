@@ -29,7 +29,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@fullcalendar/core": "6.1.22",
+    "@fullcalendar/core": "7.1.5",
     "@fullcalendar/daygrid": "6.1.22",
     "@vercel/analytics": "^2.0.1",
     "astro": "^7.4.11",
